@@ -370,7 +370,7 @@ dl.src dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .stripes{display:flex;flex-direction:column;gap:4px;margin-top:2px}
 .stripes .srow{position:relative;height:30px;border-radius:9px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(14,42,47,.08);cursor:pointer}
 .stripes .srow:focus-visible{outline:2.5px solid var(--teal);outline-offset:2px}
-.stripes svg{width:100%;height:100%;display:block}
+.stripes .srow svg{width:100%;height:100%;display:block}
 .stripes .slab{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10px;color:var(--muted);flex-wrap:wrap}
 /* lifetime lens */
 .lifetime{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.6)}
@@ -401,7 +401,7 @@ dl.src dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .fp li{display:flex;gap:7px;align-items:center}
 .fp li i{width:9px;height:9px;border-radius:50%;flex:none}
 .fp li span.v{margin-left:auto;font-family:var(--f-mono);font-size:11.5px;white-space:nowrap}
-.rankstrip svg{width:100%;height:auto;display:block;overflow:visible}
+.rankstrip svg.rankchart{width:100%;height:auto;display:block;overflow:visible}
 .rankstrip .dot{cursor:pointer}
 .rankstrip .dot:focus-visible{outline:none}
 .rankstrip .dot:focus-visible circle{stroke:var(--teal);stroke-width:3}
@@ -593,6 +593,7 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
 <script src="data/ndvi.js"></script>
 <script src="data/imagery.js"></script>
 <script src="data/calibration.js"></script>
+<script src="data/global.js"></script>
 <script>
 /* Country borders: Apache ECharts' world map registers itself through echarts.registerMap. This stub captures it. */
 window.__worldGeo=null;window.echarts={registerMap:function(n,g){if(/world/i.test(n))window.__worldGeo=g;}};
@@ -608,7 +609,7 @@ window.__worldGeo=null;window.echarts={registerMap:function(n,g){if(/world/i.tes
    ===================================================================== */
 const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
 /* Data bundles written by tools/fetch_giovanni.py and tools/fetch_appeears.py. null = file missing. */
-const ETD=window.ETD_DATA||null,NDVI=window.ETD_NDVI||null,IMG=window.ETD_IMAGERY||null,CAL=window.ETD_CAL||null;
+const ETD=window.ETD_DATA||null,NDVI=window.ETD_NDVI||null,IMG=window.ETD_IMAGERY||null,CAL=window.ETD_CAL||null,GM=window.ETD_GLOBAL||null;
 const THIS_YEAR=new Date().getFullYear(),YEAR_END=ETD?ETD.year_end:THIS_YEAR-1,Y0=1980,D=Math.PI/180;
 /* Reference period for anomalies: every dataset in the app has values in these years. */
 const BASE0=2005,BASE1=2020,BASE_TXT=BASE0+"–"+BASE1;
@@ -732,6 +733,11 @@ if(ETD&&ETD.grid){
   if(ETD.grid.vars.prec){const g=ETD.grid.vars.prec,end=g.start+Math.max(...g.cells.map(c=>{let k=c.length-1;while(k>=0&&c[k]==null)k--;return k;}));
     LAYERS.grid_prec={kind:"grid",v:"prec",name:"Precipitation grid",unit:"% vs "+BASE_TXT,source:"NASA Giovanni · GPM IMERG",code:VARS.prec.code,res:`one sample every ${ETD.grid.step}° (each value is a 0.1° cell)`,cover:`Global, ${g.start} – ${end}, annual totals`,start:g.start,end};}
 }
+/* Whole-Earth yearly maps (NASA Giovanni Time Averaged Map service, tools/fetch_giovanni_maps.py). Display only: numbers
+   always come from the time series. Each PNG covers longitude −180…180 and latitude 90…−90 (equirectangular). */
+if(GM&&GM.layers)["prec","no2","rh","aod"].forEach(k=>{const g=GM.layers[k];if(!g||!g.years||!g.years.length)return;
+  LAYERS["gmap_"+k]={kind:"gmap",key:k,name:g.name+" map",unit:g.unit,source:"NASA Giovanni · "+g.name,code:g.giovanni_id,dataset:g.dataset,years:g.years,scale:g.scale,
+    res:`about ${fmt(360/g.grid.w,g.grid.w>=720?2:0)}° pixels`,cover:`Whole Earth, yearly averages, ${g.years[0]} – ${g.years[g.years.length-1]}`,start:g.years[0],end:g.years[g.years.length-1]};});
 if(IMG&&IMG.layers){
   if(IMG.layers.ndvi)LAYERS.ndvi={kind:"img",key:"ndvi",name:"MODIS NDVI image (July)",unit:"NDVI, brown (≤ 0) to dark green (≥ 0.9)",source:"NASA AppEEARS · MODIS Terra MOD13A3 v061",code:"MOD13A3.061 _1_km_monthly_NDVI",res:"1 km",cover:"July monthly composite, 2001 – 2025, 1° × 1° box around each featured place"};
   if(IMG.layers.truecolor)LAYERS.truecolor={kind:"img",key:"truecolor",name:"MODIS true-colour image (July)",unit:"Surface reflectance, bands 1-4-3 as red-green-blue",source:"NASA AppEEARS · MODIS Terra MOD09A1 v061",code:"MOD09A1.061 sur_refl_b01, b04, b03",res:"500 m",cover:`July (least-cloudy 8-day composite per pixel) of ${IMG.layers.truecolor.years.join(", ")}; 1° × 1° box around each featured place`};
@@ -743,7 +749,7 @@ const EXPLORE=[
  {id:"lst",name:"Land surface temperature",color:"#C24E6E",series:"ts",layer:null,
   sci:"Average surface skin temperature of the land from the GLDAS Noah land-surface model, driven by observed meteorology.",
   plain:"It measures how hot the actual ground is (soil, roads and roofs) rather than the air above it."},
- {id:"prec",name:"Precipitation",color:"#2E78B0",series:"prec",layer:"grid_prec",
+ {id:"prec",name:"Precipitation",color:"#2E78B0",series:"prec",layer:LAYERS.gmap_prec?"gmap_prec":"grid_prec",
   sci:"GPM IMERG Final Run: precipitation (rain plus the water content of snow) merged from many satellites and calibrated with rain gauges, summed over the year.",
   plain:"How much rain and snow fell during the year, in millimetres of water."},
  {id:"soil",name:"Soil moisture",color:"#9A6B35",series:"soil",layer:null,
@@ -758,10 +764,10 @@ const EXPLORE=[
  {id:"snow",name:"Snow water",color:"#7FA7C9",series:"snow",layer:null,
   sci:"Snow water equivalent: the depth of water that would result if the snowpack melted, as mass per square metre (GLDAS Noah).",
   plain:"How much water is stored on the ground as snow, averaged over the year."},
- {id:"rh",name:"Humidity",color:"#2A8C86",series:"rh",layer:null,
+ {id:"rh",name:"Humidity",color:"#2A8C86",series:"rh",layer:LAYERS.gmap_rh?"gmap_rh":null,
   sci:"Relative humidity at the surface retrieved by the AIRS infrared sounder on NASA's Aqua satellite: water-vapour pressure as a percentage of saturation vapour pressure.",
   plain:"How close the air is to holding as much moisture as it can. High humidity makes heat feel worse."},
- {id:"no2",name:"Nitrogen dioxide",color:"#8E5A9E",series:"no2",layer:null,
+ {id:"no2",name:"Nitrogen dioxide",color:"#8E5A9E",series:"no2",layer:LAYERS.gmap_no2?"gmap_no2":null,
   sci:"Tropospheric NO₂ column measured by the Ozone Monitoring Instrument (OMI) on NASA's Aura satellite. NO₂ comes mainly from burning fuel in vehicles, power plants and industry.",
   plain:"A gas from traffic and burning fuel. More of it in the air above a place usually means more combustion nearby."}
 ];
@@ -985,7 +991,7 @@ const baseOf=s=>mean(s.vals.slice(BASE0-s.start,BASE1-s.start+1));
    6. STATE
    ===================================================================== */
 const saved=store.get("state")||{};
-const S={loc:null,item:"t2m",base:"photo",year:YEAR_END,month:7,section:"explore",from:Y0,to:YEAR_END,connect:["ts","soil","prec"],playing:null,
+const S={loc:null,item:"t2m",base:"photo",aod:false,year:YEAR_END,month:7,section:"explore",from:Y0,to:YEAR_END,connect:["ts","soil","prec"],playing:null,
   cmp:{a:2015,b:YEAR_END,img:"data"},lab:{focus:null,cmp:new Set()},highlight:new Set()};
 const curItem=()=>itemById(S.item),curSeries=()=>curItem().series;
 /* year range of the selected variable (at the selected place once its data is loaded) */
@@ -1107,16 +1113,28 @@ const imgYears=(L,loc)=>{const s=L&&L.kind==="img"&&IMG&&loc&&IMG.sites[loc.id];
 const imgURL=(L,loc,y)=>imgYears(L,loc).includes(y)?`data/imagery/${safeId(loc.id)}/${L.key}_${y}.png`:null;
 /* latest image year not after y (the map shows the most recent image up to the selected year) */
 const imgYearFor=(L,loc,y)=>{const ys=imgYears(L,loc).filter(v=>v<=y);return ys.length?ys[ys.length-1]:null;};
-function covers(L,y,loc){if(!L)return false;if(L.kind==="grid")return y>=L.start&&y<=L.end;return!!imgURL(L,loc||S.loc,y);}
+function covers(L,y,loc){if(!L)return false;if(L.kind==="grid")return y>=L.start&&y<=L.end;if(L.kind==="gmap")return L.years.includes(y);return!!imgURL(L,loc||S.loc,y);}
 function loadImg(url){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("image"));i.src=url;});}
 const imgCache=new Map();
-function getImg(url){if(!url)return null;let e=imgCache.get(url);if(!e){e={img:new Image(),ok:false};e.img.onload=()=>{e.ok=true;if(mode==="map")drawMap();};e.img.src=url;imgCache.set(url,e);}return e.ok?e.img:null;}
+function getImg(url){if(!url)return null;let e=imgCache.get(url);if(!e){e={img:new Image(),ok:false};e.img.onload=()=>{e.ok=true;if(mode==="map")drawMap();else updateGlobeTexture();};e.img.src=url;imgCache.set(url,e);}return e.ok?e.img:null;}
 const curLayer=()=>{const it=curItem();return it.layer&&LAYERS[it.layer]?LAYERS[it.layer]:null;};
 const gridOf=L=>L&&L.kind==="grid"&&ETD&&ETD.grid&&ETD.grid.vars[L.v]?ETD.grid.vars[L.v]:null;
 const gridBaseCache={};
 function gridBase(v){if(!gridBaseCache[v]){const g=ETD.grid.vars[v];gridBaseCache[v]=g.cells.map(c=>mean(c.slice(BASE0-g.start,BASE1-g.start+1)));}return gridBaseCache[v];}
 function gridAnom(v,idx,year){const g=ETD.grid.vars[v],x=g.cells[idx][year-g.start];if(x==null)return null;const b=gridBase(v)[idx];if(b==null)return null;return VARS[v].anomaly==="pct"?(b>0?(x/b-1)*100:null):x-b;}
 /* image layer drawn on the map: the selected variable's own imagery, else the true-colour background when it is switched on */
+const gmapURL=(L,y)=>`data/global/${L.key}_${y}.png`;
+const aodOn=y=>S.aod&&LAYERS.gmap_aod&&covers(LAYERS.gmap_aod,y);
+/* a whole-Earth map reprojected once to Web Mercator (row by row) and cached, so panning only scales one canvas */
+const MERC=new Map();
+function gmapMerc(L,y){const url=gmapURL(L,y),im=getImg(url);if(!im)return null;let c=MERC.get(url);if(c)return c;
+  const iw=im.naturalWidth,ih=im.naturalHeight,N=Math.min(2048,Math.max(1024,iw));c=document.createElement("canvas");c.width=c.height=N;const cx=c.getContext("2d");cx.imageSmoothingEnabled=true;
+  for(let r=0;r<ih;r++){const top=Math.min(85.05,90-r*180/ih),bot=Math.max(-85.05,90-(r+1)*180/ih);if(top<=bot)continue;const v0=toV(top),v1=toV(bot);cx.drawImage(im,0,r,iw,1,0,v0*N,N,Math.max(.6,(v1-v0)*N)+.4);}
+  MERC.set(url,c);return c;}
+function drawMerc(fx,c){const N=c.width,x0=Math.max(0,-T.x/T.k*N),y0=Math.max(0,-T.y/T.k*N),x1=Math.min(N,(W-T.x)/T.k*N),y1=Math.min(N,(H-T.y)/T.k*N);if(x1<=x0||y1<=y0)return;
+  fx.drawImage(c,x0,y0,x1-x0,y1-y0,T.x+x0/N*T.k,T.y+y0/N*T.k,(x1-x0)/N*T.k,(y1-y0)/N*T.k);}
+function scaleLegend(L,title){const s=L.scale,v0=s[0][0],v1=s[s.length-1][0];
+  return`<div class="lg"><span class="label">${title}</span><div class="bar" style="background:linear-gradient(90deg,${s.map(p=>`${p[1]} ${((p[0]-v0)/(v1-v0)*100).toFixed(1)}%`).join(",")});border:1px solid var(--line)"></div><div class="ends"><span>${v0}</span><span>${esc(L.unit)}</span><span>≥ ${v1}</span></div></div>`;}
 const mapImgLayer=()=>{const L=curLayer();return L&&L.kind==="img"?L:(S.base==="photo"&&LAYERS.truecolor?LAYERS.truecolor:null);};
 
 /* =====================================================================
@@ -1148,16 +1166,19 @@ function buildGlobeGeo(){if(!mapOK)return;LAND=COUNTRIES.map(c=>{const fixed=c.p
    the NASA Giovanni grid for the selected year as coloured squares, one per sample point. */
 const GT={w:2048,h:1024,cv:document.createElement("canvas"),data:null,key:"",state:"idle",ver:0};GT.cv.width=GT.w;GT.cv.height=GT.h;
 function updateGlobeTexture(){
-  const L=curLayer(),g=gridOf(L),yr=markerYear(),on=!!g&&covers(L,yr),key=(on?L.v+yr:"none")+"|"+(mapOK?1:0);
+  const L=curLayer(),g=gridOf(L),yr=markerYear(),on=!!g&&covers(L,yr),GLm=!GT.noImg&&L&&L.kind==="gmap"&&covers(L,yr)?getImg(gmapURL(L,yr)):null,AOm=!GT.noImg&&aodOn(yr)?getImg(gmapURL(LAYERS.gmap_aod,yr)):null;
+  const key=(on?L.v+yr:"none")+"|"+(mapOK?1:0)+"|"+(GLm?L.key+yr:"")+"|"+(AOm?"aod"+yr:"");
   if(key===GT.key)return;GT.key=key;
   try{const ctx=GT.cv.getContext("2d",{willReadFrequently:true}),w=GT.w,h=GT.h,X=lon=>(lon+180)/360*w,Y=lat=>(90-lat)/180*h;
     ctx.globalAlpha=1;ctx.fillStyle="#A9CADB";ctx.fillRect(0,0,w,h);
     if(mapOK){ctx.fillStyle="#E9EEDF";ctx.beginPath();COUNTRIES.forEach(c=>c.polys.forEach(p=>p.forEach(r=>{r.forEach((pt,i)=>{if(i)ctx.lineTo(X(pt[0]),Y(pt[1]));else ctx.moveTo(X(pt[0]),Y(pt[1]));});ctx.closePath();})));ctx.fill("evenodd");}
+    if(AOm){ctx.globalAlpha=.85;ctx.drawImage(AOm,0,0,w,h);ctx.globalAlpha=1;}
+    if(GLm){ctx.globalAlpha=.88;ctx.drawImage(GLm,0,0,w,h);ctx.globalAlpha=1;}
     if(on){const G0=ETD.grid,cw=w*G0.step/360,ch=h*G0.step/180;ctx.globalAlpha=.8;
       for(let i=0;i<G0.nlat;i++)for(let j=0;j<G0.nlon;j++){const a=gridAnom(L.v,i*G0.nlon+j,yr);if(a==null)continue;ctx.fillStyle=rampColor(a,L.v);ctx.fillRect(X(G0.lon0+j*G0.step-G0.step/2),Y(G0.lat0+i*G0.step+G0.step/2),cw+.5,ch+.5);}
       ctx.globalAlpha=1;}
     GT.data=ctx.getImageData(0,0,w,h).data;GT.state="ok";GT.ver++;
-  }catch(_){GT.state="failed";GT.data=null;}
+  }catch(_){if((GLm||AOm)&&!GT.noImg){GT.noImg=true;GT.key="";updateGlobeTexture();return;}GT.state="failed";GT.data=null;} /* pages opened from a file can't read images back: retry without them */
   refreshStatus();
 }
 /* Real day/night terminator: approximate subsolar point for the current UTC time (declination from day of year; equation of time ignored, ±4°). */
@@ -1257,6 +1278,8 @@ function drawCountries(){
   if(vectorBase){fx.fillStyle="#EEF1E6";fx.beginPath();COUNTRIES.forEach(c=>{if(vis(c))trace(fx,c);});fx.fill("evenodd");}
   /* NASA Giovanni grid for the selected year: one square per sample point */
   const GL=curLayer(),gg=gridOf(GL),gy=markerYear();
+  if(aodOn(gy)){const c=gmapMerc(LAYERS.gmap_aod,gy);if(c){fx.globalAlpha=.85;fx.imageSmoothingEnabled=true;drawMerc(fx,c);fx.globalAlpha=1;}}
+  if(GL&&GL.kind==="gmap"&&covers(GL,gy)){const c=gmapMerc(GL,gy);if(c){fx.globalAlpha=.88;fx.imageSmoothingEnabled=true;drawMerc(fx,c);fx.globalAlpha=1;}}
   if(gg&&covers(GL,gy)){const G0=ETD.grid,hs=G0.step/2;fx.globalAlpha=.72;
     for(let i=0;i<G0.nlat;i++){const la=G0.lat0+i*G0.step,y0=T.y+toV(Math.min(85.05,la+hs))*T.k,y1=T.y+toV(Math.max(-85.05,la-hs))*T.k;if(y1<0||y0>H||y1-y0<.01)continue;
       for(let j=0;j<G0.nlon;j++){const lo=G0.lon0+j*G0.step,x0=T.x+toU(lo-hs)*T.k,x1=T.x+toU(lo+hs)*T.k;if(x1<0||x0>W)continue;const a=gridAnom(GL.v,i*G0.nlon+j,gy);if(a==null)continue;fx.fillStyle=rampColor(a,GL.v);fx.fillRect(x0,y0,x1-x0+.5,y1-y0+.5);}}
@@ -1280,8 +1303,10 @@ function refreshStatus(){
   else if(L&&L.kind==="grid"){
     if(covers(L,yr)){cls="ok";txt=`${L.source} · ${yr} vs ${BASE_TXT} · cached ${ETD.retrieved}`;}
     else{cls="warn";txt=`No ${L.name.toLowerCase()} for ${yr}. This record covers ${L.start}–${L.end}.`;}}
+  else if(L&&L.kind==="gmap"){if(covers(L,yr)){cls="ok";txt=`${L.source} · ${yr} yearly average · cached ${GM.retrieved}`;}else{cls="warn";txt=`No ${L.name.toLowerCase()} for ${yr}. Maps cover ${L.start}–${L.end}.`;}}
   else if(L&&L.kind==="img")txt=`${it.name}: dots show values at the featured places. Zoom in on a featured place to see its MODIS image.`;
-  else txt=`${it.name}: dots show values at the featured places. This variable has no whole-globe layer.`;
+  else txt=aodOn(yr)?`${it.name}: dots show values at the featured places. Background: MODIS aerosols, ${yr} yearly average.`:`${it.name}: dots show values at the featured places. This variable has no whole-globe layer.`;
+  if(S.aod&&LAYERS.gmap_aod&&!msgOverride&&ETD&&(L&&(L.kind==="grid"||L.kind==="gmap")||!aodOn(yr)))txt+=aodOn(yr)?` · MODIS aerosols ${yr} underneath`:` · no MODIS aerosol map for ${yr}`;
   if(!S.loc&&!cls&&mode==="globe")txt+=" Search, or click a country.";
   m.className="msg "+cls;m.innerHTML=txt?`<i></i>${esc(txt)}`:"";m.hidden=!txt;
 }
@@ -1312,6 +1337,7 @@ function legendHTML(it){const parts=[];const id=it.series,L=it.layer?LAYERS[it.l
   if(id){const R=VARS[id],stops=[0,.25,.5,.75,1].map(t=>rampColor(-R.span+2*R.span*t,id)),u=R.anomaly==="pct"?"%":R.unit,d=R.anomaly==="pct"?0:Math.min(2,R.dig);
     parts.push(`<div class="lg"><span class="label">${L&&L.kind==="grid"?"Squares and dots":"Dots"}: ${markerYear()} vs ${BASE_TXT} mean</span> ${gi("anomaly")}<div class="bar" style="background:linear-gradient(90deg,${stops.join(",")});border:1px solid var(--line)"></div><div class="ends"><span>${sfmt(-R.span,d)} ${esc(u)}</span><span>0</span><span>${sfmt(R.span,d)} ${esc(u)}</span></div></div>`);}
   if(L&&L.kind==="grid")parts.push(`<p style="margin-top:8px">Each square shows one value sampled at its centre, not an average over the square.</p>`);
+  if(L&&L.kind==="gmap")parts.push(scaleLegend(L,`Whole-Earth map · ${markerYear()} yearly average`));
   if(L&&L.kind==="img"&&IMG.layers[L.key].palette)parts.push(`<div class="lg"><span class="label">Image colours · NDVI</span><div class="bar" style="background:linear-gradient(90deg,${IMG.layers[L.key].palette.map(p=>p[1]).join(",")});border:1px solid var(--line)"></div><div class="ends"><span>${IMG.layers[L.key].palette[0][0]}</span><span>${IMG.layers[L.key].palette[IMG.layers[L.key].palette.length-1][0]}</span></div></div>`);
   return parts.join("");}
 function renderExploreList(){
@@ -1324,9 +1350,12 @@ function renderExploreList(){
   const grp=(label,ids)=>{const items=EXPLORE.filter(e=>ids.includes(e.id));return items.length?`<div class="xgroup"><span class="label">${label}</span>${items.map(row).join("")}</div>`:"";};
   $("#exploreBody").innerHTML=grp("Heat",["t2m","lst"])+grp("Water",["prec","soil","et","runoff","snow","rh"])+grp("Air and land",["no2","ndvi"])+
    (LAYERS.truecolor?`<div class="basemap"><span class="label">MODIS photos at featured places${mode==="globe"?" (map view)":""}</span><div class="seg" role="group" aria-label="MODIS photos">
-    ${[["photo","Show"],["none","Hide"]].map(([k,n])=>`<button data-base="${k}" aria-pressed="${S.base===k}">${n}</button>`).join("")}</div></div>`:"");
+    ${[["photo","Show"],["none","Hide"]].map(([k,n])=>`<button data-base="${k}" aria-pressed="${S.base===k}">${n}</button>`).join("")}</div></div>`:"")+
+   (LAYERS.gmap_aod?`<div class="basemap"><span class="label">MODIS aerosols, whole Earth${mode==="globe"?"":""}</span><div class="seg" role="group" aria-label="MODIS aerosols">
+    ${[["1","Show"],["0","Hide"]].map(([k,n])=>`<button data-aod="${k}" aria-pressed="${(S.aod?"1":"0")===k}">${n}</button>`).join("")}</div><p class="hint" style="margin:0">Dust, smoke and haze from MODIS Terra, under any other map.</p>${S.aod?scaleLegend(LAYERS.gmap_aod,`MODIS aerosol optical depth · ${markerYear()} yearly average`):""}</div>`:"");
   $$("#exploreBody [data-x]").forEach(b=>b.onclick=()=>setItem(b.dataset.x));
   $$("#exploreBody [data-base]").forEach(b=>b.onclick=()=>{S.base=b.dataset.base;renderExploreList();updateTiles();drawMap();});
+  $$("#exploreBody [data-aod]").forEach(b=>b.onclick=()=>{S.aod=b.dataset.aod==="1";renderExploreList();updateGlobeTexture();drawMap();refreshStatus();});
 }
 function setItem(id){const changed=S.item!==id;S.item=id;if(changed){S.from=Y0;S.to=YEAR_END;}if(curSeries())seriesFallback=curSeries();applyRange();saveState();renderExploreList();updateTiles();updateGlobeTexture();drawMap();renderPanel();renderCompare();}
 $("#exploreToggle").onclick=()=>{const c=$("#explore").classList.toggle("collapsed");$("#exploreToggle").textContent=c?"Show":"Hide";$("#exploreToggle").setAttribute("aria-expanded",!c);sizeView();};
@@ -1346,7 +1375,7 @@ function setYear(y,opts){const RR=curRange();y=clamp(Math.round(y),RR[0],RR[1]);
   clearTimeout(texTimer);texTimer=setTimeout(updateGlobeTexture,S.playing?900:250);
   if(!(opts&&opts.light)){if(S.section==="explore"&&S.loc&&curSeries()){const d=peek(S.loc);if(d&&d.ok)drawExploreChart(d);}
     if(!(opts&&opts.fromCompare)&&S.cmp.b!==y){S.cmp.b=y;if(S.cmp.a>=y)S.cmp.a=Math.max(Y0,y-10);renderCompare();}}
-  const lg=document.querySelector(".xitem.on .lg .label");if(lg)lg.textContent=lg.textContent.replace(/\d{4} vs/,markerYear()+" vs");updateStripeMark();}
+  const lg=document.querySelector(".xitem.on .lg .label");if(lg)lg.textContent=lg.textContent.replace(/\d{4} vs/,markerYear()+" vs");document.querySelectorAll("#exploreBody .lg .label").forEach(x=>{x.textContent=x.textContent.replace(/· \d{4} yearly/,"· "+markerYear()+" yearly");});updateStripeMark();}
 yr.addEventListener("input",()=>setYear(+yr.value));
 $("#month").addEventListener("change",e=>{S.month=+e.target.value;updateTiles();updateGlobeTexture();drawMap();renderCompare();});
 function stopPlay(){if(S.playing){clearInterval(S.playing);S.playing=null;$("#play").innerHTML=icon("play");$("#play").setAttribute("aria-label","Play through the years");updateGlobeTexture();setYear(S.year);}}
@@ -1451,6 +1480,7 @@ function sourceCard(id,d){const v=VARS[id],cell=d&&d.cells&&d.cells[id],ret=id==
    <dt>Units</dt><dd>${esc(v.unit)} · ${esc(v.temporal)}</dd>
    <dt>Resolution</dt><dd>${esc(v.spatial)}</dd>
    <dt>Quality control</dt><dd>${(()=>{const q=d&&d.ok?prep(d,id):null;return q?`${q.valid} of ${q.months} months have a value; ${q.rejected} impossible value${q.rejected===1?"":"s"} removed; ${q.outliers.size} unusual month${q.outliers.size===1?"":"s"} flagged and kept. Nothing is filled in.`:"Annual values only."})()}</dd>
+   ${(()=>{const it=EXPLORE.find(e=>e.series===id),L=it&&it.layer?LAYERS[it.layer]:null;return L&&L.kind==="gmap"?`<dt>Whole-Earth map</dt><dd>${esc(L.dataset)}: yearly time-averaged maps ${L.start}–${L.end} from Giovanni's Time Averaged Map service (<code>${esc(L.code)}</code>), ${esc(L.res)}, retrieved ${esc(GM.retrieved)}. For display only; every number comes from the time series.</dd>`:"";})()}
    <dt>Retrieved</dt><dd>${esc(ret||"unknown")}. The app reads this stored copy and does not contact NASA while you use it.</dd></dl></div>`;}
 function locHeader(){const l=S.loc;if(!l)return"";return`<div class="loc"><span class="label">Selected location</span><h2>${esc(l.name)}</h2><span class="coords">${fmt(Math.abs(l.lat),2)}°${l.lat>=0?"N":"S"} · ${fmt(Math.abs(l.lon),2)}°${l.lon>=0?"E":"W"}${l.country&&l.kind!=="country"?" · "+esc(l.country):""}${l.kind==="country"?" · country reference point":""} · ${gterm("grid","grid cell")} values</span>${stripesHTML()}${lifetimeHTML()}</div>`;}
 const SEC_ICON={explore:"compass",trends:"trend",connect:"network",solutions:"flask",about:"book"};
@@ -1708,7 +1738,7 @@ function rankHTML(){const rd=rankData(),me=rd.find(r=>r.me);
   const gl=gr!=null?`<line x1="${X(gr)}" x2="${X(gr)}" y1="34" y2="112" stroke="#0E2A2F" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${X(gr)}" y="28" text-anchor="${X(gr)>w*0.7?"end":"middle"}" font-size="10.5" font-weight="600" fill="#0E2A2F" font-family="Inter, sans-serif">Planet (grid estimate) ${sfmt(gr,2)}</text>`:"";
   const ratio=gr?me.a.sen*10/gr:null;
   return`<div class="card lift rankstrip"><div class="card-head"><div><h3>${icon("rank")}How does ${esc(S.loc.name)} rank?</h3><span class="sub">${gterm("t2m","Air temperature")} warming rate, ${gterm("sen","Sen&#39;s slope")} ${me.a.from}–${me.a.to}, °C per decade</span></div><span class="badge real">Cached NASA data</span></div>
-   <svg viewBox="0 0 ${w} ${h}" role="group" aria-label="Strip chart of warming rates">${ticks}${gl}${dots}<text x="${mx}" y="${anchor==="middle"?146:146}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#0E2A2F" font-family="Inter, sans-serif">${esc(S.loc.name)} ${sfmt(me.a.sen*10,2)}</text></svg>
+   <svg class="rankchart" viewBox="0 0 ${w} ${h}" role="group" aria-label="Strip chart of warming rates">${ticks}${gl}${dots}<text x="${mx}" y="${anchor==="middle"?146:146}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#0E2A2F" font-family="Inter, sans-serif">${esc(S.loc.name)} ${sfmt(me.a.sen*10,2)}</text></svg>
    <div class="legendrow"><span><i style="background:#D9961A;height:9px;width:9px;border-radius:50%"></i>${esc(S.loc.name)}</span><span><i style="background:#BF4526;height:9px;width:9px;border-radius:50%;opacity:.75"></i>Featured place, significant</span><span><i style="background:#fff;border:1.3px solid #BF4526;height:9px;width:9px;border-radius:50%"></i>Not significant</span><span><i style="background:#0E2A2F"></i>Global rate</span></div>
    ${two(`Rank ${rankN} of ${rd.length} places by Sen's slope of annual MERRA-2 air temperature (NASA Giovanni). Global reference: this app's grid estimate of the global mean from the same dataset and years (${gr!=null?sfmt(gr,2)+" °C decade⁻¹":"n/a"}). Land warms faster than the ocean-dominated global mean, so most land points sit to the right of it.`,
      `${esc(S.loc.name)} is number ${rankN} of ${rd.length} for how fast its air is warming${ratio!=null&&me.a.sen>0?`, about ${fmt(ratio,1)}× the rate of the planet as a whole`:""}. Click a dot to explore that place.`)}</div>`;}
@@ -1835,7 +1865,7 @@ function renderAbout(){
   const lrows=Object.keys(LAYERS).map(k=>{const L=LAYERS[k];return`<tr><td><b>${esc(L.name)}</b><br><code>${esc(L.code)}</code></td><td>${esc(L.source)}<br><span class="hint">${esc(L.res)}</span></td><td>${esc(L.cover)}</td></tr>`;}).join("");
   const nSites=ETD?Object.keys(ETD.sites).length:0,ret=ETD?ETD.retrieved:"n/a";
   const res=[
-   ["NASA Giovanni","giovanni.gsfc.nasa.gov","Used","Every time series and the global grid, through the Giovanni time-series API (MERRA-2, GLDAS, GPM IMERG, AIRS, OMI)."],
+   ["NASA Giovanni","giovanni.gsfc.nasa.gov","Used","Every time series and the global grid, through the Giovanni time-series API (MERRA-2, GLDAS, GPM IMERG, AIRS, OMI); and the whole-Earth yearly maps of GPM precipitation, OMI NO₂, AIRS humidity and MODIS aerosols, through Giovanni's Time Averaged Map service."],
    ["NASA AppEEARS","appeears.earthdatacloud.nasa.gov",NDVI||IMG?"Used":"Not loaded","MODIS NDVI point series (MOD13A3) and the MODIS images in Before &amp; After (MOD13A3 NDVI, MOD09A1 true colour)."],
    ["SeaWiFS chlorophyll time-series paper (NASA NTRS 20090042747)","ntrs.nasa.gov","Method","A NASA example of building regional time series and testing their significance; the same workflow is followed here."],
    ["Statistical test methods to detect trends (Medium)","medium.com","Method","Reference for the Mann-Kendall test and Sen's slope used here."],
@@ -1888,7 +1918,8 @@ function renderAbout(){
    <li>Record lengths differ: air temperature from 1980, precipitation from 1998, GLDAS variables from 2000, humidity from 2003, NO₂ from 2005. Short records detect trends less reliably.</li>
    <li>GLDAS variables are land-only, so some coastal and island points have no value.</li>
    <li>The globe layer exists for air temperature and precipitation only, as one sample every ${ETD&&ETD.grid?ETD.grid.step:5}°.</li>
-   <li>MODIS images exist for the featured places only, for July.</li>
+   <li>MODIS vegetation (NDVI) and true-colour images exist for the featured places only, for July. No whole-Earth MODIS vegetation map is available from the approved sources: Giovanni lists the MOD13C2 product but returns no data for it, and AppEEARS has no global MODIS product. The whole-Earth MODIS layer is therefore aerosol optical depth.</li>
+   <li>Whole-Earth maps are yearly averages drawn for display; trend tests and numbers always use the stored time series.</li>
    <li>Whole-planet figures are estimates from grid samples, not official indices.</li>
    <li>Projections assume the measured trend continues; they cannot anticipate changes in what drives it.</li>
    <li>Wind speed is not offered. The GLDAS wind series available through Giovanni jumps abruptly around 2011 at about a quarter of the locations because the model's input data changed, and a trend test would report that jump as a real trend.</li></ul></div>

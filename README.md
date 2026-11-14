@@ -25,11 +25,13 @@ The app reads only the files in this folder and makes no outside requests while 
 | `index.html` | The whole app (HTML, CSS, JavaScript). |
 | `data/observations.js` | Annual and monthly series for every location, the global grid, and provenance. Written by `tools/fetch_giovanni.py`. |
 | `data/ndvi.js` | Annual and monthly MODIS NDVI per location. Written by `tools/fetch_appeears.py`. |
+| `data/global.js`, `data/global/` | Whole-Earth yearly maps (PNG) of GPM precipitation, OMI NO₂, AIRS humidity and MODIS aerosols. Written by `tools/fetch_giovanni_maps.py`. |
 | `data/calibration.js` | Width factors for the 95% prediction range. Written by `tools/calibrate.js`. |
 | `data/imagery.js`, `data/imagery/` | MODIS images for the featured places. Written by `tools/fetch_appeears.py`. |
 | `data/monthly/` | Monthly values per location as CSV, so any number in the app can be checked by hand. |
 | `tools/fetch_giovanni.py` | Retrieval and aggregation script for NASA Giovanni. |
 | `tools/fetch_appeears.py` | Retrieval and conversion script for NASA AppEEARS. |
+| `tools/fetch_giovanni_maps.py` | Whole-Earth yearly maps from Giovanni's Time Averaged Map service. |
 | `tools/calibrate.js` | Backtests the projection at every place and calibrates its 95% range (Node.js). |
 | `tools/sites.json` | The locations: the featured places and one reference point per country. |
 | `vendor/` | Local copies of D3 7.9.0 (ISC licence), the Apache ECharts 4.9.0 world outlines (Apache-2.0) and, in `vendor/fonts/`, the Space Grotesk, Inter, JetBrains Mono and Fredoka fonts (SIL Open Font License 1.1, licences included). |
@@ -47,6 +49,24 @@ The app reads only the files in this folder and makes no outside requests while 
   and methods. It opens in any browser and has a "Print / save as PDF" button.
 - **Astronaut:** a bouncing, waving astronaut in the map corner (bottom-right on phones) links to `game.html`.
   Animations stop for visitors who ask their system for reduced motion.
+
+## Whole-Earth maps
+
+The globe and map show whole-Earth yearly maps for precipitation (GPM IMERG, 1998–2024), nitrogen dioxide (OMI,
+2005–2025) and humidity (AIRS, 2003–2025) when those variables are selected, and an optional MODIS aerosol layer
+(MODIS Terra aerosol optical depth, 2001–2025) under any variable ("MODIS aerosols, whole Earth" switch).
+
+- Source: NASA Giovanni's Time Averaged Map service, the one the Giovanni website runs, one calendar year per map,
+  whole Earth. `tools/fetch_giovanni_maps.py` logs in with your Earthdata account, runs the jobs, downloads the netCDF
+  files and draws PNGs with one fixed colour scale per layer (missing values transparent). GPM is averaged from 0.1°
+  to 0.5° blocks; the others keep their native grid.
+- The maps are for display. Every number, trend test and projection still comes from the time series.
+- MODIS vegetation has no whole-Earth map: Giovanni lists MOD13C2 NDVI but returns no data for it, and AppEEARS has no
+  global MODIS product. MODIS vegetation and true-colour images remain for the featured places.
+
+```bash
+python3 tools/fetch_giovanni_maps.py --out data --cache .cache/giovanni_maps
+```
 
 ## Data sources
 
