@@ -265,6 +265,19 @@ ol.list,ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;ga
 .iv dl{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;margin:0}
 .iv dt{font-family:var(--f-mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .iv dd{margin:0 0 4px;font-size:13.5px}
+.area-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.area-chips span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--surface2);font-weight:600}
+.dangers{grid-template-columns:minmax(0,1fr)}
+.dangers .dhead{display:flex;justify-content:space-between;gap:8px;align-items:center;color:inherit}
+.dangers i{font-style:normal;font-weight:600;color:var(--ink,inherit)}
+.dangers .dimp{color:var(--ink,inherit);margin-top:2px}
+.sev{font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap;font-weight:600}
+.sev.s3{background:var(--heat-soft);color:var(--heat)} .sev.s2{background:var(--warn-soft);color:var(--warn)} .sev.s1{background:var(--surface2);color:var(--muted);border:1px solid var(--line)} .sev.s0{background:var(--cool-soft);color:var(--cool)}
+.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}
+.roadmap>div{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface2);font-size:13px}
+.roadmap ol{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.iv .here{border-left:3px solid var(--teal);padding:2px 0 2px 10px}
+.iv .here p{font-size:13.5px;margin:2px 0 0}
 .cmpcheck{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}
 .cmpcheck input{accent-color:var(--teal)}
 .slider{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:4px 10px;align-items:center;font-size:13.5px}
@@ -486,6 +499,30 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
   .presets{grid-template-columns:minmax(0,1fr)}
   .timeline .ctl{width:100%}
 }
+/* tutorial (first-visit walkthrough) */
+.tour{position:fixed;inset:0;z-index:9000}
+.tour .tour-block{position:absolute;inset:0;background:transparent}
+.tour .tour-dim{position:absolute;inset:0;background:rgba(14,42,47,.55)}
+.tour .tour-spot{position:absolute;border-radius:14px;box-shadow:0 0 0 9999px rgba(14,42,47,.55),0 0 0 3px var(--teal),0 0 0 7px rgba(11,110,105,.25);transition:all .35s var(--ease);pointer-events:none}
+.tour-card{position:absolute;width:min(380px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border-radius:18px;box-shadow:var(--shadow-lift);padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px;transition:top .35s var(--ease),left .35s var(--ease)}
+.tour-card:focus{outline:none}
+.tour-card .tour-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tour-card .tour-step{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tour-card h3{font-size:20px;display:flex;align-items:center;gap:8px}
+.tour-card h3 .ic{width:22px;height:22px;color:var(--teal)}
+.tour-card p{margin:0;font-size:14.5px}
+.tour-card .tour-why{background:var(--tint);border-radius:12px;padding:8px 11px;font-size:13.5px;color:var(--teal-deep)}
+.tour-card .tour-why b{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px}
+.tour-card ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+.tour-card .tour-dots{display:flex;gap:5px;flex-wrap:wrap}
+.tour-card .tour-dots i{width:7px;height:7px;border-radius:50%;background:var(--line2)}
+.tour-card .tour-dots i.on{background:var(--teal);width:18px;border-radius:4px}
+.tour-card .tour-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tour-card .tour-nav div{display:flex;gap:6px;flex-wrap:wrap}
+.tour-card .tour-skip{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline;padding:4px}
+.tour-card .tour-x{background:none;border:0;color:var(--muted);cursor:pointer;padding:4px;border-radius:8px;display:grid;place-items:center}
+.tour-card .tour-x .ic{width:18px;height:18px}
+@media (max-width:600px){.tour-card{left:16px!important;right:16px;width:auto;top:auto!important;bottom:16px;max-height:70vh;overflow:auto}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.chart .draw{stroke-dashoffset:0}}
 </style>
 
@@ -502,6 +539,7 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
     <span class="tab-ink" aria-hidden="true"></span>
   </nav>
   <div class="hdr-actions">
+    <button class="hbtn" id="tourBtn" type="button" data-icon="help" aria-haspopup="dialog" aria-label="Tutorial: how to use the app"><span class="t">Tutorial</span></button>
     <button class="hbtn accent" id="storyBtn" type="button" data-icon="route"><span class="t">Guided story</span></button>
     <button class="hbtn" id="dashBtn" type="button" data-icon="dash" aria-haspopup="dialog"><span class="t">Dashboard</span></button>
     <button class="hbtn" id="glossBtn" type="button" data-icon="bookopen" aria-haspopup="dialog"><span class="t">Glossary</span></button>
@@ -667,6 +705,7 @@ const ICONS={
  rank:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
  sparkle:'<path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/>',
  cake:'<path d="M4 21v-8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8M2 21h20M4 16c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1 4 0M12 11V7M12 7a1.5 1.5 0 0 1-1.5-1.5C10.5 4 12 2.5 12 2.5s1.5 1.5 1.5 3A1.5 1.5 0 0 1 12 7z"/>',
+ help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 4"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/>',
  film:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>'
 };
 const icon=(k,cls)=>`<svg class="ic${cls?" "+cls:""}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[k]||""}</svg>`;
@@ -1799,61 +1838,173 @@ function renderConnect(d){
   const cd=$("#conDefault");if(cd)cd.onclick=()=>{S.connect=["ts","soil","prec"];renderPanel();};
   if(ids.length>=2)lineChart($("#conChart"),{x0:from,x1:to,series:ids.map(z),unit:"z-score",dig:2,zero:true,sel:S.year,onPick:y=>setYear(y)});
 }
-/* ---- Solutions Lab ---- */
-const PROBLEMS={heat:{name:"Rising heat",dir:"up"},drying:{name:"Drying land",dir:"down"},wetter:{name:"Heavier rain",dir:"up"},humid:{name:"Humid heat",dir:"up"},pollution:{name:"Rising NO₂ pollution",dir:"up"}};
-function localContext(d){const P=mean(d.prec.vals),Tm=mean(d.t2m.vals),aridF=P<250?1:P<600?0.6:P<1200?0.35:0.15;
-  return{P,Tm,aridF,rainUse:clamp((P-100)/600,0,1),hot:Tm>22,cold:Tm<8,sunny:Math.abs(S.loc.lat)<35,urban:!!S.loc.urban,built:S.loc.urban?0.35:0.08,
+/* ---- Solutions Lab ----
+   1. The area: climate type, city or countryside, coast and snow, from the stored NASA Giovanni record.
+   2. Dangers ahead: trends measured now (Mann-Kendall, α = 0.05) and trends projected to pass a threshold by the
+      projection horizon. A projection counts only when it passed the five-year backtest (see predict()).
+   3. Prevention options filtered to the area, each with how to do it in this kind of place, and a phased roadmap. */
+const PROBLEMS={heat:{name:"Rising heat",dir:"up"},drying:{name:"Drying land",dir:"down"},wetter:{name:"Heavier rain",dir:"up"},flood:{name:"More flood runoff",dir:"up"},
+ humid:{name:"Humid heat",dir:"up"},thirst:{name:"Rising water demand",dir:"up"},snowloss:{name:"Shrinking snowpack",dir:"down"},pollution:{name:"Rising NO₂ pollution",dir:"up"}};
+const hasVals=(d,id)=>!!(d[id]&&d[id].vals&&d[id].vals.some(x=>x!=null));
+function localContext(d){const P=mean(d.prec.vals),Tm=mean(d.t2m.vals),aridF=P<250?1:P<600?0.6:P<1200?0.35:0.15,lat=Math.abs(S.loc.lat),SN=hasVals(d,"snow")?mean(d.snow.vals):null;
+  const polar=lat>=60||Tm<-2,desert=P<250,dry=P<600,tropical=lat<23.5&&Tm>=20,wetTrop=tropical&&P>=1200,snowy=SN!=null&&SN>=5,urban=!!S.loc.urban,coastal=!!S.loc.coastal,country=S.loc.kind==="country";
+  const label=polar?"Polar / cold region":desert?(Tm>18?"Hot desert":"Cold desert"):dry?"Dryland (semi-arid)":wetTrop?"Humid tropics":tropical?"Seasonal tropics":Tm<8?"Cold temperate":"Temperate";
+  const chips=[label,urban?"City":country?"Country (one reference point)":"Countryside / natural area"];if(coastal)chips.push("Coastal");if(snowy)chips.push("Snow-fed");
+  return{P,Tm,SN,aridF,rainUse:clamp((P-100)/600,0,1),hot:Tm>22,cold:Tm<8,sunny:lat<35,urban,rural:!urban,built:urban?0.35:0.08,polar,desert,dry,tropical,wetTrop,snowy,coastal,country,
+    area:{label,chips},
     climate:`${Tm>22?"hot":Tm<8?"cold":"mild"} and ${P<250?"very dry":P<600?"dry":P<1200?"moderately wet":"wet"} (mean ${fmt(Tm,1)} °C, ${fmt(P,0)} mm of precipitation a year; NASA Giovanni, all stored years)`};}
-function detectProblems(d){const out=[],A={};VAR_ORDER.concat(VARS.no2?["no2"]:[]).forEach(id=>A[id]=fullAnalysis(d[id]));
-  const pick=(k,ids)=>{const hits=ids.filter(id=>!A[id].insufficient&&A[id].sig&&A[id].dir===PROBLEMS[k].dir);if(hits.length)out.push({k,ev:hits.map(id=>({id,a:A[id]}))});};
-  pick("heat",["ts","t2m"]);pick("drying",["soil","prec"]);pick("wetter",["prec"]);if(A.rh.sig&&A.rh.dir==="up"&&A.t2m.sig&&A.t2m.dir==="up")out.push({k:"humid",ev:[{id:"rh",a:A.rh}]});if(A.no2)pick("pollution",["no2"]);return{out,A};}
+function detectProblems(d){const out=[],A={};VAR_ORDER.concat(["no2","runoff","snow"].filter(id=>VARS[id]&&hasVals(d,id))).forEach(id=>A[id]=fullAnalysis(d[id]));
+  const ok=id=>A[id]&&!A[id].insufficient&&A[id].sig;
+  const pick=(k,ids)=>{const hits=ids.filter(id=>ok(id)&&A[id].dir===PROBLEMS[k].dir);if(hits.length)out.push({k,ev:hits.map(id=>({id,a:A[id]}))});};
+  pick("heat",["ts","t2m"]);pick("drying",["soil","prec"]);pick("wetter",["prec"]);pick("flood",["runoff"]);
+  if(ok("rh")&&A.rh.dir==="up"&&ok("t2m")&&A.t2m.dir==="up")out.push({k:"humid",ev:[{id:"rh",a:A.rh}]});
+  if(ok("et")&&A.et.dir==="up"&&!(ok("prec")&&A.prec.dir==="up"))out.push({k:"thirst",ev:[{id:"et",a:A.et}]});
+  if(A.snow&&mean(d.snow.vals)>=5)pick("snowloss",["snow"]);if(A.no2)pick("pollution",["no2"]);return{out,A};}
+/* Projected change by the horizon year, against the 2005–2020 mean: [variables, absolute or %, Medium, High] */
+const PROJ_RULE={heat:[["t2m","ts"],"abs",0.75,1.5],drying:[["soil","prec"],"pct",-5,-12],wetter:[["prec"],"pct",7,15],flood:[["runoff"],"pct",10,25],
+ humid:[["rh"],"abs",1,3],thirst:[["et"],"pct",8,15],snowloss:[["snow"],"pct",-15,-30],pollution:[["no2"],"pct",10,25]};
+/* places where a danger hits harder: raises the rating one step when the danger is already Medium or worse */
+const EXPOSED={heat:c=>c.hot||c.polar||(c.urban&&c.tropical),drying:c=>c.dry,wetter:c=>c.urban||c.coastal,flood:c=>c.urban||c.coastal,humid:c=>c.tropical&&c.P>=600,thirst:c=>c.dry,snowloss:c=>c.snowy,pollution:c=>c.urban};
+const EXPOSED_WHY={heat:"A hot climate, a tropical city or thawing ground make heat more damaging here.",drying:"A dry climate has little water to spare.",wetter:"Paved ground or a low coast makes heavy rain harder to drain.",
+ flood:"Paved ground or a low coast makes floodwater harder to drain.",humid:"A warm, wet tropical climate is already close to the limit of what the body can cool.",thirst:"A dry climate has little water to spare.",snowloss:"Rivers and farms here depend on snowmelt.",pollution:"Many people breathe city air."};
+function futureDangers(d,c,probs){const out=[];
+  Object.keys(PROJ_RULE).forEach(k=>{const[ids,mode,med,high]=PROJ_RULE[k];if(k==="snowloss"&&!c.snowy)return;let best=null;
+    ids.forEach(id=>{if(!VARS[id]||!hasVals(d,id))return;const P=predict(d,id);if(!P.ok||!P.show)return;const F=P.full,yH=P.last+P.H,base=baseOf(d[id]);
+      if(base==null||(mode==="pct"&&Math.abs(base)<(id==="snow"?1:1e-6)))return;
+      const ch=x=>mode==="abs"?x-base:100*(x-base)/Math.abs(base),mid=ch(F.fit(yH)),lo=ch(F.fit(yH)-F.half(yH)),hi=ch(F.fit(yH)+F.half(yH)),m=mid*Math.sign(med);
+      if(m<Math.abs(med))return;const sev=m>=Math.abs(high)?3:2;if(!best||sev>best.sev||(sev===best.sev&&m>best.m))best={id,yH,mid,lo,hi,mode,sev,m,P};});
+    const now=probs.find(p=>p.k===k);if(!best&&!now)return;
+    /* High: projection passes the high threshold, or the medium one where the area is exposed.
+       Medium: projection passes the medium threshold, or a measured trend (no usable projection) where the area is exposed.
+       Low: a measured trend only. */
+    const why=[],exp=EXPOSED[k](c);let sev=best?best.sev:1;
+    if(best)why.push(`Projected to pass the ${sev===3?"high":"medium"} threshold (${mode==="abs"?sfmt(sev===3?high:med,2)+" "+VARS[best.id].unit:sfmt(sev===3?high:med,0)+"%"} vs ${BASE_TXT}) by ${best.yH}.`);
+    else why.push("No projection passed the backtest, so the rating rests on the measured trend alone.");
+    if(now)why.push("A statistically significant trend is already measured.");
+    if(exp&&sev<3){sev++;why.push(EXPOSED_WHY[k]);}
+    out.push({k,sev,now,proj:best,why});});
+  if(!out.find(x=>x.k==="heat"))return out.filter(x=>x.k!=="humid").sort((a,b)=>b.sev-a.sev);
+  return out.sort((a,b)=>b.sev-a.sev);}
+/* When nothing is measured or projected: the hazards typical of this kind of area, shown as a watch list */
+function typicalRisks(c){const k=[];if(c.dry)k.push("drying");if(c.hot||c.urban)k.push("heat");if(c.wetTrop||c.coastal)k.push("wetter");if(c.snowy)k.push("snowloss");if(!k.length)k.push("heat","wetter");
+  return[...new Set(k)].map(x=>({k:x,sev:0,watch:true,why:["Typical for this kind of area; not detected or projected in the NASA record here."]}));}
+/* What each danger means in this kind of place */
+function impact(k,c){switch(k){
+  case"heat":return c.polar?"Thawing ground and permafrost, melting ice, and buildings, roads and pipelines that lose their footing.":c.urban&&c.hot?"Dangerous heatwaves for outdoor workers, older people and homes without cooling; power cuts as cooling demand peaks.":c.rural?"Heat stress on crops, livestock and people working outdoors; lower yields in the hottest weeks.":"More frequent heatwaves, hardest on older people, small children and homes without cooling.";
+  case"drying":return c.dry?"Even less water where there is already little: failed harvests, falling wells, dust storms and land degradation.":c.wetTrop?"Forest fire risk and stress on rain-fed farms in drier years.":"Lower river flows and summer water shortages; stress on crops, gardens and forests.";
+  case"wetter":return(c.urban?"Flash floods where drains and paved ground can't take the water.":"Soil erosion, landslides on slopes and waterlogged fields.")+(c.coastal?" On the coast, high tides make rainwater harder to drain.":"");
+  case"flood":return c.urban?"More water running off roofs and roads: streets, basements and transport flood more often.":"More water running off the land: rivers rise faster and floods reach fields and villages more often.";
+  case"humid":return"Humid heat stops sweat from cooling the body, so it becomes dangerous at lower temperatures, especially at night.";
+  case"thirst":return"Plants and soil lose more water to the air, so the same rain goes less far for farms, parks and rivers.";
+  case"snowloss":return"Less snow stored in winter means less meltwater for rivers, farms and hydropower in spring and summer.";
+  case"pollution":return c.urban?"More traffic and industry fumes: more asthma, heart and lung disease.":"More burning and industry nearby: worse air for people and crops.";}return"";}
+/* Prevention options. for: the dangers it addresses; only(c): where it applies; here(c): how to do it in this kind of place; phase 0 now, 1 next 2–5 years, 2 long term. */
 const IV={
- trees:{name:"Street trees & urban forest",for:["heat"],how:"Leaves shade streets and walls; water evaporating from leaves cools the air.",fx:{temp:"↓",water:"↑",runoff:"↓",green:"↑"},limits:"Takes years to grow, needs space and maintenance.",time:"5–15 years",cost:"Medium: planting plus years of watering and care.",
+ trees:{name:c=>c&&c.rural&&!c.country?"Shade trees & shelterbelts":"Street trees & urban forest",for:["heat","flood"],phase:2,only:c=>!c.polar,how:"Leaves shade streets and walls; water evaporating from leaves cools the air.",fx:{temp:"↓",water:"↑",runoff:"↓",green:"↑"},limits:"Takes years to grow, needs space and maintenance.",time:"5–15 years",cost:"Medium: planting plus years of watering and care.",
+  here:c=>c.dry?"Pick drought-hardy native species, plant first where people walk and wait, and water them with drip lines or treated wastewater.":c.wetTrop?"Native shade trees grow fast here; keep them clear of drains and power lines and plant along the hottest streets first.":c.rural?"Shade trees and shelterbelts around homes, schools, fields and livestock areas.":"Start with the hottest, least green neighbourhoods, which are often the poorest.",
   suit(c){let s=2;const r=[];if(c.aridF>=0.6){s--;r.push(`Low precipitation (~${fmt(c.P,0)} mm/yr): trees need irrigation; drought-tolerant native species are essential.`);}else r.push(`Precipitation (~${fmt(c.P,0)} mm/yr) can sustain trees with little irrigation.`);if(c.hot){s++;r.push("Hot climate: shade gives the largest relief.");}return[s,r];}},
- cool:{name:"Cool roofs & pavements",for:["heat"],how:"High-albedo surfaces reflect sunlight instead of absorbing it.",fx:{temp:"↓",water:"–",runoff:"–",green:"–"},limits:"Small heating penalty in cold winters; reflectivity declines as surfaces soil; glare.",time:"Immediate",cost:"Low: a coating or a lighter roofing material.",
-  suit(c){let s=2;const r=[];if(c.sunny||c.hot){s++;r.push("Strong sunlight: reflective surfaces work best here.");}if(c.cold){s--;r.push("Cold winters: expect a small heating penalty.");}if(!c.urban){s--;r.push("Few roofs and paved areas outside cities.");}else r.push("Uses no water, an advantage where water is scarce.");return[s,r];}},
- groofs:{name:"Green roofs",for:["heat","wetter"],how:"Vegetated roofs shade buildings, evaporate water and retain rainfall.",fx:{temp:"↓",water:"↑",runoff:"↓",green:"↑"},limits:"Roofs must carry the extra load; plants need water and care.",time:"1–2 years",cost:"High; shallow (extensive) systems cost far less than deep ones.",
+ cool:{name:"Cool roofs & pavements",for:["heat","humid"],phase:0,only:c=>!c.polar&&(c.urban||c.country),how:"High-albedo surfaces reflect sunlight instead of absorbing it.",fx:{temp:"↓",water:"–",runoff:"–",green:"–"},limits:"Small heating penalty in cold winters; reflectivity declines as surfaces soil; glare.",time:"Immediate",cost:"Low: a coating or a lighter roofing material.",
+  here:c=>c.hot?"Start with schools, clinics and homes with metal or dark roofs, where a white coating cools rooms below the most.":c.cold?"Use only on buildings that overheat in summer; winters here make heating savings matter too.":"Coat flat roofs, car parks and playgrounds that get full sun.",
+  suit(c){let s=2;const r=[];if(c.sunny||c.hot){s++;r.push("Strong sunlight: reflective surfaces work best here.");}if(c.cold){s--;r.push("Cold winters: expect a small heating penalty.");}if(!c.urban){s--;r.push("Few roofs and paved areas outside cities.");}else if(c.dry)r.push("Uses no water, an advantage where water is scarce.");return[s,r];}},
+ groofs:{name:"Green roofs",for:["heat","wetter","flood"],phase:1,only:c=>c.urban&&!c.polar,how:"Vegetated roofs shade buildings, evaporate water and retain rainfall.",fx:{temp:"↓",water:"↑",runoff:"↓",green:"↑"},limits:"Roofs must carry the extra load; plants need water and care.",time:"1–2 years",cost:"High; shallow (extensive) systems cost far less than deep ones.",
+  here:c=>c.dry?"Use shallow beds of succulents and native dryland plants that survive with little water.":"Start on large flat roofs of public buildings, malls and warehouses.",
   suit(c){let s=1;const r=[];if(c.aridF<=0.35){s++;r.push("Enough rain to keep roof plants alive with little watering.");}else r.push("Dry climate: roof plants need regular irrigation.");if(c.urban){s++;r.push("Many flat roofs available.");}else{s--;r.push("Few suitable roofs outside cities.");}return[s,r];}},
- heatplan:{name:"Heat early warning & cooling centres",for:["heat","humid"],how:"Forecast-triggered alerts, outreach and cool public spaces protect people during heatwaves.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Protects people but does not cool the place.",time:"Months",cost:"Low; needs coordination between weather and health services.",
+ heatplan:{name:"Heat early warning & cooling centres",for:["heat","humid"],phase:0,only:c=>!c.polar,how:"Forecast-triggered alerts, outreach and cool public spaces protect people during heatwaves.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Protects people but does not cool the place.",time:"Months",cost:"Low; needs coordination between weather and health services.",
+  here:c=>c.urban?"Open libraries, mosques, churches and malls as cooling centres; check on older people living alone; move outdoor work to early morning.":"Alerts by SMS and radio, shaded rest and water for field workers, and shade and water for livestock.",
   suit(c){return[c.hot||c.urban?3:2,["Works in any climate and protects the most vulnerable first."]];}},
- drip:{name:"Efficient irrigation",for:["drying"],how:"Drip lines and scheduling deliver water to roots with less evaporation.",fx:{temp:"–",water:"↓",runoff:"–",green:"–"},limits:"Saved water often irrigates more land unless allocations are capped.",time:"1–3 years",cost:"Medium: equipment and training.",
+ thaw:{name:"Permafrost-safe infrastructure & thaw monitoring",for:["heat"],phase:1,only:c=>c.polar,how:"Raised or cooled foundations, flexible pipelines and ground-temperature monitoring keep buildings and roads stable as the ground warms.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Adapts to warming; can't stop it.",time:"1–5 years",cost:"Medium to high; cheaper than rebuilding damaged structures.",
+  here:()=>"Survey which buildings, roads and fuel tanks stand on ice-rich ground, monitor ground temperature, and build new structures on piles or ventilated pads.",
+  suit(){return[3,["Cold region: ground warming threatens anything built on frozen soil."]];}},
+ buildcode:{name:"Heat-ready buildings",for:["heat","humid"],phase:2,only:c=>c.urban&&!c.polar,how:"Shading, insulation, cross-ventilation and efficient cooling in building codes keep homes safe without overloading the grid.",fx:{temp:"↓",water:"–",runoff:"–",green:"–"},limits:"Applies mainly to new or renovated buildings; enforcement needed.",time:"5–20 years",cost:"Low for new buildings, higher for retrofits.",
+  here:c=>c.tropical?"Wide eaves, shaded windows and ceiling fans with cross-ventilation; reserve air conditioning for the most vulnerable.":"External shading, roof insulation and efficient heat pumps, written into the building code.",
+  suit(c){return[c.hot?3:2,[c.hot?"Hot climate: indoor heat is the main danger at night.":"Prepares buildings before heat becomes extreme."]];}},
+ drip:{name:"Efficient irrigation",for:["drying","thirst"],phase:1,only:c=>!c.polar,how:"Drip lines and scheduling deliver water to roots with less evaporation.",fx:{temp:"–",water:"↓",runoff:"–",green:"–"},limits:"Saved water often irrigates more land unless allocations are capped.",time:"1–3 years",cost:"Medium: equipment and training.",
+  here:c=>c.urban?"Switch park and garden sprinklers to drip and water at night.":"Pair drip lines with soil-moisture sensors and capped water allocations, so the savings stay in rivers and aquifers.",
   suit(c){return c.aridF>=0.6?[3,["Dry climate: agriculture is usually the largest water use."]]:[2,["Irrigation is a smaller share of water use in wetter climates."]];}},
- harvest:{name:"Rainwater harvesting & storage",for:["drying","wetter"],how:"Collect rain when it falls and store it for dry periods.",fx:{temp:"–",water:"↓",runoff:"↓",green:"–"},limits:"Stored water evaporates in hot climates; storage needs space.",time:"Months to years",cost:"Low (tanks) to high (reservoirs).",
+ crops:{name:"Drought- & heat-tolerant farming",for:["drying","heat","thirst"],phase:1,only:c=>c.rural&&!c.polar,how:"Hardier crop varieties, mulch, cover crops and trees among fields keep yields and soil moisture up in hotter, drier years.",fx:{temp:"–",water:"↓",runoff:"↓",green:"↑"},limits:"Seeds and advice must reach smallholders; markets for new crops.",time:"1–5 seasons",cost:"Low to medium.",
+  here:c=>c.dry?"Sorghum, millet and other hardy varieties, plus planting pits and mulch to hold the little rain that falls.":"Shift sowing dates, keep the soil covered and plant trees along field edges.",
+  suit(c){return[c.dry||c.hot?3:2,[c.dry?"Dry climate: farming depends on every drop of soil moisture.":"Keeps farms productive as conditions shift."]];}},
+ drought:{name:"Drought early warning & water-sharing plan",for:["drying","thirst","snowloss"],phase:0,how:"Agree in advance who cuts water use, by how much, and at which reservoir or soil-moisture level, using satellite drought indicators.",fx:{temp:"–",water:"↓",runoff:"–",green:"–"},limits:"Only works if the cuts are agreed and enforced before the crisis.",time:"Months",cost:"Low.",
+  here:c=>c.urban?"Set water-restriction stages for the city tied to reservoir levels, and protect supply to hospitals and poor neighbourhoods first.":"Track soil moisture and rainfall each season, and set up fodder and seed reserves for herders and farmers.",
+  suit(c){return[c.dry?3:2,[c.dry?"Dry climate: droughts arrive often and hit hard.":"Cheap preparation for rarer droughts."]];}},
+ reuse:{name:"Water reuse & leak repair",for:["drying","thirst"],phase:1,only:c=>c.urban,how:"Treating wastewater for parks, industry and farms and fixing leaking pipes is often the cheapest ‘new’ water a city has.",fx:{temp:"–",water:"↓",runoff:"–",green:"–"},limits:"Treatment plants cost money and need public trust.",time:"2–5 years",cost:"Medium.",
+  here:()=>"Find and fix leaks in the supply network first, then reuse treated wastewater for parks, cooling and industry.",
+  suit(c){return[c.dry?3:2,[c.dry?"Dry climate: every litre reused is a litre not taken from rivers or aquifers.":"Cuts demand on rivers and reservoirs."]];}},
+ harvest:{name:"Rainwater harvesting & storage",for:["drying","wetter","flood"],phase:0,how:"Collect rain when it falls and store it for dry periods.",fx:{temp:"–",water:"↓",runoff:"↓",green:"–"},limits:"Stored water evaporates in hot climates; storage needs space.",time:"Months to years",cost:"Low (tanks) to high (reservoirs).",
+  here:c=>c.urban?"Roof tanks on homes and schools, and underground cisterns under public squares.":"Small farm ponds, sand dams on seasonal rivers and stone lines on fields.",
   suit(c){return c.P<150?[0,[`Very little precipitation (~${fmt(c.P,0)} mm/yr): little water to collect.`]]:c.P<600?[1,[`Modest precipitation (~${fmt(c.P,0)} mm/yr): useful mainly as a supplement.`]]:[3,[`Ample precipitation (~${fmt(c.P,0)} mm/yr) to capture.`]];}},
- wetlands:{name:"Protect wetlands & water bodies",for:["drying","wetter"],how:"Wetlands store water, recharge groundwater and absorb floodwater.",fx:{temp:"↓",water:"↓",runoff:"↓",green:"↑"},limits:"Competes with land for farming and building.",time:"Ongoing",cost:"Protection is far cheaper than restoration.",
+ recharge:{name:"Managed aquifer recharge",for:["drying","wetter","flood"],phase:2,only:c=>c.dry&&c.P>=150,how:"Divert flood or storm water into basins and wells so it refills groundwater for dry years.",fx:{temp:"–",water:"↓",runoff:"↓",green:"–"},limits:"Needs suitable soil and clean water; slow to show results.",time:"3–10 years",cost:"Medium.",
+  here:()=>"Spread the rare flood flows from seasonal rivers into infiltration basins instead of letting them run off or evaporate.",
+  suit(){return[2,["Dry climate: groundwater is the main reserve for dry years."]];}},
+ wetlands:{name:"Protect wetlands & water bodies",for:["drying","wetter","flood","thirst"],phase:1,how:"Wetlands store water, recharge groundwater and absorb floodwater.",fx:{temp:"↓",water:"↓",runoff:"↓",green:"↑"},limits:"Competes with land for farming and building.",time:"Ongoing",cost:"Protection is far cheaper than restoration.",
+  here:c=>c.dry?"Protect the remaining oases, riverbanks and seasonal lakes from drainage and over-pumping.":"Stop draining or building on marshes and floodplains, and restore the ones already lost.",
   suit(c){return[2,[c.aridF>=0.6?"In dry regions, remaining wetlands and riverbanks are especially valuable.":"Protects natural flood storage."]];}},
- floodplain:{name:"Green stormwater & open floodplains",for:["wetter"],how:"Permeable ground, parks and space for rivers let heavy rain soak in or spread safely.",fx:{temp:"–",water:"–",runoff:"↓",green:"↑"},limits:"Can't replace drains and defences for extreme storms.",time:"1–5 years",cost:"Medium; often cheaper over its lifetime than larger pipes alone.",
+ floodplain:{name:"Green stormwater & open floodplains",for:["wetter","flood"],phase:1,how:"Permeable ground, parks and space for rivers let heavy rain soak in or spread safely.",fx:{temp:"–",water:"–",runoff:"↓",green:"↑"},limits:"Can't replace drains and defences for extreme storms.",time:"1–5 years",cost:"Medium; often cheaper over its lifetime than larger pipes alone.",
+  here:c=>c.urban?"Rain gardens, permeable pavements and parks that can flood safely; keep drains clear before the rainy season.":"Keep homes and new building off the floodplain and leave room for rivers to spread.",
   suit(c){return[c.P>600?3:2,[c.P>600?"High precipitation: managing runoff matters here.":"Useful where heavy downpours are becoming more common."]];}},
- air:{name:"Cut pollution at the source",for:["pollution"],how:"Rising NO₂ points to more fuel being burned nearby, so cutting emissions at the source is the direct fix.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Needs policy and enforcement across sectors.",time:"Years",cost:"Varies widely.",
-  suit(c){return[c.urban?3:2,[c.urban?"Cities have the most pollution sources.":"Rural burning and dust still matter."]];}}};
+ floodwarn:{name:"Flood early warning & evacuation plans",for:["wetter","flood"],phase:0,how:"Rain and river forecasts trigger alerts early enough for people to move themselves and their goods to safety.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Saves lives but not buildings; warnings must reach everyone.",time:"Months",cost:"Low.",
+  here:c=>c.urban?"Map the streets and underpasses that flood first, and set evacuation routes and shelters in advance.":"Community river gauges, SMS and radio alerts, and raised shelters for people and livestock.",
+  suit(c){return[c.urban||c.wetTrop||c.coastal?3:2,["Among the cheapest ways to cut flood deaths."]];}},
+ mangrove:{name:c=>c&&c.tropical?"Mangroves & coastal wetlands":"Dunes, salt marshes & coastal wetlands",for:["wetter","flood"],phase:2,only:c=>c.coastal,how:"Living coastlines slow waves and storm surges and give rain floods somewhere to go.",fx:{temp:"–",water:"–",runoff:"↓",green:"↑"},limits:"Needs space along the shore; takes years to establish.",time:"3–10 years",cost:"Low to medium; cheaper than sea walls.",
+  here:c=>c.tropical?"Replant mangroves along estuaries and lagoons and stop clearing them for ponds or building.":"Restore salt marshes and dunes in front of sea walls instead of building them higher.",
+  suit(){return[3,["Coastal place: the shoreline is the first line of defence."]];}},
+ slopes:{name:"Reforest slopes & protect catchments",for:["wetter","flood","drying"],phase:2,only:c=>c.rural&&!c.desert&&!c.polar,how:"Forests and grass on slopes and upstream land slow runoff, hold soil and feed rivers in dry months.",fx:{temp:"↓",water:"–",runoff:"↓",green:"↑"},limits:"Takes years; competes with grazing and farming.",time:"5–20 years",cost:"Low to medium.",
+  here:c=>c.wetTrop?"Protect the remaining forest upstream first; replanting comes second.":"Terraces, contour hedges and native trees on the steepest, most eroded slopes.",
+  suit(){return[2,["Countryside: the land upstream decides how fast floodwater arrives."]];}},
+ meltstore:{name:"Store meltwater & plan for less snow",for:["snowloss","drying"],phase:1,only:c=>c.snowy,how:"Small reservoirs, recharge ponds and updated reservoir rules capture an earlier, smaller melt for the summer.",fx:{temp:"–",water:"↓",runoff:"↓",green:"–"},limits:"Storage can't replace snow fully; reservoirs affect rivers.",time:"2–10 years",cost:"Medium to high.",
+  here:()=>"Revise reservoir rules for an earlier melt, add small storage and recharge ponds, and plan summer supply for years with little snow.",
+  suit(){return[3,["Snow-fed place: snowmelt is a major water source here."]];}},
+ air:{name:"Cut pollution at the source",for:["pollution"],phase:2,how:"Rising NO₂ points to more fuel being burned nearby, so cutting emissions at the source is the direct fix.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Needs policy and enforcement across sectors.",time:"Years",cost:"Varies widely.",
+  here:c=>c.urban?"Tighter emission limits for power plants, factories and diesel vehicles, with air-quality monitors in every district.":"Cleaner engines for pumps and generators, and emission limits for nearby industry.",
+  suit(c){return[c.urban?3:2,[c.urban?"Cities have the most pollution sources.":"Rural burning and dust still matter."]];}},
+ transit:{name:"Clean transport & low-emission zones",for:["pollution"],phase:1,only:c=>c.urban,how:"Buses, trains, cycling and electric vehicles replace exhaust where people breathe it most.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Needs investment and alternatives before restrictions.",time:"2–10 years",cost:"Medium to high.",
+  here:()=>"Start a low-emission zone in the busiest centre and move bus fleets to electric or cleaner fuels.",
+  suit(){return[3,["City: traffic is usually the largest NO₂ source."]];}},
+ cleancook:{name:"Clean cooking & no open burning",for:["pollution"],phase:0,only:c=>c.rural,how:"Cleaner stoves and alternatives to burning crop waste cut smoke where people live.",fx:{temp:"–",water:"–",runoff:"–",green:"–"},limits:"Needs affordable fuel and equipment.",time:"Months to years",cost:"Low to medium.",
+  here:()=>"Subsidise cleaner stoves and give farmers a use for crop residue (mulch, compost, collection) instead of burning it.",
+  suit(){return[2,["Countryside: household and field burning add to local pollution."]];}}};
+const ivName=(k,c)=>typeof IV[k].name==="function"?IV[k].name(c):IV[k].name;
+const ivFits=(k,c)=>!IV[k].only||IV[k].only(c);
 const suitLabel=s=>s>=3?"High":s>=2?"Medium":"Low";
+const SEV=["Watch","Low","Medium","High"];
 const FXNAME={temp:"Temperature",water:"Water demand",runoff:"Flood runoff",green:"Green cover"};
 const fxHTML=fx=>`<div class="effects">${Object.keys(FXNAME).map(k=>{const v=fx[k]||"–",good=(k==="green")?v==="↑":v==="↓",cls=v==="–"?"nil":good?"good":"bad";return`<span>${k==="runoff"?gterm("runoff",FXNAME[k]):FXNAME[k]} <b class="${cls}">${v}</b></span>`;}).join("")}</div>`;
+const projTxt=p=>{const v=VARS[p.id],f=x=>p.mode==="abs"?`${sfmt(x,1)} ${v.unit}`:`${sfmt(x,0)}%`;return`${v.name}: ${f(p.mid)} by ${p.yH} vs ${BASE_TXT} (95% range ${f(p.lo)} to ${f(p.hi)})`;};
 function renderSolutions(d){
-  if(!d.ok){panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab","Options matched to the trends detected in this place.")}${unavailable(d)}<div class="note">The Solutions Lab starts from the trends measured here. Without NASA Giovanni data it can't tell which problems exist, so it shows nothing rather than guessing.</div>`;return;}
-  const c=localContext(d),{out:probs,A}=detectProblems(d),L=S.lab;if(L.focus&&!probs.find(p=>p.k===L.focus))L.focus=null;
-  const shown=Object.keys(IV).filter(k=>probs.length&&IV[k].for.some(f=>(L.focus?[L.focus]:probs.map(p=>p.k)).includes(f))).map(k=>({k,iv:IV[k],s:IV[k].suit(c)})).sort((a,b)=>b.s[0]-a.s[0]);
-  const cmpKeys=[...L.cmp].filter(k=>shown.find(s=>s.k===k)).slice(0,3);
-  /* section 3: projections of the variables behind the detected problems (or air temperature and precipitation) */
-  const pids=[...new Set(probs.flatMap(p=>p.ev.map(e=>e.id)))].concat(probs.length?[]:["t2m","prec"]).filter(id=>d[id]&&d[id].vals.some(x=>x!=null)).slice(0,3),PR=pids.map(id=>({id,P:predict(d,id)}));
-  panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab",`What could be done about the trends measured in ${esc(S.loc.name)}, which options suit this place, and what each choice trades off.`)}
-  <div class="card"><span class="label">1 · Detected in the NASA Giovanni record</span>
-   ${probs.length?`<div class="problems">${probs.map(p=>`<button class="problem" data-prob="${p.k}" aria-pressed="${L.focus===p.k}"><b>${esc(PROBLEMS[p.k].name)}</b>${p.ev.map(e=>`<span>${esc(VARS[e.id].name)}: ${sfmt(e.a.sen*10,VARS[e.id].dig)} ${esc(VARS[e.id].unit)}/decade, p ${pfmt(e.a.p)}</span>`).join("")}</button>`).join("")}</div>
-   ${two(`Local climate: ${esc(c.climate)}.`,"These are the problems the measurements actually show here. Tap one to focus the options on it.","Context")}`
-   :two("No significant monotonic trend indicating warming, drying, wetting, humid heat or rising NO₂ was detected (Mann-Kendall, α = 0.05).","The data doesn't show a clear environmental problem trend here, so no targeted fixes are suggested. Section 3 shows where the main variables are heading.")}</div>
-  ${shown.length?`<div class="sec-title"><h2 style="font-size:19px">2 · Options that fit ${esc(S.loc.name)}</h2><p>Ranked by how well each suits this place's measured climate. Tick up to three to compare.</p></div>
-  ${shown.map(({k,iv,s})=>`<div class="iv"><div class="iv-head"><div><h4>${esc(iv.name)}</h4><span class="hint">Addresses ${iv.for.map(f=>esc(PROBLEMS[f].name.toLowerCase())).join(", ")}</span></div><span class="suit ${suitLabel(s[0])}">${suitLabel(s[0])} fit</span></div>
-    <p style="font-size:14px">${autoGloss(esc(iv.how),2)}</p>${fxHTML(iv.fx)}<ul class="reasons">${s[1].map(r=>`<li>${esc(r)}</li>`).join("")}</ul>
+  if(!d.ok){panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab","Prevention options matched to the dangers ahead for this place.")}${unavailable(d)}<div class="note">The Solutions Lab starts from the trends measured here. Without NASA Giovanni data it can't tell which dangers lie ahead, so it shows nothing rather than guessing.</div>`;return;}
+  const c=localContext(d),{out:probs}=detectProblems(d),found=futureDangers(d,c,probs),dangers=found.length?found:typicalRisks(c),L=S.lab,keys=dangers.map(x=>x.k);
+  if(L.focus&&!keys.includes(L.focus))L.focus=null;
+  const sevOf=k=>{const x=dangers.find(z=>z.k===k);return x?x.sev:0;},target=L.focus?[L.focus]:keys,place=esc(S.loc.name),area=esc(c.area.label.toLowerCase());
+  const shown=Object.keys(IV).filter(k=>ivFits(k,c)&&IV[k].for.some(f=>target.includes(f))).map(k=>{const s=IV[k].suit(c),hit=IV[k].for.filter(f=>target.includes(f)),sev=Math.max(...hit.map(sevOf));return{k,iv:IV[k],s,hit,sev,prio:s[0]+sev};})
+    .sort((a,b)=>b.prio-a.prio||b.s[0]-a.s[0]);
+  const cmpKeys=[...L.cmp].filter(k=>shown.find(s=>s.k===k)).slice(0,3),yH=Math.max(YEAR_END+10,...found.filter(x=>x.proj).map(x=>x.proj.yH));
+  const PHASE=["Now · next 2 years","Next · 2–5 years",`Long term · by ${yH}`],road=PHASE.map((_,i)=>shown.filter(x=>x.iv.phase===i&&x.s[0]>=2).slice(0,3));
+  /* projections of the variables behind the dangers (or air temperature and precipitation) */
+  const pids=[...new Set(found.flatMap(x=>(x.proj?[x.proj.id]:[]).concat((probs.find(p=>p.k===x.k)||{ev:[]}).ev.map(e=>e.id))))].concat(found.length?[]:["t2m","prec"]).filter(id=>hasVals(d,id)).slice(0,3),PR=pids.map(id=>({id,P:predict(d,id)}));
+  panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab",`The dangers ahead for ${place}, measured or projected from the NASA record, and the prevention options that fit this kind of area.`)}
+  <div class="card"><span class="label">1 · This area</span><div class="chips area-chips">${c.area.chips.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+   ${two(`Local climate: ${esc(c.climate)}.${c.snowy?` Mean snow water equivalent ${fmt(c.SN,1)} kg/m².`:""}${c.country?" Countries are represented by one reference point, so coast and city are not assessed.":""}`,`Options below are chosen for this kind of place (${esc(c.area.chips.join(", ").toLowerCase())}): what works in a desert city is different from what works in the tropics or the Arctic.`,"Context")}</div>
+  <div class="card"><span class="label">2 · ${found.length?"Dangers ahead":"Watch list"}</span>
+   ${found.length?"":`<div class="note">No danger trend is measured or projected here (Mann-Kendall, α = 0.05; projections that passed the backtest). These are the hazards typical of this kind of place (${area}), worth preparing for anyway.</div>`}
+   <div class="problems dangers">${dangers.map(x=>{const p=probs.find(q=>q.k===x.k);return`<button class="problem" data-prob="${x.k}" aria-pressed="${L.focus===x.k}"><span class="dhead"><b>${esc(PROBLEMS[x.k].name)}</b><span class="sev s${x.sev}">${SEV[x.sev]}</span></span>
+     ${p?p.ev.map(e=>`<span><i>Measured:</i> ${esc(VARS[e.id].name)} ${sfmt(e.a.sen*10,VARS[e.id].dig)} ${esc(VARS[e.id].unit)}/decade, p ${pfmt(e.a.p)}</span>`).join(""):""}
+     ${x.proj?`<span><i>Projected:</i> ${esc(projTxt(x.proj))}</span>`:""}<span class="dimp">${esc(impact(x.k,c))}</span></button>`;}).join("")}</div>
+   ${found.length?two(`Rating: Low when only a significant trend is measured; Medium when the backtested projection passes the medium threshold; High when it passes the high threshold. Places especially exposed to a danger move up one step. Thresholds vs ${BASE_TXT}: heat +0.75/+1.5 °C, drying −5/−12%, heavier rain +7/+15%, runoff +10/+25%, humidity +1/+3 points, evapotranspiration +8/+15%, snow −15/−30%, NO₂ +10/+25%.`,"These are the dangers the data points to for this place, worst first. Tap one to see only the options that prevent it.","How dangers are rated"):""}
+   ${found.length?`<details class="more"><summary>Why each rating</summary><ul class="reasons">${found.map(x=>`<li><b>${esc(PROBLEMS[x.k].name)}</b>: ${x.why.map(esc).join(" ")}</li>`).join("")}</ul></details>`:""}</div>
+  ${shown.length?`<div class="sec-title"><h2 style="font-size:19px">3 · Prevention plan for ${place}</h2><p>${L.focus?`Options against ${esc(PROBLEMS[L.focus].name.toLowerCase())}`:"Options against every danger above"}, ranked by how serious the danger is and how well each suits this place (${area}).</p></div>
+  <div class="card"><span class="label">Roadmap</span><div class="roadmap">${PHASE.map((ph,i)=>`<div><b>${esc(ph)}</b>${road[i].length?`<ol>${road[i].map(x=>`<li>${esc(ivName(x.k,c))}<span class="hint"> · ${x.hit.map(f=>esc(PROBLEMS[f].name.toLowerCase())).join(", ")}</span></li>`).join("")}</ol>`:`<p class="hint">No well-suited option at this stage.</p>`}</div>`).join("")}</div></div>
+  ${shown.map(({k,iv,s,hit})=>`<div class="iv"><div class="iv-head"><div><h4>${esc(ivName(k,c))}</h4><span class="hint">Prevents ${hit.map(f=>esc(PROBLEMS[f].name.toLowerCase())).join(", ")} · ${esc(PHASE[iv.phase].split(" · ")[0])}</span></div><span class="suit ${suitLabel(s[0])}">${suitLabel(s[0])} fit</span></div>
+    <p style="font-size:14px">${autoGloss(esc(iv.how),2)}</p><div class="here"><span class="label">How to do it here · ${area}${c.urban?", city":""}</span><p>${esc(iv.here(c))}</p></div>${fxHTML(iv.fx)}<ul class="reasons">${s[1].map(r=>`<li>${esc(r)}</li>`).join("")}</ul>
     <details class="more"><summary>Limits, time and cost</summary><dl><dt>Limits &amp; trade-offs</dt><dd>${autoGloss(esc(iv.limits),2)}</dd><dt>Time to work</dt><dd>${esc(iv.time)}</dd><dt>Resources</dt><dd>${esc(iv.cost)}</dd></dl></details>
     <label class="cmpcheck"><input type="checkbox" data-cmp="${k}" ${L.cmp.has(k)?"checked":""}> Compare</label></div>`).join("")}
-  ${cmpKeys.length>=2?`<div class="card"><h3 style="font-size:16px">Side by side</h3><div class="stattbl"><table><thead><tr><th></th>${cmpKeys.map(k=>`<th>${esc(IV[k].name)}</th>`).join("")}</tr></thead><tbody>
+  ${cmpKeys.length>=2?`<div class="card"><h3 style="font-size:16px">Side by side</h3><div class="stattbl"><table><thead><tr><th></th>${cmpKeys.map(k=>`<th>${esc(ivName(k,c))}</th>`).join("")}</tr></thead><tbody>
     <tr><th>Fit here</th>${cmpKeys.map(k=>`<td>${suitLabel(IV[k].suit(c)[0])}</td>`).join("")}</tr>${Object.keys(FXNAME).map(f=>`<tr><th>${FXNAME[f]}</th>${cmpKeys.map(k=>`<td class="num">${IV[k].fx[f]||"–"}</td>`).join("")}</tr>`).join("")}
-    <tr><th>Time to work</th>${cmpKeys.map(k=>`<td>${esc(IV[k].time)}</td>`).join("")}</tr><tr><th>Cost</th>${cmpKeys.map(k=>`<td>${esc(IV[k].cost.split(".")[0])}</td>`).join("")}</tr><tr><th>Main limit</th>${cmpKeys.map(k=>`<td>${esc(IV[k].limits)}</td>`).join("")}</tr></tbody></table></div></div>`:cmpKeys.length===1?`<p class="hint">Tick one more option to compare.</p>`:""}`:""}
-  <div class="sec-title"><h2 style="font-size:19px">3 · Where it is heading</h2><p>If the measured trends continue. Each projection is first tested on the last five years it was not allowed to see.</p></div>
+    <tr><th>When</th>${cmpKeys.map(k=>`<td>${esc(PHASE[IV[k].phase])}</td>`).join("")}</tr><tr><th>Time to work</th>${cmpKeys.map(k=>`<td>${esc(IV[k].time)}</td>`).join("")}</tr><tr><th>Cost</th>${cmpKeys.map(k=>`<td>${esc(IV[k].cost.split(".")[0])}</td>`).join("")}</tr><tr><th>Main limit</th>${cmpKeys.map(k=>`<td>${esc(IV[k].limits)}</td>`).join("")}</tr></tbody></table></div></div>`:cmpKeys.length===1?`<p class="hint">Tick one more option to compare.</p>`:""}`:""}
+  <div class="sec-title"><h2 style="font-size:19px">4 · Where it is heading</h2><p>If the measured trends continue. Each projection is first tested on the last five years it was not allowed to see.</p></div>
   ${PR.map(({id,P})=>{const v=VARS[id];if(!P.ok)return`<div class="card"><h3 style="font-size:16px">${esc(v.name)}</h3><p class="hint">Record too short to fit and test a projection (${P.n} years).</p></div>`;
-    const yH=P.last+P.H,F=P.full;return`<div class="card"><div class="card-head"><h3 style="font-size:16px">${esc(v.name)}</h3><span class="badge sim">Projection</span></div><svg class="chart" id="pr-${id}" role="img" aria-label="${esc(v.name)} projection"></svg>
-    ${P.show?two(`Trend line ${sfmt(F.b*10,v.dig)} ${esc(v.unit)} decade⁻¹ from ${F.from}–${F.last}; projected ${yH}: ${fmt(F.fit(yH),v.dig)} ${esc(v.unit)} (95% range ${fmt(F.fit(yH)-F.half(yH),v.dig)} to ${fmt(F.fit(yH)+F.half(yH),v.dig)}). Backtest on ${P.trainLast+1}–${P.last}: ${fmt(P.skill*100,0)}% smaller error than the long-term average; ${P.inside} of ${P.test.length} hidden years inside the range.`,
-      `If nothing changes, expect about ${fmt(F.fit(yH),v.dig)} ${esc(v.unit)} by ${yH}. The options above are ways to bend this line.`,"Projection")
+    const yP=P.last+P.H,F=P.full;return`<div class="card"><div class="card-head"><h3 style="font-size:16px">${esc(v.name)}</h3><span class="badge sim">Projection</span></div><svg class="chart" id="pr-${id}" role="img" aria-label="${esc(v.name)} projection"></svg>
+    ${P.show?two(`Trend line ${sfmt(F.b*10,v.dig)} ${esc(v.unit)} decade⁻¹ from ${F.from}–${F.last}; projected ${yP}: ${fmt(F.fit(yP),v.dig)} ${esc(v.unit)} (95% range ${fmt(F.fit(yP)-F.half(yP),v.dig)} to ${fmt(F.fit(yP)+F.half(yP),v.dig)}). Backtest on ${P.trainLast+1}–${P.last}: ${fmt(P.skill*100,0)}% smaller error than the long-term average; ${P.inside} of ${P.test.length} hidden years inside the range.`,
+      `If nothing changes, expect about ${fmt(F.fit(yP),v.dig)} ${esc(v.unit)} by ${yP}. The prevention plan above is about being ready before then.`,"Projection")
      :`<div class="note"><b>No projection shown.</b> ${P.brk.found?`The record has a possible break in ${P.brk.year}.`:"In the backtest the trend line did no better than the long-term average."}</div>`}</div>`;}).join("")}`;
   PR.forEach(({id,P})=>drawPredChart($("#pr-"+id),d,id,P,{h:170}));
   panel.querySelectorAll("[data-prob]").forEach(b=>b.onclick=()=>{L.focus=L.focus===b.dataset.prob?null:b.dataset.prob;renderPanel();});
@@ -1930,7 +2081,7 @@ function renderAbout(){
    <tr><th>Your lifetime lens</th><td>Sen's slope recomputed on the same series from your birth year (minimum 8 years). The year is kept only in this browser's storage.</td></tr>
    <tr><th>Insight feed</th><td>All variables with data, ranked: significant first, then by signal-to-noise ratio.</td></tr>
    <tr><th>Monthly analysis</th><td>Seasonal Mann-Kendall and seasonal Sen's slope on the stored monthly values of the chosen period; anomalies against each calendar month's ${BASE_TXT} mean.</td></tr>
-   <tr><th>Where it is heading</th><td>Trend line, 95% prediction range and five-year backtest, computed from the same stored values. The Solutions Lab shows the same projection for the variables behind each detected problem.</td></tr>
+   <tr><th>Where it is heading</th><td>Trend line, 95% prediction range and five-year backtest, computed from the same stored values. The Solutions Lab uses the same projections to rate future dangers and shows them for the variables behind each detected problem.</td></tr>
    <tr><th>Dashboard</th><td>Every variable for one place on one screen: strength of change, every year at a glance, a tile per variable and a table of all statistics. Each variable uses its own years with data.</td></tr>
    <tr><th>Summary report</th><td>A single HTML file with the same numbers, charts, sources and methods; it opens in any browser and prints to PDF.</td></tr>
    <tr><th>Guided story</th><td>Narrates the same tests, the global comparison, detrended correlations and the Solutions Lab ranking. No extra data.</td></tr>
@@ -2172,8 +2323,8 @@ function buildStory(d){const l=S.loc,steps=[],nm=esc(l.name);
   steps.push({t:"What's connected?",p:pairTxt||"There aren't enough variables with data to compare here.",sci:pairSci||"Needs two overlapping annual series.",go:()=>{S.connect=pick.length>=2?pick:["ts","soil","prec"];goSection("connect");storyFly(4);}});
   const a0=2001;steps.push({t:"Before and after",p:`Below the map, Before & After now compares ${a0} with ${YEAR_END}. For the featured places it shows MODIS images of the same box in both years.`,sci:"NASA AppEEARS MODIS images, same bounding box and calendar month (July) in every image. The numbers come from the time series, not from image pixels.",
     go:()=>{S.cmp.a=a0;S.cmp.b=YEAR_END;setYear(YEAR_END,{fromCompare:true});renderCompare();storyFly(6);},extra:`<button class="btn small" data-story-cmp>Jump to Before &amp; After ↓</button>`});
-  const {out:probs}=detectProblems(d),best=Object.keys(IV).filter(k=>probs.length&&IV[k].for.some(f=>probs.map(p=>p.k).includes(f))).map(k=>({k,s:IV[k].suit(c)[0]})).sort((x,y)=>y.s-x.s)[0];
-  steps.push({t:"What can be done?",p:probs.length?`The record shows ${probs.map(p=>esc(PROBLEMS[p.k].name.toLowerCase())).join(" and ")}. The best-fitting option for this climate is ${best?esc(IV[best.k].name.toLowerCase()):"listed in the Solutions Lab"}. The Solutions Lab also shows where these trends are heading if they continue.`:"No problem trend was detected, so the Solutions Lab suggests no targeted fixes. The Solutions Lab still shows where the main variables are heading.",
+  const {out:probs}=detectProblems(d),best=Object.keys(IV).filter(k=>probs.length&&ivFits(k,c)&&IV[k].for.some(f=>probs.map(p=>p.k).includes(f))).map(k=>({k,s:IV[k].suit(c)[0]})).sort((x,y)=>y.s-x.s)[0];
+  steps.push({t:"What can be done?",p:probs.length?`The record shows ${probs.map(p=>esc(PROBLEMS[p.k].name.toLowerCase())).join(" and ")}. The best-fitting option for this climate is ${best?esc(ivName(best.k,c).toLowerCase()):"listed in the Solutions Lab"}. The Solutions Lab rates the dangers ahead and lays out a prevention plan for this kind of area.`:"No problem trend was detected, so the Solutions Lab suggests no targeted fixes. The Solutions Lab still shows where the main variables are heading.",
     sci:"Options ranked by suitability rules using local NASA Giovanni climate. Projections extend the measured trend and are shown only after passing a test on the last five years.",go:()=>{goSection("solutions");storyFly(9);}});
   return steps;}
 async function startStory(){stopPlay();if(!S.loc){flash("Pick a place first, then press Guided story. Try Cairo from the featured places.","warn",7000);$("#q").focus();return;}
@@ -2258,6 +2409,63 @@ function selectLocation(loc,opts){loc=snapLoc(loc);if(!loc)return;if(S.loc&&locK
   load(loc).then(()=>{applyRange();drawMap();renderExploreList();renderCompare();});
   if(window.innerWidth<=900)setTimeout(()=>$("#panel").scrollIntoView({behavior:"smooth",block:"start"}),1200);}
 $$("nav.sections button").forEach(b=>b.onclick=()=>{S.section=b.dataset.sec;renderPanel();positionInk();if(window.innerWidth<=900)$("#panel").scrollIntoView({behavior:"smooth",block:"start"});});
+/* ---- Tutorial: a step-by-step walkthrough that starts on the first visit and can be replayed from the header ---- */
+const TOUR=[
+ {t:"Welcome, Earth Trend Detective",ic:"globe",p:"This app shows how the climate and environment of any country, or of 17 featured places, have changed since 1980, using NASA satellite and model data.",
+  why:"To find out whether a change is real or just chance, where it is heading, and what can be done about it.",list:["Pick a place","Choose what to measure","Read the trend","Plan solutions"]},
+ {sel:".cmd .bar",t:"1 · Pick a place",ic:"search",p:"Type a country or a featured city, such as Egypt, Cairo or Tokyo, or press “Use my location”.",
+  why:"Every chart, number and solution in the app is for the place you choose."},
+ {sel:"#stage",t:"2 · Or click the globe",ic:"globe",p:"Drag to spin the globe and click any country. Scroll or pinch to zoom into the map; the globe button brings you back.",
+  why:"To explore visually and compare regions side by side."},
+ {sel:"#explore",t:"3 · Choose what to measure",ic:"layers",p:"Air temperature, rain, soil moisture, humidity, snow, NO₂ pollution and more. The map colours show the variable you choose.",
+  why:"Different variables tell different parts of the story: heat, water, air quality."},
+ {sel:"#timeline",t:"4 · Travel through time",ic:"play",p:"Drag the slider or press play to watch the years change. “Before & After” compares two years of the same place side by side.",
+  why:"To see when a change started and how big it is."},
+ {sel:"#panel",t:"5 · Read the results",ic:"trend",p:"Here you get the chart, a trend test that says whether the change is statistically significant, and a projection that is only shown after it passes a test on the last five years.",
+  why:"So you can tell a real long-term trend from normal year-to-year ups and downs."},
+ {sel:"nav.sections",t:"6 · Five sections",ic:"compass",p:"Switch between the parts of the app:",
+  list:["Explore Earth: one variable, one place","Trend Explorer: every trend, ranked","Earth Connections: variables that move together","Solutions Lab: dangers ahead and a prevention plan","Data & Methods: sources and how everything is computed"],
+  why:"Each section answers a different question about the same place."},
+ {sel:'nav.sections [data-sec="solutions"]',t:"7 · Solutions Lab",ic:"flask",p:"Rates the dangers ahead for your place, such as heat, drought, floods or pollution, and builds a prevention plan suited to that kind of area, from now to the long term.",
+  why:"To turn what the data shows into action before the dangers arrive."},
+ {sel:".hdr-actions",t:"8 · Helpful tools",ic:"sparkle",p:"",list:["Guided story: a narrated tour of the place you picked","Dashboard: every variable on one screen","Glossary: every term in plain words","Share: a link to exactly what you are looking at"],
+  why:"Use them whenever you want a summary or don't know a word."},
+ {t:"You're ready!",ic:"sparkle",p:"Start with an example, or explore on your own. You can replay this tutorial any time with the “Tutorial” button at the top.",end:true}];
+let tourI=-1,tourEl=null,tourPrevFocus=null;
+const tourVisible=e=>{if(!e)return null;const r=e.getBoundingClientRect();return r.width>8&&r.height>8&&r.bottom>0&&r.right>0&&r.top<innerHeight&&r.left<innerWidth?r:null;};
+function tourPlace(){if(!tourEl)return;const st=TOUR[tourI],card=tourEl.querySelector(".tour-card"),spot=tourEl.querySelector(".tour-spot"),dim=tourEl.querySelector(".tour-dim");
+  let r=st.sel?tourVisible(document.querySelector(st.sel)):null;
+  if(!r){spot.hidden=true;dim.hidden=false;card.style.left=Math.max(16,(innerWidth-card.offsetWidth)/2)+"px";card.style.top=Math.max(16,(innerHeight-card.offsetHeight)/2)+"px";return;}
+  dim.hidden=true;spot.hidden=false;const pad=6,x=Math.max(4,r.left-pad),y=Math.max(4,r.top-pad),w=Math.min(innerWidth-8,r.right+pad)-x,h=Math.min(innerHeight-8,r.bottom+pad)-y;
+  Object.assign(spot.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"});
+  if(innerWidth<=600)return; /* phones: the card sits at the bottom (CSS) */
+  const cw=card.offsetWidth,ch=card.offsetHeight,m=14;let left,top;
+  if(y+h+m+ch<=innerHeight-8){top=y+h+m;left=x;}                 /* below */
+  else if(y-m-ch>=8){top=y-m-ch;left=x;}                          /* above */
+  else if(x+w+m+cw<=innerWidth-8){left=x+w+m;top=y;}              /* right */
+  else if(x-m-cw>=8){left=x-m-cw;top=y;}                          /* left */
+  else{left=(innerWidth-cw)/2;top=innerHeight-ch-16;}             /* large target: bottom centre over it */
+  card.style.left=clamp(left,8,innerWidth-cw-8)+"px";card.style.top=clamp(top,8,innerHeight-ch-8)+"px";}
+function tourShow(i){tourI=clamp(i,0,TOUR.length-1);const st=TOUR[tourI],n=TOUR.length,card=tourEl.querySelector(".tour-card");
+  if(st.sel==="#explore"&&$("#explore").classList.contains("collapsed"))$("#exploreToggle").click();
+  const tgt=st.sel&&document.querySelector(st.sel);if(tgt&&innerWidth<=900)tgt.scrollIntoView({block:"center"});
+  card.innerHTML=`<div class="tour-top"><span class="tour-step">${tourI?`Step ${tourI} of ${n-2}`:"Tutorial"}</span><button class="tour-x" type="button" data-tour="close" aria-label="Close tutorial">${icon("x")}</button></div>
+   <h3 id="tourTitle">${icon(st.ic)}${esc(st.t)}</h3>${st.p?`<p>${esc(st.p)}</p>`:""}${st.list?`<ul>${st.list.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+   ${st.why?`<div class="tour-why"><b>What it's for</b>${esc(st.why)}</div>`:""}
+   <div class="tour-dots" aria-hidden="true">${TOUR.map((_,k)=>`<i class="${k===tourI?"on":""}"></i>`).join("")}</div>
+   <div class="tour-nav">${st.end?`<button class="tour-skip" type="button" data-tour="back">Back</button><div><button class="btn" type="button" data-tour="close">Explore on my own</button><button class="btn primary" type="button" data-tour="example">Try Cairo</button></div>`
+     :`<button class="tour-skip" type="button" data-tour="close">Skip tutorial</button><div>${tourI?`<button class="btn" type="button" data-tour="back">Back</button>`:""}<button class="btn primary" type="button" data-tour="next">${tourI?"Next":"Start the tour"} →</button></div>`}</div>`;
+  card.querySelectorAll("[data-tour]").forEach(b=>b.onclick=()=>{const a=b.dataset.tour;if(a==="next")tourShow(tourI+1);else if(a==="back")tourShow(tourI-1);else if(a==="close")endTour();
+    else if(a==="example"){endTour();const f=FEATURED.find(x=>x.name==="Cairo");if(f)selectLocation(f);}});
+  requestAnimationFrame(()=>{tourPlace();const b=card.querySelector(".btn.primary");(b||card).focus({preventScroll:true});});}
+function startTour(){if(tourEl)return;stopPlay();tourPrevFocus=document.activeElement;tourEl=document.createElement("div");tourEl.className="tour";
+  tourEl.innerHTML=`<div class="tour-block"></div><div class="tour-dim"></div><div class="tour-spot" hidden></div><div class="tour-card" role="dialog" aria-modal="true" aria-labelledby="tourTitle" tabindex="-1"></div>`;
+  document.body.appendChild(tourEl);tourShow(0);}
+function endTour(){if(!tourEl)return;tourEl.remove();tourEl=null;store.set("tourDone",1);if(tourPrevFocus&&tourPrevFocus.focus)tourPrevFocus.focus();}
+document.addEventListener("keydown",e=>{if(!tourEl)return;if(e.key==="Escape"){e.preventDefault();endTour();}else if(e.key==="ArrowRight"&&tourI<TOUR.length-1)tourShow(tourI+1);else if(e.key==="ArrowLeft"&&tourI>0)tourShow(tourI-1);
+  else if(e.key==="Tab"){const f=[...tourEl.querySelectorAll(".tour-card button")];if(!f.length)return;const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus();}}});
+addEventListener("resize",()=>{if(tourEl)tourPlace();});
+$("#tourBtn").onclick=()=>startTour();
 function boot(){
   if(saved.item&&EXPLORE.find(e=>e.id===saved.item))S.item=saved.item;
   if(window.innerWidth<=900||window.innerHeight<700){$("#explore").classList.add("collapsed");$("#exploreToggle").textContent="Show";$("#exploreToggle").setAttribute("aria-expanded","false");}
@@ -2271,6 +2479,7 @@ function boot(){
   else if(prev&&isFinite(prev.lat)){const f=FEATURED.find(x=>x.name===prev.name)||COUNTRIES.find(c=>c.name===prev.name)||snapLoc(Object.assign({},prev,{kind:"point"}),true);if(!f)renderPanel();else{S.loc=f;G.rot=[-f.lon,clamp(-f.lat,-80,80)];G.spin=false;renderPanel();load(f).then(()=>{applyRange();renderPanel();renderCompare();});}}
   else renderPanel();
   renderCompare();setYear(S.year,{light:true});refreshStatus();requestAnimationFrame(positionInk);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(positionInk);
+  if(!store.get("tourDone"))setTimeout(startTour,900); /* first visit: start the tutorial */
 }
 try{boot();}catch(e){console.error(e);const m=$("#msg");m.hidden=false;m.className="msg warn";m.textContent="Something went wrong while starting: "+(e&&e.message);}
 })();
