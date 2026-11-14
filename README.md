@@ -47,6 +47,18 @@ The app reads only the files in this folder and makes no outside requests while 
   and a table of all statistics. Clicking a tile opens that variable in Explore.
 - **Summary report:** one self-contained HTML file with key findings, projections, charts, all statistics, sources
   and methods. It opens in any browser and has a "Print / save as PDF" button.
+- **Tutorial:** on the first visit a step-by-step walkthrough starts by itself. It highlights each part of the app
+  (search, globe, variables, timeline, results, the five sections, the Solutions Lab and the header tools) and says
+  what each is for. Skip it at any time (Esc or "Skip tutorial"); it is remembered in the browser and does not start
+  again. The "Tutorial" button in the header replays it.
+- **Solutions Lab, area by area:** each place is classed by climate (hot or cold desert, dryland, humid or seasonal
+  tropics, temperate, cold temperate, polar), city or countryside, coast and snow. Dangers ahead (rising heat, drying
+  land, heavier rain, more flood runoff, humid heat, rising water demand, shrinking snowpack, rising NO₂) are rated
+  Low, Medium or High from the measured trend and the backtested projection against fixed thresholds, one step higher
+  where that kind of area is especially exposed. Prevention options are filtered to the area (for example permafrost
+  foundations only in polar places, mangroves only on tropical coasts, water reuse only in cities), each says how to do
+  it in that kind of place, and a roadmap groups them into now, the next 2–5 years and the long term. Where nothing is
+  measured or projected, a watch list shows the hazards typical of the area.
 - **Astronaut:** a bouncing, waving astronaut in the map corner (bottom-right on phones) links to `game.html`.
   Animations stop for visitors who ask their system for reduced motion.
 

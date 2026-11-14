@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>The Protector: You</title>
 <meta name="description" content="Learn to protect the planet that protects you.">
 <style>
@@ -258,6 +258,113 @@ select option { background: #0b1534; }
 [dir="rtl"] .skip { right: auto; left: 16px; } /* .spot-skip stays right: the mirrored mission buttons sit bottom-left */
 [dir="rtl"] .etd-back { left: auto; right: 16px; }
 .lens-track, .chart, .lens-spark, .te-div { direction: ltr; } /* time runs left to right, like the world behind it */
+/* ==== Phones and tablets ====================================================================================
+   Desktop is unaffected: safe-area insets are 0 there, dvh equals vh, --kb stays 0, and the media queries below
+   only match small, short or touch screens. */
+html { -webkit-text-size-adjust: 100%; }
+@supports (height: 100dvh) { html, body { height: 100dvh; } }
+body { overscroll-behavior: none; }
+.hud { padding-top: calc(12px + env(safe-area-inset-top)); padding-left: calc(16px + env(safe-area-inset-left)); padding-right: calc(16px + env(safe-area-inset-right)); }
+.hub { left: calc(16px + env(safe-area-inset-left)); right: calc(16px + env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom)); }
+.mission { padding-bottom: calc(16px + env(safe-area-inset-bottom)); padding-left: max(calc(16px + env(safe-area-inset-left)), calc((100% - 1100px) / 2)); padding-right: max(calc(16px + env(safe-area-inset-right)), calc((100% - 1100px) / 2)); }
+.skip { top: calc(16px + env(safe-area-inset-top)); right: calc(16px + env(safe-area-inset-right)); }
+[dir="rtl"] .skip { right: auto; left: calc(16px + env(safe-area-inset-left)); }
+.etd-back { top: calc(16px + env(safe-area-inset-top)); left: calc(16px + env(safe-area-inset-left)); }
+[dir="rtl"] .etd-back { left: auto; right: calc(16px + env(safe-area-inset-right)); }
+.spot-skip { right: calc(16px + env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom)); }
+.sub { bottom: calc(20px + env(safe-area-inset-bottom)); }
+.lens-dock { bottom: calc(14px + env(safe-area-inset-bottom)); }
+.panel.center { max-height: calc(100% - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - var(--kb, 0px)); top: calc(50% - var(--kb, 0px) / 2); }
+
+/* touch screens: no double-tap zoom or page bounce; panels still scroll; no "sticky" hover effects */
+@media (pointer: coarse) {
+  body, #ui { touch-action: manipulation; }
+  #world { touch-action: none; }
+  .panel, .mission, .cards, .results, .hud-btns, .lens-track { touch-action: pan-x pan-y; }
+  .te-div { touch-action: none; }
+}
+@media (hover: none) {
+  .btn:hover, .card:hover, .opt:hover { transform: none; }
+  .btn:hover { background: rgba(255,255,255,0.08); } .btn.primary:hover { background: linear-gradient(180deg, #ffe17a, #f5b928); }
+  .card:hover { box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .chip:hover { background: rgba(255,255,255,.07); } .res:hover { background: rgba(255,255,255,.06); } .opt:hover { border-color: var(--line); }
+}
+
+/* tablets and every touch screen: full-size tap targets; tutorial skip and the Two Earths strip clear of other buttons */
+@media (pointer: coarse), (max-width: 820px) {
+  .hud-btns .btn { min-width: 44px; } .weak summary { min-height: 44px; } .adv summary { min-height: 44px; display: flex; align-items: center; }
+  .spot-skip { bottom: auto; top: calc(var(--hud, 70px) + 8px); }
+  .te-div { top: var(--hud, 70px); }
+}
+/* phones (portrait or landscape) */
+@media (max-width: 760px), (max-height: 500px) {
+  .hud { padding: calc(8px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 6px calc(10px + env(safe-area-inset-left)); row-gap: 6px; }
+  .hud .badge { flex: 1 1 150px; min-width: 0; }
+  /* one row of HUD buttons that scrolls sideways, so the HUD never grows tall enough to cover the hero */
+  .hud-btns { flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; margin-inline-start: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 2px 0; }
+  .hud-btns::-webkit-scrollbar { display: none; }
+  .hud-btns .btn { flex: 0 0 auto; min-width: 44px; }
+  .hud-btns { align-items: center; }
+  /* tutorial skip and the Two Earths drag strip must not sit on top of the bottom band or the HUD buttons */
+  .spot-skip { bottom: auto; top: calc(var(--hud, 70px) + 8px); }
+  .te-div { top: var(--hud, 70px); }
+  .title-screen { padding-top: calc(70px + env(safe-area-inset-top)); }
+  .weak summary { min-height: 44px; }
+  .hub { bottom: calc(10px + env(safe-area-inset-bottom)); }
+  .card { min-height: 112px; }
+  .panel.side { padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+  .mk { font-size: 12px; }
+  /* Two Earths: a compact panel so both halves of the world and the hero stay in view */
+  .te-panel { padding-top: 8px; }
+  .te-panel .mhead { margin-bottom: 2px; } .te-panel .mhead b { font-size: 16px; } .te-panel .stars i { font-size: 20px; }
+  .te-line { font-size: 13px; margin: 2px 0 6px; line-height: 1.35; }
+  .te-panel .pledge { font-size: 14px; padding: 8px 10px; } .te-panel .pledge .row { margin-top: 4px; } .te-panel .row.end { margin-top: 6px; }
+}
+@supports (height: 1dvh) { @media (max-width: 760px) {
+  .mission { max-height: 56dvh; } .panel.side { max-height: 52dvh; }
+} }
+
+/* short landscape phones: side panels on the right keep the hero (left third of the world) visible */
+@media (max-height: 500px) and (orientation: landscape) {
+  .title-screen { padding-top: calc(60px + env(safe-area-inset-top)); }
+  .logo .pre { font-size: 13px; } .logo .big { font-size: clamp(34px, 12vh, 60px); } .logo .you { font-size: clamp(20px, 7vh, 34px); margin-top: 2px; }
+  .tag { margin: 8px 0 2px; font-size: 16px; } .title-screen .row { margin-top: 6px; } .langseg { margin-top: 6px; }
+  .sub { display: none; }
+  .panel.side { top: calc(8px + env(safe-area-inset-top)); bottom: calc(8px + env(safe-area-inset-bottom)); right: calc(8px + env(safe-area-inset-right)); left: auto;
+    width: min(400px, 50vw); max-height: none; border-radius: var(--r); padding: 14px; }
+  .mission:not(.te-panel) { left: auto; right: 0; top: calc(var(--hud, 70px) + 4px); bottom: 0; width: min(560px, 58vw); max-height: none; border-radius: 22px 0 0 0;
+    border-top: 0; border-inline-start: 2px solid rgba(255,214,90,.55); padding: 10px calc(12px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) 14px; }
+  .mission .opts { grid-template-columns: 1fr; gap: 6px; } .mission .opt { min-height: 48px; padding: 6px 12px; }
+  .mission .evidence { flex-direction: column; align-items: stretch; gap: 4px; }
+  .hub { left: auto; width: min(540px, 60vw); top: calc(var(--hud, 70px) + 4px); right: calc(8px + env(safe-area-inset-right)); overflow-y: auto; }
+  .te-panel { max-height: 46dvh; }
+  /* one HUD row: name, place badge and the sideways-scrolling buttons */
+  .hud { flex-wrap: nowrap; } .hud .id { flex: 0 0 auto; } .hud .badge { flex: 0 1 240px; }
+  .hud-btns { flex: 1 1 0; min-width: 0; }
+  .lens-dock { padding: 8px 14px 10px; } .lens-track { margin: 34px 14px 22px; } .lens-cap { font-size: 12px; }
+  .caption { bottom: 8vh; font-size: 17px; }
+  .spot-skip { top: auto; right: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: calc(12px + env(safe-area-inset-left)); } /* over the world, clear of the side panel */
+}
+/* ==== Decluttered controls: two icon buttons (Menu, Settings) open glass panels with everything secondary ==== */
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+[dir="rtl"] .ico.dir { transform: scaleX(-1); } /* arrows point the reading way */
+.btn.icon { width: 48px; min-width: 48px; height: 48px; padding: 0; }
+.hud-btns { gap: 8px; }
+.topbar { position: absolute; top: calc(16px + env(safe-area-inset-top)); inset-inline-end: calc(16px + env(safe-area-inset-right)); display: flex; gap: 8px; z-index: 2; }
+.menu-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 4px; }
+.menu-item { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--ink); font: inherit; font-weight: 700; text-decoration: none; text-align: start; cursor: pointer; transition: background .2s; }
+.menu-item:hover { background: rgba(255,214,90,.18); }
+.menu-item .ico { color: var(--gold); }
+.setlist .tog { display: flex; align-items: center; justify-content: center; gap: 8px; }
+/* the tutorial's skip button sits under the HUD, clear of every screen's main buttons (landscape phones keep their own spot) */
+@media not ((max-height: 500px) and (orientation: landscape)) { .spot-skip { bottom: auto; top: calc(var(--hud, 70px) + 8px); } }
+/* place picker and certificate open below the HUD when it is showing, so they never cover it */
+#ui:has(> .hud:not(.hidden)) > .screen.panel.center { top: calc(50% + var(--hud, 70px) / 2 - var(--kb, 0px) / 2);
+  max-height: calc(100% - var(--hud, 70px) - 24px - env(safe-area-inset-bottom) - var(--kb, 0px)); }
+@media (max-width: 760px), (max-height: 500px) {
+  .hud { flex-wrap: nowrap; align-items: center; } .hud .badge { flex: 1 1 auto; min-width: 0; }
+  .hud-btns { flex: 0 0 auto; margin-inline-start: auto; overflow: visible; }
+}
 </style>
 </head>
 <body>
@@ -348,15 +455,18 @@ const EN = {
     online: 'Search online', onlineNote: 'Sends only the words you typed to Open-Meteo\'s free place search. No location, no account.',
     noResults: 'No match in the built-in list.', go: 'Fly there!',
     dataMode: 'Data', live: 'Real NASA data', sample: 'Sample data',
-    noSite: 'No stored NASA records for that point (open ocean, or outside the country outlines). Pick a country or a featured place.',
+    noSite: 'No NASA data for this point (open sea, or outside the country outlines), so nothing is loaded. Pick a featured place or a country.',
     noData: 'The NASA data files (data/observations.js) were not found next to this game, so only Sample data can be played.',
-    resolved: (picked, site) => picked === site ? site : `${picked} → NASA records for ${site}`,
+    countryRef: n => `${n} (country reference point)`,
+    notHere: (asked, site) => `No NASA record for ${asked} itself. Showing ${site}.`,
+    notHerePoint: site => `No NASA record for this exact point. Showing the nearest stored site: ${site}.`,
+    via: asked => `for “${asked}”`, noSiteShort: 'No NASA data here',
   },
 
   scan: ['ORBI is reading NASA Giovanni records for this place...', 'Taking each year\'s average of all 12 months, so the seasons can\'t fool us...', 'Checking: real pattern or just luck?'],
   scanSlow: 'Still reading Earth\'s memory...',
 
-  hud: { etd: 'Back to Earth Trend Detective', rank: 'Rank', stars: 'Stars', switch: 'Switch place', adv: 'Advanced', sound: 'Sound', cert: 'Certificate', lens: 'Time Lens', settings: 'Settings' },
+  hud: { menu: 'Menu', etd: 'Back to Earth Trend Detective', rank: 'Rank', stars: 'Stars', switch: 'Switch place', adv: 'Advanced', sound: 'Sound', cert: 'Certificate', lens: 'Time Lens', settings: 'Settings' },
 
   settings: {
     title: 'Settings', voice: 'ORBI voice', music: 'Music', sfx: 'Sound effects', motion: 'Reduced motion',
@@ -1003,15 +1113,18 @@ const AR = {
     online: 'ابحث عبر الإنترنت', onlineNote: 'سنرسل فقط الكلمات التي كتبتها إلى خدمة البحث المجانية Open-Meteo. لا موقع ولا حساب.',
     noResults: 'لا توجد نتيجة في القائمة المدمجة.', go: 'هيا نطير!',
     dataMode: 'البيانات', live: 'بيانات ناسا الحقيقية', sample: 'بيانات تجريبية',
-    noSite: 'لا توجد سجلات ناسا محفوظة لهذه النقطة (محيط مفتوح، أو خارج حدود الدول). اختر دولة أو مكانًا مميّزًا.',
+    noSite: 'لا توجد بيانات ناسا لهذه النقطة (بحر مفتوح، أو خارج حدود الدول)، لذا لن يُحمَّل شيء. اختر مكانًا مميّزًا أو دولة.',
     noData: 'لم نجد ملفات بيانات ناسا (data/observations.js) بجانب هذه اللعبة، لذا يمكن اللعب بالبيانات التجريبية فقط.',
-    resolved: (picked, site) => picked === site ? site : `${picked} ← سجلات ناسا في ${site}`,
+    countryRef: n => `${n} (النقطة المرجعية للدولة)`,
+    notHere: (asked, site) => `لا توجد سجلات ناسا خاصة بـ«${asked}». نعرض بدلًا منها: ${site}.`,
+    notHerePoint: site => `لا توجد سجلات ناسا لهذه النقطة بالضبط. نعرض أقرب موقع محفوظ: ${site}.`,
+    via: asked => `عن «${asked}»`, noSiteShort: 'لا توجد بيانات ناسا هنا',
   },
 
   scan: ['أوربي يقرأ سجلات ناسا جيوفاني لهذا المكان...', 'نأخذ متوسط أشهر السنة الاثني عشر، حتى لا تخدعنا الفصول...', 'نتحقّق: نمط حقيقي أم مجرد صدفة؟'],
   scanSlow: 'ما زلنا نقرأ ذاكرة الأرض...',
 
-  hud: { etd: 'العودة إلى محقّق اتجاهات الأرض', rank: 'الرتبة', stars: 'النجوم', switch: 'غيّر المكان', adv: 'متقدّم', sound: 'الصوت', cert: 'الشهادة', lens: 'عدسة الزمن', settings: 'الإعدادات' },
+  hud: { menu: 'القائمة', etd: 'العودة إلى محقّق اتجاهات الأرض', rank: 'الرتبة', stars: 'النجوم', switch: 'غيّر المكان', adv: 'متقدّم', sound: 'الصوت', cert: 'الشهادة', lens: 'عدسة الزمن', settings: 'الإعدادات' },
 
   settings: {
     title: 'الإعدادات', voice: 'صوت أوربي', music: 'الموسيقى', sfx: 'المؤثرات الصوتية', motion: 'حركة أقل',
@@ -1719,7 +1832,7 @@ function drawMap(ctx, w, h, o = {}) {
   ctx.fillStyle = '#3f9d5a';
   for (const poly of LAND) { ctx.beginPath(); poly.forEach(([lo, la], i) => (i ? ctx.lineTo(X(lo), Y(la)) : ctx.moveTo(X(lo), Y(la)))); ctx.fill(); }
   ctx.fillStyle = 'rgba(255,255,255,0.75)';
-  CITIES.forEach(c => { ctx.beginPath(); ctx.arc(X(c.lon), Y(c.lat), 2.2, 0, 7); ctx.fill(); });
+  (o.dots || CITIES).forEach(c => { ctx.beginPath(); ctx.arc(X(c.lon), Y(c.lat), 2.2, 0, 7); ctx.fill(); });
   if (o.marker) {
     const mx = X(o.marker.lon), my = Y(o.marker.lat);
     ctx.strokeStyle = '#ffd65a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(mx, my, 9, 0, 7); ctx.stroke();
@@ -2304,6 +2417,8 @@ function siteBiome(site, debug) {
 
 // A built-in city that is also one of the app's featured places (its stored 1° point can be > 50 km away, e.g. Lagos, London).
 const featuredByName = n => FEATURED.find(f => f.name === n || f.name.startsWith(n + ' ')) || null;
+// Every place the game may name: the app's stored sites (17 featured places + the country reference points).
+const allSites = () => (ETD ? Object.keys(ETD.sites).map(id => ({ id, name: id.slice(2), lat: ETD.sites[id].lat, lon: ETD.sites[id].lon, kind: id[0] === 'f' ? 'featured' : 'country' })) : []);
 const PERIOD = id => (VARS[id].range.match(/\d{4}/g) || [Y0, YEAR_END]).map(Number); // [first, last] year of the dataset
 
 // Which world effect a factor drives: [increasing, decreasing].
@@ -2449,7 +2564,7 @@ async function loadPlace(place, mode) {
   if (mode === 'sample') return MockProvider.get(place);
   return LiveProvider.get(place);
 }
-return { ALPHA, strictAlpha, effectOf, MockProvider, LiveProvider, JsonProvider, validateRadar, loadPlace, resolveSite, siteBiome, featuredByName, hasData: !!ETD };
+return { ALPHA, strictAlpha, effectOf, MockProvider, LiveProvider, JsonProvider, validateRadar, loadPlace, resolveSite, siteBiome, featuredByName, allSites, hasData: !!ETD };
 })();
 
 // ---- js/audio.js ----
@@ -2715,7 +2830,8 @@ class World {
   }
 
   resize() {
-    this.dpr = Math.min(2, devicePixelRatio || 1);
+    this.dpr = Math.min(2, devicePixelRatio || 1); // capped: phones at 3x would draw 2.25x the pixels for no visible gain
+    this.low = matchMedia('(pointer: coarse)').matches && Math.min(innerWidth, innerHeight) < 500; // phone: lighter particle load
     this.W = innerWidth; this.H = innerHeight;
     this.c.width = this.W * this.dpr; this.c.height = this.H * this.dpr;
     this.horizon = this.H * (this.W < this.H ? 0.52 : 0.6);
@@ -2760,7 +2876,7 @@ class World {
     x ??= this.heroX; y ??= this.heroY - 60 - this.lift;
     this.rings.push({ x, y, r: 0, life: 1 }, { x, y, r: 0, life: 1.25 });
     this.flash = 0.7; this.flashColor = [255, 246, 200]; this.shake(14);
-    const n = this.reduced ? 40 : 160;
+    const n = (this.reduced ? 40 : 160) * (this.low ? 0.6 : 1);
     for (let i = 0; i < n; i++) {
       const a = Math.random() * 6.28, sp = 120 + Math.random() * 520;
       this.parts.push({ type: 'spark', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 100, life: 0, max: 1 + Math.random() * 1.2, size: 2 + Math.random() * 4, col: Math.random() < 0.5 ? [255, 220, 90] : [120, 255, 170] });
@@ -2796,7 +2912,7 @@ class World {
   }
 
   spawn(dt) {
-    const { W, H } = this, m = this.reduced ? 0.25 : 1, sceneVis = 1 - this.space.mix;
+    const { W, H } = this, m = (this.reduced ? 0.25 : 1) * (this.low ? 0.6 : 1), sceneVis = 1 - this.space.mix;
     const E = this.split ? this.splitE() : this.E; // Two Earths: weather particles follow the REAL EARTH side
     if (sceneVis < 0.05) return;
     const chance = rate => { let n = rate * dt * m; let c = 0; while (n > 1) { c++; n--; } if (Math.random() < n) c++; return c; };
@@ -3093,7 +3209,7 @@ class World {
   }
 
   heatHaze() {
-    const { ctx, c, dpr, E, t } = this, y0 = (this.horizon - this.lift - this.H * 0.18) * dpr, y1 = (this.horizon - this.lift + this.H * (0.12 + E.hotground * 0.3)) * dpr, step = 6 * dpr;
+    const { ctx, c, dpr, E, t } = this, y0 = (this.horizon - this.lift - this.H * 0.18) * dpr, y1 = (this.horizon - this.lift + this.H * (0.12 + E.hotground * 0.3)) * dpr, step = (this.low ? 8 : 6) * dpr;
     const amp = Math.max(E.heat, E.hotground * 0.9);
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     for (let y = y0; y < y1; y += step) {
@@ -3245,7 +3361,7 @@ const { World, ease, GOOD } = __mod.world;
 const { LOOKS, defaultLook, COSMETICS, PATTERNS, GLOWS } = __mod.hero;
 const { CITIES, DEMOS, makePlace, drawMap, biomeFor } = __mod.geo;
 const { BIOMES } = __mod.biomes;
-const { loadPlace, effectOf, strictAlpha, JsonProvider, validateRadar, resolveSite, siteBiome, featuredByName, hasData } = __mod.data;
+const { loadPlace, effectOf, strictAlpha, JsonProvider, validateRadar, resolveSite, siteBiome, featuredByName, allSites, hasData } = __mod.data;
 const { initAudio, sfx, setWeather, setMuted, isMuted, setMood, setDrone, setHeartbeat, setPrefs, speak, stopSpeaking, isSpeaking, setVoiceLang } = __mod.audio;
 const world = new World(document.getElementById('world'));
 const ui = document.getElementById('ui');
@@ -3267,7 +3383,9 @@ const h = (html) => { const t = document.createElement('template'); t.innerHTML 
 const esc = s => String(s).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 // Display names in the current language. English keeps the data's own names; other languages look them up.
 const placeName = n => (S.places && S.places[n]) || n;
-const dispName = p => (/^\d+°[NS], \d+°[EW]$/.test(p.name) ? S.pointName(p.lat, p.lon) : placeName(p.name)); // map/GPS points are labelled by position
+// A site is named only by its own data name; a country site is marked as the country's reference point.
+const siteLabel = st => (st.kind === 'country' ? S.loc.countryRef(placeName(st.name)) : placeName(st.name));
+const dispName = p => (p.site ? siteLabel(p.site) : /^\d+°[NS], \d+°[EW]$/.test(p.name) ? S.pointName(p.lat, p.lon) : placeName(p.name)); // points without a site: by position
 const biomeName = b => (S.biomes && S.biomes[b]) || BIOMES[b].name;
 const varName = f => (S.vars && S.vars[f.id] && S.vars[f.id].name) || f.variable;
 const unitName = f => (S.units && f.unit in S.units ? S.units[f.unit] : f.unit || '');
@@ -3275,6 +3393,18 @@ const srcName = x => (S.src && S.src[x]) || x;
 const datasetLabel = f => (f.sample ? S.sampleDataset || f.dataset : S.vars && S.vars[f.id] ? `${srcName(f.source)} · ${S.vars[f.id].ds}` : f.dataset);
 const shortEffect = e => S.effects[e].short || S.effects[e].name.replace(/^\S+ /, '');
 const cosShort = c => (S.cosShort && S.cosShort[c]) || S.cosmetics[c].split(' ')[0];
+// One line-icon set (24px grid, 1.8 stroke, currentColor) for every icon control.
+const ICO = {
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  lens: '<path d="M6 3h12M6 21h12"/><path d="M7 3v2.5a5 5 0 0 0 2.5 4.3L12 12l2.5-2.2A5 5 0 0 0 17 5.5V3M7 21v-2.5a5 5 0 0 1 2.5-4.3L12 12l2.5 2.2a5 5 0 0 1 2.5 4.3V21"/>',
+  cert: '<circle cx="12" cy="9" r="6"/><path d="M8.2 13.6L7 22l5-3 5 3-1.2-8.4"/>',
+  pledge: '<path d="M9 3h6v3H9z"/><path d="M15 4.5h2a2 2 0 0 1 2 2V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/>',
+  place: '<path d="M12 22s7-6.1 7-12a7 7 0 0 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  back: '<path d="M10 16l-5-5 5-5"/><path d="M5 11h10a4 4 0 0 1 4 4v4"/>',
+};
+const ico = (k, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICO[k]}</svg>`;
+const iconBtn = (k, label, cls) => `<button class="btn small ghost icon ${cls}" aria-label="${label}" title="${label}">${ico(k)}</button>`;
 const FONT = () => (S.lang === 'ar' ? '"Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif' : 'system-ui, sans-serif');
 const wait = ms => new Promise(r => setTimeout(r, world.reduced ? Math.min(ms, 300) : ms));
 const tweens = [];
@@ -3289,6 +3419,13 @@ function screen(node) {
 }
 const btn = (label, cls = '') => `<button class="btn ${cls}">${label}</button>`;
 document.addEventListener('click', e => { if (e.target.closest('button')) { initAudio(); sfx.click(); } }, true);
+// Touch devices only allow sound after a tap: start WebAudio and prime speech on the very first touch.
+addEventListener('touchend', () => { initAudio(); try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch { /* no speech: text only */ } }, { once: true, passive: true });
+document.addEventListener('gesturestart', e => e.preventDefault()); // iOS pinch-zoom while playing
+// On-screen keyboard: --kb = the part of the screen it covers, so the place panel stays above it (0 on desktop).
+if (window.visualViewport) { const vv = visualViewport, kb = () => document.documentElement.style.setProperty('--kb', Math.max(0, innerHeight - vv.height - vv.offsetTop) + 'px'); vv.addEventListener('resize', kb); vv.addEventListener('scroll', kb); }
+const phone = () => matchMedia('(max-width: 760px), (max-height: 500px)').matches;
+const coarse = matchMedia('(pointer: coarse)');
 
 // ORBI speech bubble follows ORBI
 const bubble = h('<div class="bubble hidden"></div>'); ui.appendChild(bubble);
@@ -3350,7 +3487,8 @@ function frame(now) {
   world.orbi.talk = isSpeaking(); tut.update();
   if ((moodT += dt) > 0.5) { moodT = 0; setMood(1 - Math.max(0, ...Object.entries(world.E).filter(([k]) => !GOOD.has(k)).map(([, v]) => v))); } // music follows the world's health
   if (world.orbi.on && !bubble.classList.contains('hidden')) {
-    const x = Math.min(innerWidth - 140, Math.max(140, world.orbi.x)), y = Math.max(60, world.orbi.y - world.lift - 40);
+    const hw = Math.max(140, bubble.offsetWidth / 2 + 8); // keep the whole bubble on narrow screens
+    const x = Math.min(innerWidth - hw, Math.max(hw, world.orbi.x)), y = Math.max(60, bubble.offsetHeight + 8, world.orbi.y - world.lift - 40); // never above the screen top
     bubble.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
   }
   setWeather(world.E.cold * 0.3 + world.E.smog * 0.2, world.E.flooding + world.E.streams * 0.3);
@@ -3366,9 +3504,9 @@ function showTitle() {
     <div class="logo">${S.logo.pre ? `<span class="pre">${S.logo.pre}</span>` : ''}<span class="big">${S.logo.big}</span><span class="you">${S.logo.you}</span></div>
     <p class="tag">${S.tagline}</p>
     <div class="row">${btn(S.start, 'primary xl')}${save.nick ? btn(S.cont(esc(save.nick)), 'ghost') : ''}</div>
-    ${langSeg()}
-    <p class="sub">${S.subline}</p><a class="btn small ghost etd-back" href="index.html">${S.backArrow} ${S.hud.etd}</a></div>`));
-  const [b1, b2] = s.querySelectorAll('.row button'); bindLang(s);
+    <p class="sub">${S.subline}</p><div class="topbar">${iconBtn('menu', S.hud.menu, 'menub')}${iconBtn('gear', S.hud.settings, 'gear')}</div></div>`));
+  const [b1, b2] = s.querySelectorAll('.row button');
+  s.querySelector('.menub').onclick = showMenu; s.querySelector('.gear').onclick = showSettings;
   b1.onclick = () => { initAudio(); playIntro(); };
   if (b2) b2.onclick = () => { initAudio(); save.place ? travelTo(save.place, true) : showLocation(); };
 }
@@ -3440,7 +3578,7 @@ function showCreator() {
     <p class="hint">${S.creator.nickHint}</p>
     ${btn(S.creator.go, 'primary xl')}</div>`));
   const sync = () => s.querySelectorAll('.tog').forEach(b => b.classList.toggle('on', !!L[b.dataset.k]));
-  sync();
+  sync(); if (phone()) relift('.creator'); // phones: the creator sheet is at the bottom, keep the hero above it
   s.addEventListener('click', e => {
     const sw = e.target.closest('.sw'), seg = e.target.closest('.seg button'), tog = e.target.closest('.tog');
     if (sw) { const k = sw.parentElement.dataset.k; L[k] = +sw.dataset.i; sw.parentElement.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === sw)); world.burst(world.heroX, world.heroY - 80, [255, 220, 120], 12); }
@@ -3453,7 +3591,7 @@ function showCreator() {
     const by = +s.querySelector('#by').value; // only the year, kept on this device
     if (by) save.birthYear = by; else delete save.birthYear;
     save.nick = nick; save.look = L; persist();
-    screen(null);
+    screen(null); if (world.lift) tween(world, 'lift', 0, 0.6);
     world.override = { pose: 'power', mood: 'joy', power: 1, until: world.t + 2.2 };
     sfx.power(); await wait(500); world.heal(); sfx.heal();
     say(S.creator.born(nick), 2600); await wait(2600);
@@ -3465,6 +3603,7 @@ function showCreator() {
 // ---------- 4. location ----------
 function showLocation() {
   let picked = save.place || null;
+  const SITES = allSites(), FEAT = SITES.filter(x => x.kind === 'featured');
   if (!hasData) save.mode = 'sample'; // the NASA files are missing: only Sample data can be played (said in the notice)
   const note = radarNotice || (hasData ? '' : S.loc.noData); radarNotice = '';
   const s = screen(h(`<div class="screen panel center loc">
@@ -3473,7 +3612,7 @@ function showLocation() {
       <div><canvas class="map" width="720" height="360" aria-label="${S.mapAria}"></canvas><p class="hint">${S.loc.mapHint}</p></div>
       <div class="loc-side">
         <label>${S.loc.demos}</label>
-        <div class="chips">${DEMOS.map(c => `<button class="chip" data-n="${c.name}">${placeName(c.name)}<small>${biomeName(c.biome)}</small></button>`).join('')}</div>
+        <div class="chips">${FEAT.map((f, i) => `<button class="chip" data-i="${i}">${placeName(f.name)}<small>${biomeName(siteBiome(f))}</small></button>`).join('')}</div>
         <label for="q">${S.loc.search}</label>
         <input id="q" autocomplete="off" placeholder="${S.loc.placeholder || S.placeholder}">
         <div class="results"></div>
@@ -3481,15 +3620,18 @@ function showLocation() {
         <div class="seg mode"><button data-v="live">${S.loc.live}</button><button data-v="sample">${S.loc.sample}</button></div>
       </div>
     </div>
+    <div class="notice locnote hidden"></div>
     <div class="row end"><span class="picked"></span>${btn(S.loc.go, 'primary xl go')}</div>
     <p class="credits">${S.credits}</p></div>`));
   const map = s.querySelector('.map'), mctx = map.getContext('2d'), res = s.querySelector('.results'), go = s.querySelector('.go');
-  const redraw = () => drawMap(mctx, map.width, map.height, { marker: picked });
-  const live = () => save.mode !== 'sample';
+  const redraw = () => drawMap(mctx, map.width, map.height, { marker: picked, dots: SITES.length ? SITES : null });
   const pick = (p) => {
-    picked = p; redraw(); go.disabled = live() && !p.site;
-    s.querySelector('.picked').innerHTML = live() && !p.site ? `<b>${esc(dispName(p))}</b> · ${S.loc.noSite}`
-      : `<b>${esc(p.site ? S.loc.resolved(dispName(p), placeName(p.site.name)) : dispName(p))}</b> · ${biomeName(p.biome)} · ${p.lat}°, ${p.lon}°`;
+    picked = p; redraw();
+    const none = hasData && !p.site; go.disabled = none; // no stored site (open sea): say so and load nothing
+    s.querySelector('.picked').innerHTML = none ? `<b>${S.loc.noSite}</b>` : `<b>${esc(dispName(p))}</b> · ${biomeName(p.biome)} · ${p.lat}°, ${p.lon}°`;
+    // what was asked for has no record of its own: say which site is shown instead
+    const note = !p.site || p.asked == null ? '' : p.asked === '' ? S.loc.notHerePoint(siteLabel(p.site)) : p.asked !== p.site.name ? S.loc.notHere(placeName(p.asked), siteLabel(p.site)) : '';
+    const n = s.querySelector('.locnote'); n.textContent = note; n.classList.toggle('hidden', !note);
     sfx.scan();
   };
   // The picked point is resolved on this device to a stored NASA site with the app's rule (featured place within 50 km,
@@ -3503,36 +3645,46 @@ function showLocation() {
     hits.sort((a, b) => a[0] - b[0]);
     return (hits.find(([, s]) => s.name === country) || hits[0] || [])[1] || null;
   };
-  const at = (lat, lon, name, biome, country) => {
-    const f = name && featuredByName(name), own = f && Math.abs(f.lat - lat) <= 0.75 && Math.abs(f.lon - lon) <= 0.75 ? resolveSite(f.lat, f.lon) : null;
-    const site = own || resolveSite(lat, lon) || (name ? near(lat, lon, country) : null), p = makePlace(lat, lon, name, biome);
-    if (site) { p.site = site; p.biome = siteBiome(site); }
-    return p;
+  // A place IS its NASA site: name, position and scene all come from the site. `asked` keeps what was searched
+  // ('' for a map/GPS point) only to explain which site is shown.
+  const fromSite = (st, asked) => { const p = makePlace(st.lat, st.lon, st.name, siteBiome(st)); p.site = st; if (asked != null) p.asked = asked; return p; };
+  const at = (lat, lon, asked, country) => {
+    const f = asked && featuredByName(asked), own = f && Math.abs(f.lat - lat) <= 0.75 && Math.abs(f.lon - lon) <= 0.75 ? resolveSite(f.lat, f.lon) : null;
+    const site = own || resolveSite(lat, lon) || (asked ? near(lat, lon, country) : null);
+    return site ? fromSite(site, asked) : makePlace(lat, lon); // no site: labelled by position only, nothing to load
   };
-  // chip labels show the scene each city will really get (its resolved NASA site), not the old preset
-  s.querySelectorAll('.chip').forEach(b => { const c = CITIES.find(x => x.name === b.dataset.n); b.querySelector('small').textContent = biomeName(at(c.lat, c.lon, c.name, c.biome, c.country).biome); });
-  go.disabled = !picked || (live() && !picked.site); if (picked) pick(picked); else redraw();
+  go.disabled = !picked || (hasData && !picked.site); if (picked) pick(picked); else redraw();
   map.onclick = e => {
     const r = map.getBoundingClientRect();
-    pick(at(90 - ((e.clientY - r.top) / r.height) * 180, ((e.clientX - r.left) / r.width) * 360 - 180));
+    pick(at(90 - ((e.clientY - r.top) / r.height) * 180, ((e.clientX - r.left) / r.width) * 360 - 180, ''));
   };
-  s.querySelectorAll('.chip').forEach(b => (b.onclick = () => { const c = CITIES.find(x => x.name === b.dataset.n); pick(at(c.lat, c.lon, c.name, c.biome, c.country)); }));
-  const list = items => { res.innerHTML = items.length ? items.map((c, i) => `<button class="res" data-i="${i}">${esc(placeName(c.name))} <small>${esc(placeName(c.country || ''))}</small></button>`).join('') : `<p class="hint">${S.loc.noResults}</p>`;
-    res.querySelectorAll('.res').forEach(b => (b.onclick = () => { const c = items[+b.dataset.i]; pick(at(c.lat, c.lon, c.name, c.biome, c.country)); })); };
+  s.querySelectorAll('.chip').forEach(b => (b.onclick = () => pick(fromSite(FEAT[+b.dataset.i]))));
+  // Results are always shown as the NASA site they resolve to; a searched name without its own record is shown only as "for ...".
+  const list = places => { res.innerHTML = places.length ? places.map((p, i) => `<button class="res" data-i="${i}">${esc(p.site ? siteLabel(p.site) : S.loc.noSiteShort)}${p.asked && (!p.site || p.asked !== p.site.name) ? ` <small>${esc(S.loc.via(placeName(p.asked)))}</small>` : ''}</button>`).join('') : `<p class="hint">${S.loc.noResults}</p>`;
+    res.querySelectorAll('.res').forEach(b => (b.onclick = () => pick(places[+b.dataset.i]))); };
   const q = s.querySelector('#q');
-  q.oninput = () => { const v = q.value.trim().toLowerCase(); res.innerHTML = ''; if (v.length > 1) list(CITIES.filter(c => [c.name, c.country, placeName(c.name), placeName(c.country)].join(' ').toLowerCase().includes(v)).slice(0, 6)); };
+  q.addEventListener('focus', () => { if (coarse.matches) setTimeout(() => q.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350); });
+  q.oninput = () => {
+    const v = q.value.trim().toLowerCase(); res.innerHTML = ''; if (v.length < 2) return;
+    const hit = t => String(t).toLowerCase().includes(v);
+    const out = SITES.filter(st => hit(st.name) || hit(placeName(st.name))).map(st => fromSite(st));
+    for (const c of CITIES) if ([c.name, c.country, placeName(c.name), placeName(c.country)].some(hit)) { // a city without data resolves to its site
+      const p = at(c.lat, c.lon, c.name, c.country); if (p.site && !out.some(o => o.site.id === p.site.id)) out.push(p);
+    }
+    list(out.slice(0, 6));
+  };
   s.querySelector('.online').onclick = async () => {
     const v = q.value.trim(); if (v.length < 2) { q.focus(); return; }
     if (!confirm(S.loc.onlineNote)) return;
     try {
       const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=5&language=${S.geoLang}&format=json&name=${encodeURIComponent(v)}`);
       const j = await r.json();
-      list((j.results || []).map(x => ({ name: x.name, country: x.country, lat: x.latitude, lon: x.longitude })));
+      list((j.results || []).map(x => { const p = at(x.latitude, x.longitude, x.name, x.country); if (!p.site) p.asked = x.name; return p; }));
     } catch { res.innerHTML = `<p class="hint">${S.loc.noResults}</p>`; }
   };
   s.querySelector('.geo').onclick = () => {
     if (!confirm(S.loc.geoAsk)) return;
-    navigator.geolocation?.getCurrentPosition(p => pick(at(p.coords.latitude, p.coords.longitude)), () => say(S.loc.geoFail), { enableHighAccuracy: false, timeout: 10000, maximumAge: 3600e3 });
+    navigator.geolocation?.getCurrentPosition(p => pick(at(p.coords.latitude, p.coords.longitude, '')), () => say(S.loc.geoFail), { enableHighAccuracy: false, timeout: 10000, maximumAge: 3600e3 });
   };
   const mode = s.querySelector('.mode');
   const syncMode = () => mode.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === save.mode); if (b.dataset.v === 'live') b.disabled = !hasData; });
@@ -3560,7 +3712,7 @@ async function travelTo(p, fromTitle = false, preloaded = null) {
     tween(sp, 'zoom', 0.55, 0.9); tween(sp, 'globeR', R, 1.1); await tween(sp, 'mix', 1, 0.9);
   } else { sp.globeR = sp.globeR || R; tween(sp, 'globeR', R, 1); }
   sp.zoom = 1; sp.marker = p;
-  const scan = h(`<div class="screen scan"><div class="ring"></div><p></p><small>${esc(p.site && save.mode !== 'sample' && !preloaded ? S.loc.resolved(dispName(p), placeName(p.site.name)) : dispName(p))} · ${biomeName(p.biome)}</small></div>`);
+  const scan = h(`<div class="screen scan"><div class="ring"></div><p></p><small>${esc(dispName(p))} · ${biomeName(p.biome)}</small></div>`);
   screen(scan);
   let i = 0; const msg = scan.querySelector('p'); msg.textContent = S.scan[0];
   const ticker = setInterval(() => { msg.textContent = S.scan[++i % S.scan.length]; sfx.scan(); if (i > 5) msg.textContent = S.scanSlow; }, 1400);
@@ -3610,13 +3762,8 @@ const hud = h(`<div class="hud hidden"></div>`);
 function buildHud() {
   hud.innerHTML = `<div class="id"><b class="nick"></b><span class="rank"></span></div>
   <div class="badge"></div>
-  <div class="hud-btns"><button class="btn small ghost lensb" aria-label="${S.hud.lens}" title="${S.hud.lens}">⏳<span class="lbl">&nbsp;${S.hud.lens}</span></button><button class="btn small ghost gear" aria-label="${S.hud.settings}" title="${S.hud.settings}">⚙</button><button class="btn small ghost adv">${S.hud.adv}</button><button class="btn small ghost snd">${isMuted() ? S.muted : S.hud.sound}</button><button class="btn small ghost cert">${S.hud.cert}</button><button class="btn small primary sw">${S.hud.switch}</button><a class="btn small ghost" href="index.html" title="${S.hud.etd}">${S.backArrow}<span class="lbl">&nbsp;${S.hud.etd}</span></a></div>`;
-  hud.querySelector('.snd').classList.toggle('on', isMuted());
-  hud.querySelector('.sw').onclick = () => !busy && showLocation();
-  hud.querySelector('.adv').onclick = e => { save.adv = !save.adv; persist(); e.target.classList.toggle('on', save.adv); };
-  hud.querySelector('.snd').onclick = e => { setMuted(!isMuted()); e.target.classList.toggle('on', isMuted()); e.target.textContent = isMuted() ? S.muted : S.hud.sound; };
-  hud.querySelector('.cert').onclick = () => showCert();
-  hud.querySelector('.lensb').onclick = () => !busy && showLens();
+  <div class="hud-btns">${iconBtn('menu', S.hud.menu, 'menub')}${iconBtn('gear', S.hud.settings, 'gear')}</div>`;
+  hud.querySelector('.menub').onclick = () => showMenu();
   hud.querySelector('.gear').onclick = () => showSettings();
 }
 buildHud();
@@ -3627,13 +3774,11 @@ function updateHud() {
   hud.classList.remove('hidden');
   hud.querySelector('.nick').textContent = S.protector(save.nick);
   hud.querySelector('.rank').textContent = `${rank()} · ★ ${totalStars()}`;
-  hud.querySelector('.adv').classList.toggle('on', !!save.adv);
-  hud.querySelector('.lensb').classList.toggle('hidden', !lensMain());
   ui.style.setProperty('--hud', hud.offsetHeight + 'px'); // labels in Two Earths / Time Lens sit just under the HUD
   const live = data.source === 'live', radar = data.source === 'radar';
   const srcs = [...new Set(data.factors.map(f => srcName(f.source)))].join(' + ') || srcName('NASA Giovanni');
   hud.querySelector('.badge').className = 'badge ' + (live || radar ? 'live' : 'sample');
-  hud.querySelector('.badge').textContent = `${live && data.site ? placeName(data.site.name) : dispName(place)} · ${radar ? S.badge.radar : live ? S.badge.live(srcs) : S.badge.sample}`;
+  hud.querySelector('.badge').textContent = `${live && data.site ? siteLabel(data.site) : dispName(place)} · ${radar ? S.badge.radar : live ? S.badge.live(srcs) : S.badge.sample}`;
 }
 
 // ---------- kid-friendly evidence wording ----------
@@ -3654,7 +3799,7 @@ const icon = e => ({ heat: '☀', cold: '❄', drying: '☁', flooding: '☔', d
 
 // ---------- 6. hub ----------
 function showHub(arrived = false) {
-  tween(world, 'lift', 0, 0.6);
+  tween(world, 'lift', 0, 0.6); if (phone()) relift('.hub'); // phones: keep the hero above the cards
   focus = null; applyEffects(); updateHud();
   const play = factorsPlayable(), weak = factorsWeak(), P = prog();
   const allDone = play.length && play.every(f => P[f.id]?.done);
@@ -3725,6 +3870,7 @@ function relift(sel = '.mission') {
   requestAnimationFrame(() => {
     const p = ui.querySelector(sel); if (!p) return;
     // measure from layout, not the slide-in animation: bottom-anchored panels end at innerHeight - bottom
+    const r = p.getBoundingClientRect(); if (r.left > world.heroX + 60) { tween(world, 'lift', 0, 0.7); return; } // side panel: the hero is already clear
     const top = innerHeight - p.offsetHeight - (parseFloat(getComputedStyle(p).bottom) || 0), sc = world.heroScale();
     const want = world.heroY + 18 - top, max = world.heroY - 175 * sc - 70;
     tween(world, 'lift', Math.max(0, Math.min(want, max)), 0.7);
@@ -3882,13 +4028,37 @@ function showPledges() {
   };
   draw(); m.querySelector('.close').onclick = () => m.remove();
 }
+// Menu: secondary destinations. Items that need a place appear once a place is loaded (as their HUD buttons did).
+function showMenu() {
+  const inGame = !!data && !hud.classList.contains('hidden');
+  const items = [
+    inGame && lensMain() && ['lens', S.hud.lens, () => !busy && showLens()],
+    inGame && ['cert', S.hud.cert, () => showCert()],
+    ['pledge', S.pledge.list, () => showPledges()],
+    inGame && ['place', S.hud.switch, () => !busy && showLocation()],
+  ].filter(Boolean);
+  const m = modal(`<h2>${S.hud.menu}</h2><nav class="menu-list">${items.map((it, i) => `<button class="menu-item" data-i="${i}">${ico(it[0])}<span>${it[1]}</span></button>`).join('')}<a class="menu-item" href="index.html">${ico('back', 'dir')}<span>${S.hud.etd}</span></a></nav>
+    <div class="row end">${btn(S.settings.close, 'ghost close')}</div>`);
+  m.querySelectorAll('.menu-item[data-i]').forEach(b => (b.onclick = () => { m.remove(); items[+b.dataset.i][2](); }));
+  m.querySelector('.close').onclick = () => m.remove();
+}
 function showSettings() {
-  const m = modal(`<h2>${S.settings.title}</h2><label>${S.langLabel}</label>${langSeg()}<div class="setlist">${['voice', 'music', 'sfx', 'motion'].map(k => `<button class="tog" data-k="${k}" aria-pressed="${!!SET[k]}">${S.settings[k]}</button>`).join('')}</div>
-    <div class="row">${btn(S.settings.pledges, 'ghost pl')}<span style="flex:1"></span>${btn(S.settings.close, 'primary close')}</div>`);
-  const sync = () => m.querySelectorAll('.tog').forEach(b => { b.classList.toggle('on', !!SET[b.dataset.k]); b.setAttribute('aria-pressed', !!SET[b.dataset.k]); });
+  const m = modal(`<h2>${S.settings.title}</h2><label>${S.langLabel}</label>${langSeg()}<div class="setlist">${['voice', 'music', 'sfx', 'motion'].map(k => `<button class="tog" data-k="${k}" aria-pressed="${!!SET[k]}">${S.settings[k]}</button>`).join('')}<button class="tog" data-x="snd"></button><button class="tog" data-x="adv">${S.hud.adv}</button></div>
+    <div class="row end">${btn(S.settings.close, 'primary close')}</div>`);
+  // sound on/off (was the HUD Sound/Muted button) and the Advanced notebook (was the HUD Advanced button)
+  const sync = () => m.querySelectorAll('.tog').forEach(b => {
+    const on = b.dataset.x === 'snd' ? !isMuted() : b.dataset.x === 'adv' ? !!save.adv : !!SET[b.dataset.k];
+    if (b.dataset.x === 'snd') b.textContent = isMuted() ? S.muted : S.hud.sound;
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+  });
   sync();
-  m.querySelectorAll('.tog').forEach(b => (b.onclick = () => { SET[b.dataset.k] = !SET[b.dataset.k]; persist(); applySettings(); sync(); }));
-  m.querySelector('.pl').onclick = showPledges; m.querySelector('.close').onclick = () => m.remove();
+  m.querySelectorAll('.tog').forEach(b => (b.onclick = () => {
+    if (b.dataset.x === 'snd') setMuted(!isMuted());
+    else if (b.dataset.x === 'adv') { save.adv = !save.adv; persist(); }
+    else { SET[b.dataset.k] = !SET[b.dataset.k]; persist(); applySettings(); }
+    sync();
+  }));
+  m.querySelector('.close').onclick = () => m.remove();
   bindLang(m, true);
 }
 
@@ -3908,7 +4078,7 @@ function showLens() {
   const born = save.birthYear ? Math.max(y0, Math.min(y1, save.birthYear)) : null, pct = y => ((y - y0) / (y1 - y0 || 1)) * 100;
   const vals = main.series.values, lo = Math.min(...vals), hi = Math.max(...vals);
   const spark = vals.map((v, i) => `${(pct(years[i])).toFixed(2)},${(36 - ((v - lo) / (hi - lo || 1)) * 32).toFixed(2)}`).join(' ');
-  const cap = data.source === 'sample' ? S.lens.sample : data.source === 'radar' ? S.lens.radar(esc(dispName(place))) : S.lens.caption(esc(data.site ? placeName(data.site.name) : dispName(place)), esc(srcName(main.source)), esc(main.period));
+  const cap = data.source === 'sample' ? S.lens.sample : data.source === 'radar' ? S.lens.radar(esc(dispName(place))) : S.lens.caption(esc(data.site ? siteLabel(data.site) : dispName(place)), esc(srcName(main.source)), esc(main.period));
   const s = screen(h(`<div class="screen lens">
     <p class="lens-cap ${data.source === 'sample' ? 'smp' : ''}">${cap}</p>
     <div class="lens-dock">
@@ -3975,10 +4145,10 @@ function showCert() {
   x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); x.ellipse(600, 640, 30, 11, -0.4, 0, 7); x.stroke();
   x.fillStyle = '#9fb3d1'; x.font = `18px ${FONT()}`; x.fillText(S.cert.footer, 600, 730);
   const url = c.toDataURL('image/png');
+  c.toBlob(b => { const a = ui.querySelector('.cert a[download]'); if (b && a) a.href = URL.createObjectURL(b); }, 'image/png');
   const s = screen(h(`<div class="screen panel center cert"><img alt="${S.cert.heading}" src="${url}">
-    <div class="row center"><a class="btn primary" download="protector-certificate.png" href="${url}">${S.cert.download}</a><button class="btn ghost pls">${S.pledge.list}</button><button class="btn ghost">${S.cert.close}</button></div></div>`));
-  s.querySelector('.pls').onclick = showPledges;
-  sfx.star(); world.heal(); s.querySelector('button.ghost:not(.pls)').onclick = () => (data ? showHub() : showTitle());
+    <div class="row center"><a class="btn primary" download="protector-certificate.png" href="${url}">${S.cert.download}</a><button class="btn ghost">${S.cert.close}</button></div></div>`));
+  sfx.star(); world.heal(); s.querySelector('button.ghost').onclick = () => (data ? showHub() : showTitle());
 }
 
 // ---------- Trend Radar input: ?radar=<url> or postMessage({ type: 'protector:radar', data }) ----------
