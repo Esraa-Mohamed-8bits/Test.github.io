@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Detect real Earth-system trends for any place on Earth with NASA Data Rods, NASA AppEEARS, NASA GIBS imagery and NASA GISTEMP. NASA Space Apps 2026.">
+<meta name="description" content="Detect real Earth-system trends for any place on Earth with NASA POWER, NASA GIBS imagery and NASA GISTEMP. NASA Space Apps 2026.">
 <title>Earth Trend Detective</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -435,8 +435,6 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
   .timeline .ctl{width:100%}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.chart .draw{stroke-dashoffset:0}}
-.apform{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.apform input{flex:1 1 150px;min-width:0;padding:9px 11px;border:1px solid var(--line,#C9D3D6);border-radius:10px;font:inherit;background:var(--card,#fff);color:inherit}
 </style>
 
 </head>
@@ -480,7 +478,7 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
   <div class="timeline float" id="timeline">
     <div class="yr"><b id="yearBig">2025</b><small>year shown</small></div>
     <button class="btn play" id="play" aria-label="Play through the years" data-icon="play"></button>
-    <div class="track"><input type="range" id="year" min="2000" max="2025" value="2025" aria-label="Year"><div class="ticks" id="ticks"></div></div>
+    <div class="track"><input type="range" id="year" min="1981" max="2025" value="2025" aria-label="Year"><div class="ticks" id="ticks"></div></div>
     <div class="ctl">
       <label class="hint" for="speed">Speed</label><select id="speed"><option value="900">0.5×</option><option value="450" selected>1×</option><option value="200">2×</option></select>
       <label class="hint" for="month">Month</label><select id="month"></select>
@@ -524,7 +522,7 @@ window.__worldGeo=null;window.echarts={registerMap:function(n,g){if(/world/i.tes
    0. UTILITIES
    ===================================================================== */
 const $=s=>document.querySelector(s),$$=s=>Array.from(document.querySelectorAll(s));
-const THIS_YEAR=new Date().getFullYear(),YEAR_END=THIS_YEAR-1,Y0=2000,BASE_N=11,D=Math.PI/180;
+const THIS_YEAR=new Date().getFullYear(),YEAR_END=THIS_YEAR-1,Y0=1981,D=Math.PI/180;
 const range=(a,b)=>Array.from({length:Math.max(0,b-a+1)},(_,i)=>a+i);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -591,28 +589,30 @@ function countUp(root){(root||document).querySelectorAll("[data-count]").forEach
 const cnt=(v,dg,signed)=>`<span data-count="${v}" data-dig="${dg}" data-signed="${signed?1:0}">${signed?sfmt(v,dg):fmt(v,dg)}</span>`;
 
 /* =====================================================================
-   1. GLOBAL RECORD: NASA GISTEMP v4 annual means, fetched live from the CSV (see section 5)
+   1. REAL GLOBAL RECORDS (values copied from the agencies' published files)
    ===================================================================== */
+const GIS=[-0.17,-0.09,-0.11,-0.18,-0.28,-0.33,-0.31,-0.36,-0.18,-0.11,-0.36,-0.22,-0.27,-0.31,-0.30,-0.23,-0.11,-0.11,-0.28,-0.18,-0.08,-0.16,-0.28,-0.37,-0.47,-0.26,-0.22,-0.38,-0.42,-0.48,-0.43,-0.44,-0.37,-0.34,-0.15,-0.14,-0.36,-0.46,-0.30,-0.27,-0.27,-0.18,-0.28,-0.26,-0.27,-0.22,-0.11,-0.21,-0.20,-0.36,-0.15,-0.09,-0.16,-0.28,-0.13,-0.20,-0.15,-0.03,0.00,-0.02,0.12,0.18,0.06,0.09,0.20,0.09,-0.07,-0.03,-0.11,-0.11,-0.18,-0.07,0.01,0.08,-0.13,-0.14,-0.19,0.05,0.06,0.03,-0.03,0.06,0.03,0.05,-0.20,-0.11,-0.06,-0.02,-0.08,0.05,0.03,-0.08,0.01,0.16,-0.07,-0.01,-0.10,0.18,0.07,0.16,0.26,0.32,0.14,0.32,0.16,0.12,0.18,0.32,0.39,0.27,0.45,0.41,0.22,0.23,0.31,0.45,0.33,0.47,0.61,0.38,0.39,0.53,0.63,0.62,0.53,0.68,0.64,0.67,0.54,0.66,0.72,0.61,0.65,0.67,0.75,0.90,1.01,0.91,0.85,0.98,1.01,0.85,0.89,1.17,1.28,1.19];
+const CO2=[315.98,316.91,317.64,318.45,318.99,319.62,320.04,321.37,322.18,323.05,324.62,325.68,326.32,327.46,329.68,330.19,331.13,332.03,333.84,335.41,336.84,338.76,340.12,341.48,343.15,344.87,346.35,347.61,349.31,351.69,353.20,354.45,355.70,356.54,357.21,358.96,360.97,362.74,363.88,366.84,368.54,369.71,371.32,373.45,375.98,377.70,379.98,382.09,384.02,385.83,387.64,390.10,391.85,394.06,396.74,398.81,401.01,404.41,406.76,408.72,411.65,414.21,416.41,418.53,421.08,424.61];
+const ICE=[7.20,7.85,7.25,7.45,7.52,7.17,6.93,7.54,7.48,7.49,7.04,6.24,6.55,7.55,6.50,7.18,6.13,7.88,6.74,6.56,6.24,6.32,6.75,5.96,6.15,6.05,5.57,5.92,4.30,4.68,5.36,4.90,4.56,3.57,5.21,5.22,4.62,4.53,4.82,4.79,4.36,4.00,4.95,4.87,4.37,4.38];
 const GLOBAL=[
- {id:"g_temp",name:"Global surface temperature anomaly",unit:"°C",dig:2,start:1880,vals:[],src:"NASA GISTEMP v4",url:"https://data.giss.nasa.gov/gistemp/",sci:"Annual (Jan–Dec) global mean of land-station and sea-surface temperature anomalies relative to the 1951–1980 base period.",plain:"How much warmer or cooler the whole planet was each year than in the mid-20th century."}
+ {id:"g_temp",name:"Global surface temperature anomaly",unit:"°C",dig:2,start:1880,vals:GIS,src:"NASA GISTEMP v4",url:"https://data.giss.nasa.gov/gistemp/",sci:"Annual global mean of land-station and sea-surface temperature anomalies relative to the 1951–1980 base period.",plain:"How much warmer or cooler the whole planet was each year than in the mid-20th century."},
+ {id:"g_co2",name:"Atmospheric CO₂ (Mauna Loa)",unit:"ppm",dig:1,start:1959,vals:CO2,src:"NOAA GML Mauna Loa annual means",url:"https://gml.noaa.gov/ccgg/trends/",sci:"Annual mean dry-air mole fraction of CO₂ in parts per million, from continuous in-situ measurements.",plain:"How much carbon dioxide is in the air. CO₂ mixes quickly, so this one record represents the planet."},
+ {id:"g_ice",name:"Arctic sea ice extent, September",unit:"M km²",dig:2,start:1979,vals:ICE,src:"NSIDC Sea Ice Index",url:"https://nsidc.org/data/seaice_index",sci:"Monthly mean area of ocean with at least 15% ice concentration, from passive-microwave satellites.",plain:"How much of the Arctic Ocean is still frozen at the end of summer, when ice is at its lowest."}
 ];
-const GL={state:"loading"};
 
 /* =====================================================================
-   2. TIME SERIES (Data Rods + AppEEARS), MAP IMAGERY (NASA GIBS), and the explore list
+   2. TIME SERIES (NASA POWER), MAP IMAGERY (NASA GIBS), and the explore list
    ===================================================================== */
-const RODS_META={source:"NASA GES DISC Hydrology Data Rods",dataset:"GLDAS Noah Land Surface Model L4 monthly 0.25° v2.1 (GLDAS_NOAH025_M_v2.1)",spatial:"0.25° grid cell (about 25 km)",temporal:"Annual mean of monthly values (a year needs 9+ months)",range:`${Y0} – ${YEAR_END}`};
-const APPEARS_META={source:"NASA AppEEARS",spatial:"MODIS pixel at the point (250 m NDVI, 1 km LST)",temporal:"Annual mean of monthly means (a year needs 9+ months)",range:`${Y0} – ${YEAR_END}`};
+const POWER_META={source:"NASA POWER",dataset:"POWER Monthly & Annual point API (meteorology from the MERRA-2 reanalysis)",spatial:"0.5° × 0.625° grid cell (about 50 × 60 km)",temporal:"Annual mean of monthly values",range:`1981 – ${YEAR_END}`};
 const VARS={
- ts:Object.assign({name:"Land surface temperature (day)",unit:"°C",dig:2,code:"MOD11A2.061 LST_Day_1km",appeears:true,conv:v=>v,color:"#C24E6E",span:2.5,anomaly:"abs",limits:"Daytime clear-sky overpasses only, so cloudy periods are missing. Needs a free Earthdata login (AppEEARS)."},APPEARS_META,{dataset:"MODIS Terra 8-day land surface temperature (MOD11A2.061)"}),
- t2m:Object.assign({name:"Air temperature (2 m)",unit:"°C",dig:2,code:"Tair_f_inst",rods:"Tair_f_inst",conv:v=>v-273.15,color:"#C8553D",span:2,anomaly:"abs",limits:"A 25 km grid-cell average, so it smooths out city heat islands. Model output driven by observations."},RODS_META),
- prec:Object.assign({name:"Precipitation",unit:"mm/yr",dig:0,code:"Rainf_f_tavg",rods:"Rainf_f_tavg",conv:v=>v*86400*365.25,color:"#2E78B0",span:40,anomaly:"pct",limits:"Large year-to-year variability; GLDAS rainfall is a forcing blend, not a rain gauge at this point."},RODS_META),
- soil:Object.assign({name:"Soil moisture (40–100 cm)",unit:"kg/m²",dig:1,code:"SoilMoi40_100cm_inst",rods:"SoilMoi40_100cm_inst",conv:v=>v,color:"#9A6B35",span:25,anomaly:"abs",limits:"Model-derived water mass in the 40–100 cm soil layer, not an in-situ probe. SMAP satellite soil moisture imagery begins in 2015."},RODS_META),
- rh:Object.assign({name:"Specific humidity",unit:"g/kg",dig:2,code:"Qair_f_inst",rods:"Qair_f_inst",conv:v=>v*1000,color:"#2A8C86",span:0.8,anomaly:"abs",limits:"Grams of water vapour per kilogram of air. Rises as air warms, so read it with temperature."},RODS_META),
- wind:Object.assign({name:"Wind speed (near surface)",unit:"m/s",dig:2,code:"Wind_f_inst",rods:"Wind_f_inst",conv:v=>v,color:"#6656A3",span:0.4,anomaly:"abs",limits:"Model forcing winds are smoother than station winds and can shift when the driving data change."},RODS_META),
- ndvi:Object.assign({name:"Vegetation NDVI",unit:"NDVI",dig:3,code:"MOD13Q1.061 250m_16_days_NDVI",appeears:true,conv:v=>v,color:"#3C8A55",span:0.08,anomaly:"abs",limits:"Cloud-screened 16-day composites at one 250 m pixel; a single pixel can be a road or a field. Needs a free Earthdata login (AppEEARS)."},APPEARS_META,{dataset:"MODIS Terra 16-day vegetation indices (MOD13Q1.061)"})
+ ts:Object.assign({name:"Earth skin temperature",unit:"°C",dig:2,power:"TS",conv:v=>v,color:"#C24E6E",span:2.2,anomaly:"abs",limits:"Reanalysis skin temperature over a 50 km cell, the closest long point record to satellite LST. MODIS LST imagery on the map shows 5 km detail but starts in 2000."},POWER_META),
+ t2m:Object.assign({name:"Air temperature (2 m)",unit:"°C",dig:2,power:"T2M",conv:v=>v,color:"#C8553D",span:2,anomaly:"abs",limits:"A 50 km grid-cell average, so it smooths out city heat islands. Reanalysis blends models with observations."},POWER_META),
+ prec:Object.assign({name:"Precipitation",unit:"mm/yr",dig:0,power:"PRECTOTCORR",conv:v=>v*365.25,color:"#2E78B0",span:40,anomaly:"pct",limits:"Large year-to-year variability; POWER blends several precipitation sources over the record."},POWER_META),
+ soil:Object.assign({name:"Root-zone soil wetness",unit:"% saturation",dig:1,power:"GWETROOT",conv:v=>v*100,color:"#9A6B35",span:10,anomaly:"abs",limits:"Model-derived wetness index, not an in-situ probe. SMAP satellite soil moisture imagery begins in 2015."},POWER_META),
+ rh:Object.assign({name:"Relative humidity (2 m)",unit:"%",dig:1,power:"RH2M",conv:v=>v,color:"#2A8C86",span:8,anomaly:"abs",limits:"Falls as air warms even with constant moisture; read it with temperature."},POWER_META),
+ wind:Object.assign({name:"Wind speed (10 m)",unit:"m/s",dig:2,power:"WS10M",conv:v=>v,color:"#6656A3",span:0.4,anomaly:"abs",limits:"Reanalysis winds are smoother than station winds and can shift when assimilated observations change."},POWER_META)
 };
-const VAR_ORDER=["ts","t2m","prec","soil","rh","wind","ndvi"];
+const VAR_ORDER=["ts","t2m","prec","soil","rh","wind"];
 const GIBS=(id,ext,level)=>({gibs:id,ext,level});
 const LAYERS={
  bluemarble:Object.assign(GIBS("BlueMarble_ShadedRelief_Bathymetry","jpeg",8),{name:"Blue Marble",source:"NASA GIBS · Blue Marble",res:"500 m",cover:"Static cloud-free composite",period:"static"}),
@@ -633,21 +633,21 @@ const EXPLORE=[
   sci:"Land surface temperature (LST) is the radiative skin temperature of the land surface, retrieved from thermal-infrared emission.",
   plain:"It measures how hot the actual ground is (soil, roads and roofs) rather than the air above it."},
  {id:"t2m",name:"Air temperature",color:"#C8553D",series:"t2m",layer:null,
-  sci:"Near-surface air temperature from the GLDAS Noah land-surface model (2 m reference height), driven by satellite and station-based observations.",
+  sci:"Near-surface air temperature at 2 m from the MERRA-2 reanalysis, which assimilates satellite and station observations.",
   plain:"The temperature you feel, at about head height."},
  {id:"prec",name:"Precipitation",color:"#2E78B0",series:"prec",layer:"imerg",
-  sci:"Precipitation rate from the GLDAS Noah forcing (rain plus the water content of snow), converted to millimetres per year.",
+  sci:"Bias-corrected total precipitation (rain plus the water content of snow), summed over the year.",
   plain:"How much rain and snow fell during the year, in millimetres of water."},
  {id:"soil",name:"Soil moisture",color:"#9A6B35",series:"soil",layer:"smap",
-  sci:"Water mass held in the 40–100 cm soil layer, in kilograms per square metre (1 kg/m² = 1 mm of water), from the GLDAS Noah model.",
+  sci:"Root-zone soil wetness: the fraction of soil pore space filled with water in the top ~1 m (0 = dry, 1 = saturated).",
   plain:"How much water the soil holds where plant roots can reach it."},
  {id:"rh",name:"Humidity",color:"#2A8C86",series:"rh",layer:null,
-  sci:"Specific humidity: grams of water vapour per kilogram of air, from the GLDAS Noah forcing.",
-  plain:"How much water vapour the air holds. Humid air makes heat feel worse."},
+  sci:"Relative humidity at 2 m: water-vapour pressure as a percentage of saturation vapour pressure at the same temperature.",
+  plain:"How close the air is to holding as much moisture as it can. High humidity makes heat feel worse."},
  {id:"wind",name:"Wind speed",color:"#6656A3",series:"wind",layer:null,
-  sci:"Near-surface wind speed from the GLDAS Noah forcing, in m/s.",
+  sci:"Mean wind speed 10 m above the surface from MERRA-2.",
   plain:"Average wind strength near the ground. Calm air lets pollution build up."},
- {id:"ndvi",name:"Vegetation (NDVI)",color:"#3C8A55",series:"ndvi",layer:"ndvi",
+ {id:"ndvi",name:"Vegetation (NDVI)",color:"#3C8A55",series:null,layer:"ndvi",
   sci:"NDVI = (NIR − Red) / (NIR + Red). Healthy vegetation reflects near-infrared strongly and absorbs red light.",
   plain:"A greenness score from space: higher values mean more, healthier plants."},
  {id:"water",name:"Water bodies",color:"#3F8FC0",series:null,layer:"water",
@@ -757,142 +757,26 @@ function pearson(xa,ya){const n=xa.length;if(n<6)return null;const mx=mean(xa),m
 function detrend(xs,ys){const mx=mean(xs),my=mean(ys);let sxy=0,sxx=0;for(let i=0;i<xs.length;i++){sxy+=(xs[i]-mx)*(ys[i]-my);sxx+=(xs[i]-mx)**2;}const b=sxy/sxx;return ys.map((v,i)=>v-(my+b*(xs[i]-mx)));}
 
 /* =====================================================================
-   5. DATA: three live NASA sources, requested by the browser itself. Nothing is bundled or invented.
-      - GES DISC Hydrology Data Rods (GLDAS Noah monthly, no login): t2m, prec, soil, rh, wind
-      - NASA AppEEARS (MODIS, free Earthdata login typed into the page): ts (LST day) and ndvi
-      - NASA GISTEMP v4 CSV: global temperature anomaly
-   If a source can't be reached the app says so and links to it.
+   5. DATA: live NASA POWER only. If it can't be reached, say so and link to the source.
    ===================================================================== */
-const RODS_URL="https://hydro1.gesdisc.eosdis.nasa.gov/daac-bin/access/timeseries.cgi";
-const RODS_PROD="GLDAS2:GLDAS_NOAH025_M_v2.1:";
-const APPEARS_URL="https://appeears.earthdatacloud.nasa.gov/api";
-const APPEARS_LAYERS=[{product:"MOD13Q1.061",layer:"_250m_16_days_NDVI"},{product:"MOD11A2.061",layer:"LST_Day_1km"}];
-const GISTEMP_URL="https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv";
-const MIN_MONTHS=9;
-
-/* small shared helpers: a request limiter (Data Rods is slow) and a CSV parser */
-const NET={max:6,n:0,q:[]};
-function netSlot(){return new Promise(res=>{const go=()=>{NET.n++;res();};NET.n<NET.max?go():NET.q.push(go);});}
-function netFree(){NET.n--;const f=NET.q.shift();if(f)f();}
-async function netFetch(url,opts,ms){await netSlot();const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),ms||60000);try{return await fetch(url,Object.assign({signal:ctl.signal},opts||{}));}finally{clearTimeout(tm);netFree();}}
-function parseCSV(t){const rows=[];let row=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
-  if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
-  else if(c==='"')q=true;else if(c===","){row.push(f);f="";}
-  else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(f);f="";if(row.length>1||row[0]!=="")rows.push(row);row=[];}
-  else f+=c;}
-  if(f!==""||row.length){row.push(f);rows.push(row);}return rows;}
-/* monthly values {"YYYY-MM":x} -> one annual mean per year Y0..YEAR_END; a year needs >= MIN_MONTHS months (same rule as the extractor) */
-function annualFromMonthly(m){const by={};for(const k in m){const y=+k.slice(0,4);(by[y]=by[y]||[]).push(m[k]);}
-  return range(Y0,YEAR_END).map(y=>{const a=by[y];return a&&a.length>=MIN_MONTHS?a.reduce((s,v)=>s+v,0)/a.length:null;});}
-const blankSeries=()=>range(Y0,YEAR_END).map(()=>null);
-
-/* ---------- GES DISC Hydrology Data Rods ---------- */
-const rodsURL=(loc,code)=>RODS_URL+"?"+new URLSearchParams({variable:RODS_PROD+code,startDate:`${Y0}-01-01T00`,endDate:`${YEAR_END}-12-31T23`,location:`GEOM:POINT(${loc.lon.toFixed(3)}, ${loc.lat.toFixed(3)})`,type:"asc2"});
-let rodsNetFail=0;
-async function fetchRodsVar(loc,id){const v=VARS[id];
-  const res=await netFetch(rodsURL(loc,v.rods),{},90000);if(!res.ok)throw new Error("http "+res.status);
-  const m={};for(const ln of (await res.text()).split(/\r?\n/)){const p=ln.split("\t");if(p.length!==2||!/^\d{4}-\d\d/.test(p[0]))continue;const x=parseFloat(p[1]);if(!isFinite(x)||x<=-9000)continue;m[p[0].slice(0,7)]=x;}
-  return annualFromMonthly(m).map(x=>x==null?null:+v.conv(x).toFixed(v.dig+1));}
-async function fetchRods(loc){
-  if(rodsNetFail>=6)return{ok:false,reason:"blocked",vars:{},failed:[]};
-  const ids=VAR_ORDER.filter(id=>VARS[id].rods),vars={},errs=[];
-  await Promise.all(ids.map(async id=>{try{const vals=await fetchRodsVar(loc,id);if(vals.some(x=>x!=null)){vars[id]=vals;rodsNetFail=0;}else errs.push("empty");}
-    catch(e){const n=e&&e.name;errs.push(n==="AbortError"?"timeout":n==="TypeError"?"blocked":String(e&&e.message||e));if(n==="TypeError")rodsNetFail++;}}));
-  const any=Object.keys(vars).length>0;return{ok:any,reason:any?null:(errs[0]||"empty"),vars,failed:ids.filter(id=>!vars[id])};}
-
-/* ---------- NASA AppEEARS (MODIS NDVI + LST at a point; runs as a background task) ---------- */
-const AP={auth:null,token:null,exp:0,runs:new Map()};
-const apBasic=a=>"Basic "+btoa(unescape(encodeURIComponent(a.u+":"+a.p)));
-async function apLogin(){
-  if(AP.token&&Date.now()<AP.exp)return AP.token;if(!AP.auth)throw new Error("signin");
-  const r=await netFetch(APPEARS_URL+"/login",{method:"POST",headers:{Authorization:apBasic(AP.auth)}},60000);
-  if(r.status===401||r.status===403){AP.auth=null;AP.token=null;const e=new Error("NASA rejected that Earthdata username or password.");e.auth=true;throw e;}
-  if(!r.ok)throw new Error("AppEEARS login: http "+r.status);
-  const j=await r.json();AP.token=j.token;AP.exp=Date.now()+11*3600e3;return AP.token;}
-async function apGet(path,tok,ms){const r=await netFetch(APPEARS_URL+path,{headers:{Authorization:"Bearer "+tok}},ms||60000);if(!r.ok)throw new Error("AppEEARS "+path.split("/")[1]+": http "+r.status);return r;}
-async function apTask(loc,tok){const nm=loc.name.replace(/[^\w]+/g,"_").slice(0,40)||"place";
-  const body={task_type:"point",task_name:`etd_${nm}_${Date.now()}`,params:{dates:[{startDate:`01-01-${Math.max(Y0,2000)}`,endDate:`12-31-${YEAR_END}`}],layers:APPEARS_LAYERS,coordinates:[{id:nm,category:"etd",latitude:+loc.lat.toFixed(4),longitude:+loc.lon.toFixed(4)}]}};
-  const r=await netFetch(APPEARS_URL+"/task",{method:"POST",headers:{Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify(body)},60000);
-  if(!r.ok)throw new Error("AppEEARS task: http "+r.status);return (await r.json()).task_id;}
-async function apWait(tid,tok,tick){const t0=Date.now();
-  for(;;){const j=await (await apGet("/task/"+tid,tok)).json();
-    if(j.status==="done")return;if(j.status==="error"||j.status==="deleted")throw new Error("The AppEEARS task failed.");
-    if(Date.now()-t0>30*60e3)throw new Error("AppEEARS did not finish within 30 minutes.");
-    tick(Math.round((Date.now()-t0)/1000),j.status);await new Promise(r=>setTimeout(r,15000));}}
-/* AppEEARS writes one results CSV per product, so every results file is read (the extractor script read only the first). */
-function monthlyMeans(list,kind){const vals=list.map(o=>o.v);
-  /* the CSV may carry raw integers or scaled values: detect which, then drop fill values */
-  const raw=kind==="ndvi"?vals.some(v=>Math.abs(v)>2):vals.some(v=>v>1000);
-  const f=kind==="ndvi"?(raw?v=>v>-3000?v*0.0001:null:v=>v>-0.25?v:null):(raw?v=>v>0?v*0.02-273.15:null:v=>v>0?v-273.15:null);
-  const acc={};list.forEach(o=>{const x=f(o.v);if(x==null)return;(acc[o.k]=acc[o.k]||[]).push(x);});
-  const m={};for(const k in acc)m[k]=acc[k].reduce((s,v)=>s+v,0)/acc[k].length;return m;}
-async function apCollect(tid,tok){
-  const files=(await (await apGet("/bundle/"+tid,tok)).json()).files||[];
-  const csvs=files.filter(f=>/\.csv$/i.test(f.file_name)&&/results/i.test(f.file_name));
-  if(!csvs.length)throw new Error("AppEEARS returned no results CSV.");
-  const out={ts:blankSeries(),ndvi:blankSeries()};
-  for(const f of csvs){const rows=parseCSV(await (await apGet("/bundle/"+tid+"/"+f.file_id,tok,300000)).text());if(rows.length<2)continue;
-    const h=rows[0],di=h.indexOf("Date");if(di<0)continue;
-    const ni=h.findIndex(c=>/_NDVI$/.test(c)&&!/QA/.test(c)),li=h.findIndex(c=>c.includes("LST_Day")&&!c.includes("QA")&&!c.includes("View"));
-    const col=ci=>rows.slice(1).map(r=>({k:(r[di]||"").slice(0,7),v:parseFloat(r[ci])})).filter(o=>/^\d{4}-\d\d$/.test(o.k)&&isFinite(o.v));
-    if(ni>=0)out.ndvi=annualFromMonthly(monthlyMeans(col(ni),"ndvi"));
-    if(li>=0)out.ts=annualFromMonthly(monthlyMeans(col(li),"lst"));}
-  return out;}
-function apSet(d,state,msg){d.aps.state=state;d.aps.msg=msg||"";}
-function apIdle(){const a=document.activeElement;return!(a&&panel.contains(a)&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName));}
-function apRefresh(loc){if(!S.loc||locKey(S.loc)!==locKey(loc))return;drawMap();if(apIdle())renderPanel();}
-function apText(loc,d){if(!S.loc||locKey(S.loc)!==locKey(loc))return;const e=$("#apMsg");if(e)e.textContent=d.aps.msg;}
-function runAppeears(loc,d){const k=locKey(loc);if(AP.runs.has(k))return;
-  if(!AP.auth){apSet(d,"auth");return;}
-  apSet(d,"running","Signing in to AppEEARS…");
-  AP.runs.set(k,(async()=>{
-    try{const tok=await apLogin();apSet(d,"running","Submitting the MODIS request…");apText(loc,d);
-      const tid=await apTask(loc,tok);
-      await apWait(tid,tok,(s,st)=>{apSet(d,"running",`AppEEARS is ${st==="pending"?"queueing":"processing"} the request (${s} s so far, usually a few minutes). This page updates by itself.`);apText(loc,d);});
-      apSet(d,"running","Downloading the MODIS results…");apText(loc,d);
-      const r=await apCollect(tid,tok);
-      ["ts","ndvi"].forEach(id=>{const v=VARS[id];d[id]={start:Y0,vals:r[id].map(x=>x==null?null:+v.conv(x).toFixed(v.dig+1))};});
-      apSet(d,"ok");
-    }catch(e){const n=e&&e.name;apSet(d,e&&e.auth?"auth":"error",e&&e.auth?e.message:n==="TypeError"?"The browser couldn't reach AppEEARS (network or cross-origin block).":n==="AbortError"?"AppEEARS took too long to answer.":String(e&&e.message||e));}
-    AP.runs.delete(k);apRefresh(loc);})());}
-/* sign-in / progress card shown where MODIS series are needed */
-function apBox(d,ids){if(!d||!d.ok)return"";
-  const need=(ids||["ts","ndvi"]).filter(id=>!d[id].vals.some(x=>x!=null));
-  const st=d.aps.state;if(st==="ok"&&!need.length)return"";
-  const what=(ids||["ts","ndvi"]).map(id=>VARS[id].name.toLowerCase()).join(" and ");
-  if(st==="running")return`<div class="note" id="apBox"><b>NASA AppEEARS is preparing MODIS ${esc(what)} for ${esc(S.loc.name)}.</b><br><span id="apMsg">${esc(d.aps.msg)}</span></div>`;
-  if(st==="ok")return`<div class="note warn" id="apBox"><b>AppEEARS finished but had no valid ${esc(what)} values for this point.</b> That can happen over open water or under persistent cloud.</div>`;
-  if(st==="error")return`<div class="note warn" id="apBox"><b>NASA AppEEARS couldn't deliver MODIS data.</b> <span id="apMsg">${esc(d.aps.msg)}</span><div class="btnrow" style="margin-top:8px"><button class="btn small" id="apRetry">Try again</button><a class="btn small" href="https://appeears.earthdatacloud.nasa.gov/" target="_blank" rel="noopener">Open AppEEARS ↗</a></div></div>`;
-  return`<div class="card" id="apBox"><span class="label">NASA AppEEARS · MODIS</span><h3 style="font-size:16px">Sign in to fetch the MODIS series</h3>
-   <p class="hint">MODIS land surface temperature and NDVI come from NASA AppEEARS, which needs a free <a href="https://urs.earthdata.nasa.gov/users/new" target="_blank" rel="noopener">Earthdata account</a>. Your login goes only to NASA, stays in this tab's memory and is never saved.${d.aps.msg?` <b>${esc(d.aps.msg)}</b>`:""}</p>
-   <div class="apform"><input id="apU" type="text" placeholder="Earthdata username" autocomplete="username" aria-label="Earthdata username"><input id="apP" type="password" placeholder="Password" autocomplete="current-password" aria-label="Earthdata password"><button class="btn primary" id="apGo">Fetch MODIS series</button></div><p class="hint" id="apMsgIn"></p></div>`;}
-function bindAp(){const go=$("#apGo");
-  if(go){const fire=()=>{const u=$("#apU").value.trim(),p=$("#apP").value;if(!u||!p){$("#apMsgIn").textContent="Enter your Earthdata username and password.";return;}
-    const d=S.loc&&peek(S.loc);if(!d)return;AP.auth={u,p};AP.token=null;apSet(d,"idle");runAppeears(S.loc,d);renderPanel();};
-    go.onclick=fire;$("#apP").addEventListener("keydown",e=>{if(e.key==="Enter")fire();});}
-  const rt=$("#apRetry");if(rt)rt.onclick=()=>{const d=S.loc&&peek(S.loc);if(!d)return;apSet(d,"idle");runAppeears(S.loc,d);renderPanel();};}
-
-/* ---------- NASA GISTEMP v4 (global annual mean anomaly, CSV) ---------- */
-async function loadGistemp(){GL.state="loading";
-  try{const r=await netFetch(GISTEMP_URL,{},45000);if(!r.ok)throw new Error("http "+r.status);
-    const rows=parseCSV(await r.text()),hi=rows.findIndex(x=>x[0]==="Year");if(hi<0)throw new Error("unexpected file format");
-    const ji=rows[hi].indexOf("J-D");if(ji<0)throw new Error("no J-D column");
-    const by={};rows.slice(hi+1).forEach(x=>{const y=+x[0],v=parseFloat(x[ji]);if(y>=1880&&isFinite(v))by[y]=v;});   /* "***" = not yet available */
-    const ys=Object.keys(by).map(Number).sort((a,b)=>a-b);if(ys.length<20)throw new Error("too few years");
-    GLOBAL[0].start=ys[0];GLOBAL[0].vals=range(ys[0],ys[ys.length-1]).map(y=>by[y]!=null?by[y]:null);GL.state="ok";
-  }catch(e){GL.state="fail";GL.reason=e&&e.name==="TypeError"?"blocked":String(e&&e.message||e);}}
-function globalPending(){return`<div class="sec-title" style="margin-top:6px"><h2 style="font-size:20px">The whole planet</h2><p>Real global record from NASA ${gterm("gistemp","GISTEMP")}, fetched live.</p></div>
-  ${GL.state==="fail"?`<div class="note warn"><b>NASA GISTEMP couldn't be loaded here.</b> The platform won't substitute invented numbers.<br><a href="${GISTEMP_URL}" target="_blank" rel="noopener">Open the GISTEMP CSV ↗</a></div>`:skeleton("Fetching the GISTEMP record from NASA",["w70","b"])}`;}
-
-/* ---------- per-place data object ---------- */
+const POWER_PARAMS="T2M,TS,PRECTOTCORR,GWETROOT,RH2M,WS10M";
+const powerURL=loc=>`https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=${POWER_PARAMS}&community=AG&longitude=${loc.lon.toFixed(3)}&latitude=${loc.lat.toFixed(3)}&start=${Y0}&end=${YEAR_END}&format=JSON`;
+let powerNetFail=0;
+async function fetchPower(loc){
+  if(powerNetFail>=2)return{ok:false,reason:"blocked"};
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000);
+  try{const res=await fetch(powerURL(loc),{signal:ctl.signal});clearTimeout(tm);if(!res.ok)return{ok:false,reason:"http "+res.status};
+    const j=await res.json();const P=j&&j.properties&&j.properties.parameter;if(!P)return{ok:false,reason:"empty"};
+    const out={ok:true,status:"live"};let any=false;
+    VAR_ORDER.forEach(id=>{const v=VARS[id];const vals=range(Y0,YEAR_END).map(y=>{const x=P[v.power]&&P[v.power][y+"13"];return x==null||x<=-990?null:+v.conv(x).toFixed(v.dig+1);});if(vals.some(x=>x!=null))any=true;out[id]={start:Y0,vals};});
+    return any?out:{ok:false,reason:"empty"};
+  }catch(e){clearTimeout(tm);if(e&&e.name==="TypeError")powerNetFail++;return{ok:false,reason:e&&e.name==="AbortError"?"timeout":"blocked"};}
+}
 const dataCache=new Map(),resolved=new Map();
 const locKey=l=>l.lat.toFixed(2)+","+l.lon.toFixed(2);
-function getData(loc){const k=locKey(loc);if(!dataCache.has(k))dataCache.set(k,fetchRods(loc).then(r=>{
-  const d={ok:r.ok,status:"live",reason:r.reason,failed:r.failed||[],url:rodsURL(loc,"Tair_f_inst"),aps:{state:"idle",msg:""}};
-  VAR_ORDER.forEach(id=>{d[id]={start:Y0,vals:r.vars&&r.vars[id]?r.vars[id]:blankSeries()};});return d;}));return dataCache.get(k);}
+function getData(loc){const k=locKey(loc);if(!dataCache.has(k))dataCache.set(k,fetchPower(loc).then(r=>Object.assign(r,{url:powerURL(loc)})));return dataCache.get(k);}
 const peek=loc=>resolved.get(locKey(loc))||null;
 async function load(loc){const d=await getData(loc);resolved.set(locKey(loc),d);return d;}
-
 
 /* =====================================================================
    6. STATE
@@ -906,31 +790,31 @@ const saveState=()=>store.set("state",{item:S.item,loc:S.loc?{name:S.loc.name,la
 
 /* =====================================================================
    6b. GLOSSARY: every hard term defined once, reused by the ⓘ icons, the auto-annotator and the Glossary drawer.
-       ex(): an optional example computed from the selected place's real NASA point-series numbers (null when no data).
+       ex(): an optional example computed from the selected place's real NASA POWER numbers (null when no data).
    ===================================================================== */
 const gCtx=()=>{if(!S.loc)return null;const d=peek(S.loc);if(!d||!d.ok)return null;const id=curSeries()||seriesFallback;const a=fullAnalysis(d[id]);return a.insufficient?null:{d,id,v:VARS[id],a,place:S.loc.name};};
 const exIn=(f)=>()=>{const c=gCtx();return c?f(c):null;};
 const GLOSS={
  lst:{name:"Land surface temperature (LST)",re:/land surface temperature|\bLST\b/i,plain:"How hot the ground itself is (soil, roads, roofs), not the air.",sci:"Radiative skin temperature of land retrieved from thermal-infrared emission; MODIS, about 1–5 km pixels."},
- skin:{name:"Skin temperature",re:/skin[- ]temperature/i,plain:"The temperature of the very top of the ground or sea surface.",sci:"Surface skin temperature as seen by MODIS (MOD11A2 LST_Day_1km), fetched through NASA AppEEARS.",
-  ex:()=>{if(!S.loc)return null;const d=peek(S.loc);if(!d||!d.ok)return null;const m=mean(d.ts.vals);return m==null?null:`In ${S.loc.name}, the ${Y0}–${YEAR_END} mean land surface temperature is ${fmt(m,1)} °C.`;}},
- t2m:{name:"Air temperature (2 m)",re:/air temperature/i,plain:"The temperature you feel, about head height above the ground.",sci:"Near-surface air temperature (GLDAS Noah Tair_f_inst, monthly), from NASA Data Rods."},
- prec:{name:"Precipitation",re:/\bprecipitation\b/i,plain:"Rain plus melted snow, as millimetres of water.",sci:"GLDAS Noah Rainf_f_tavg: precipitation rate in kg m⁻² s⁻¹, converted to mm per year."},
- reanalysis:{name:"Land-surface model (GLDAS)",re:/GLDAS|land[- ]surface model|reanalysis/i,plain:"A weather and land history made by running a land model on top of observed weather and satellite data.",sci:"The Global Land Data Assimilation System (NASA GSFC/GES DISC) runs the Noah land-surface model on a 0.25° grid from 2000, forced by observation-based meteorology."},
+ skin:{name:"Skin temperature",re:/skin[- ]temperature/i,plain:"The temperature of the very top of the ground or sea surface.",sci:"Surface–air interface temperature (NASA POWER TS) from the MERRA-2 reanalysis.",
+  ex:()=>{if(!S.loc)return null;const d=peek(S.loc);if(!d||!d.ok)return null;const m=mean(d.ts.vals);return m==null?null:`In ${S.loc.name}, the 1981–${YEAR_END} mean skin temperature is ${fmt(m,1)} °C.`;}},
+ t2m:{name:"Air temperature (2 m)",re:/air temperature/i,plain:"The temperature you feel, about head height above the ground.",sci:"Near-surface air temperature 2 m above ground, from the MERRA-2 reanalysis (NASA POWER T2M)."},
+ prec:{name:"Precipitation (bias-corrected)",re:/\bprecipitation\b/i,plain:"Rain plus melted snow, as millimetres of water.",sci:"POWER PRECTOTCORR: total precipitation with bias correction against gauge-based products, summed per year."},
+ reanalysis:{name:"Reanalysis (MERRA-2)",re:/reanalysis|MERRA-2/i,plain:"A best-estimate weather history built by blending observations with a weather model.",sci:"MERRA-2 (NASA GMAO) assimilates satellite and ground observations into a consistent global grid from 1980."},
  ndvi:{name:"NDVI",re:/\bNDVI\b/,plain:"A greenness score from space; higher means more, healthier plants.",sci:"(NIR − Red) / (NIR + Red); dense healthy vegetation is roughly 0.6–0.9, bare ground near 0.1."},
  aod:{name:"Aerosol optical depth",re:/aerosol optical depth|optical depth/i,plain:"How much dust, smoke or haze dims the sunlight.",sci:"Column-integrated extinction of light by aerosols at 550 nm; dimensionless, 0 is perfectly clear."},
- rootzone:{name:"Soil wetness / root zone",re:/root[- ]zone|soil wetness/i,plain:"How full of water the soil is where plant roots grow.",sci:"Water mass in the 40–100 cm soil layer (GLDAS Noah SoilMoi40_100cm_inst), in kg m⁻².",
-  ex:()=>{if(!S.loc)return null;const d=peek(S.loc);if(!d||!d.ok)return null;const m=mean(d.soil.vals);return m==null?null:`In ${S.loc.name}, the 40–100 cm soil layer averages ${fmt(m,0)} kg/m² of water.`;}},
- rh:{name:"Specific humidity",re:/specific humidity/i,plain:"How much water vapour the air holds.",sci:"Mass of water vapour per mass of moist air (GLDAS Noah Qair_f_inst), shown in g/kg."},
- wind:{name:"Wind speed",re:/wind speed/i,plain:"Average wind strength near the ground.",sci:"Near-surface wind speed from the GLDAS Noah forcing (Wind_f_inst), in m/s."},
+ rootzone:{name:"Soil wetness / root zone",re:/root[- ]zone|soil wetness/i,plain:"How full of water the soil is where plant roots grow.",sci:"Fraction of soil pore space filled with water in roughly the top 1 m (0 dry, 1 saturated; POWER GWETROOT).",
+  ex:()=>{if(!S.loc)return null;const d=peek(S.loc);if(!d||!d.ok)return null;const m=mean(d.soil.vals);return m==null?null:`In ${S.loc.name}, root-zone soil averages ${fmt(m,0)}% of saturation.`;}},
+ rh:{name:"Relative humidity",re:/relative humidity/i,plain:"How close the air is to holding all the water vapour it can.",sci:"Water-vapour pressure as a percentage of saturation vapour pressure at the same temperature."},
+ wind:{name:"Wind speed (10 m)",re:/wind speed/i,plain:"Average wind strength near the ground.",sci:"Mean wind speed 10 m above the surface from MERRA-2 (POWER WS10M), in m/s."},
  water:{name:"Water mask",re:/water mask/i,plain:"A map of which pixels are water and which are land.",sci:"MODIS-derived static land/water classification at 250 m."},
  lights:{name:"Night lights (VIIRS)",re:/night[- ]?lights|Day\/Night Band/i,plain:"Light seen from space at night, a sign of cities and roads.",sci:"VIIRS Day/Night Band composite of night-time radiance (2012 snapshot)."},
  fires:{name:"Thermal anomalies",re:/thermal anomal(y|ies)/i,plain:"Spots much hotter than their surroundings, usually active fires.",sci:"MODIS pixels with a fire radiative signal detected in the 4 µm and 11 µm channels on that day."},
  snow:{name:"Snow cover",re:/snow cover/i,plain:"How much of the ground is under snow.",sci:"MODIS fractional snow cover (%), monthly average from daily NDSI-based maps."},
  sst:{name:"Sea surface temperature",re:/sea[- ]surface (foundation )?temperature/i,plain:"How warm the top layer of the ocean is.",sci:"GHRSST MUR L4: blended multi-sensor foundation SST at 1 km, gap-filled daily."},
- anomaly:{name:"Anomaly",re:/\banomal(y|ies)\b/i,plain:"The difference from what is normal for that place.",sci:"Departure of a value from a reference-period mean; here the 2000–2010 mean.",
-  ex:exIn(c=>{const s=c.d[c.id],v=s.vals[YEAR_END-s.start],ref=mean(s.vals.slice(0,BASE_N));return v==null||ref==null?null:`In ${c.place}, ${YEAR_END}'s ${c.v.name.toLowerCase()} anomaly is ${sfmt(c.v.anomaly==="pct"?(v/ref-1)*100:v-ref,c.v.anomaly==="pct"?0:c.v.dig)} ${c.v.anomaly==="pct"?"%":c.v.unit}.`;})},
- baseline:{name:"Baseline (2000–2010)",re:/baseline|2000–2010/i,plain:"The 30 years used as ‘normal’ to compare against.",sci:"Climatological reference period; anomalies are measured from its 30-year mean."},
+ anomaly:{name:"Anomaly",re:/\banomal(y|ies)\b/i,plain:"The difference from what is normal for that place.",sci:"Departure of a value from a reference-period mean; here the 1981–2010 mean.",
+  ex:exIn(c=>{const s=c.d[c.id],v=s.vals[YEAR_END-s.start],ref=mean(s.vals.slice(0,30));return v==null||ref==null?null:`In ${c.place}, ${YEAR_END}'s ${c.v.name.toLowerCase()} anomaly is ${sfmt(c.v.anomaly==="pct"?(v/ref-1)*100:v-ref,c.v.anomaly==="pct"?0:c.v.dig)} ${c.v.anomaly==="pct"?"%":c.v.unit}.`;})},
+ baseline:{name:"Baseline (1981–2010)",re:/baseline|1981–2010/i,plain:"The 30 years used as ‘normal’ to compare against.",sci:"Climatological reference period; anomalies are measured from its 30-year mean."},
  mk:{name:"Mann-Kendall test",re:/Mann-Kendall/i,plain:"A test of whether values keep moving one way over the years.",sci:"Non-parametric rank test for a monotonic trend: counts increases minus decreases over all pairs of years.",
   ex:exIn(c=>`In ${c.place}, the test gives Z = ${fmt(c.a.Z,2)} for ${c.v.name.toLowerCase()}.`)},
  pvalue:{name:"p-value",re:/p-value/i,plain:"The chance of seeing a trend this strong if nothing were really changing.",sci:"Probability, under the no-trend null hypothesis, of a test statistic at least this extreme.",
@@ -952,9 +836,9 @@ const GLOSS={
  detrend:{name:"Detrending",re:/detrend(?:ed|ing)/i,plain:"Removing the long-term trend to compare year-to-year wiggles.",sci:"Subtracting a fitted linear trend so shared trends don't inflate the correlation."},
  causation:{name:"Causation vs correlation",re:/causation|causes another/i,plain:"Moving together doesn't prove one thing causes the other.",sci:"Causal claims need a physical mechanism and controlled evidence; correlation can come from a shared driver."},
  zscore:{name:"z-score",re:/z-scores?/i,plain:"How unusual a value is, counted in standard deviations from average.",sci:"z = (x − mean) / σ, giving a series with mean 0 and standard deviation 1."},
- grid:{name:"Grid cell",re:/grid[- ]cell|25 km (?:cell|grid)/i,plain:"The patch of Earth one data value stands for.",sci:"GLDAS Noah cell of 0.25° × 0.25°, about 25 km at mid-latitudes.",
-  ex:()=>S.loc?`${S.loc.name}'s numbers describe the whole ~25 km cell around ${fmt(Math.abs(S.loc.lat),2)}°${S.loc.lat>=0?"N":"S"}, ${fmt(Math.abs(S.loc.lon),2)}°${S.loc.lon>=0?"E":"W"}.`:null},
- sres:{name:"Spatial resolution",re:/spatial resolution|\bresolution\b/i,plain:"The size of the smallest detail the data can show.",sci:"Ground footprint of one pixel or grid cell, e.g. 250 m for MODIS NDVI or 25 km for GLDAS."},
+ grid:{name:"Grid cell",re:/grid[- ]cell|50 km (?:cell|grid)/i,plain:"The patch of Earth one data value stands for.",sci:"NASA POWER cell of 0.5° × 0.625°, about 50 × 60 km at mid-latitudes.",
+  ex:()=>S.loc?`${S.loc.name}'s numbers describe the whole ~50 km cell around ${fmt(Math.abs(S.loc.lat),2)}°${S.loc.lat>=0?"N":"S"}, ${fmt(Math.abs(S.loc.lon),2)}°${S.loc.lon>=0?"E":"W"}.`:null},
+ sres:{name:"Spatial resolution",re:/spatial resolution|\bresolution\b/i,plain:"The size of the smallest detail the data can show.",sci:"Ground footprint of one pixel or grid cell, e.g. 250 m for MODIS NDVI or 50 km for POWER."},
  tres:{name:"Temporal resolution",re:/temporal resolution/i,plain:"How often a measurement is made or averaged.",sci:"Time step of a record: daily, 8-day, monthly or annual."},
  composite:{name:"Composite (8-day / monthly)",re:/composites?/i,plain:"Many satellite passes merged into one cleaner picture.",sci:"Per-pixel aggregation over a window (best-quality 8-day, monthly mean) to fill cloud gaps."},
  albedo:{name:"Albedo",re:/albedo|reflective surfaces/i,plain:"How much sunlight a surface reflects instead of absorbing.",sci:"Ratio of reflected to incoming shortwave radiation, from 0 (black) to 1 (white)."},
@@ -1032,15 +916,15 @@ const viewCenterX=()=>(leftOffset()+W-panelOffset())/2;
 function rampColor(v,id){const R=VARS[id];if(!R||v==null||!isFinite(v))return"#F4F7F6";const t=clamp(v/R.span,-1,1);
   const neg=id==="prec"||id==="soil"||id==="rh"?"#A9743A":COL.cool,pos=id==="prec"||id==="soil"||id==="rh"?COL.cool:COL.heat;
   return t<0?d3.interpolateRgb("#F4F7F6",neg)(-t):d3.interpolateRgb("#F4F7F6",pos)(t);}
-function anomalyOf(d,id,year){if(!d||!d.ok||!id)return null;const s=d[id];const v=s.vals[year-s.start];if(v==null)return null;const ref=mean(s.vals.slice(0,BASE_N));if(ref==null)return null;return VARS[id].anomaly==="pct"?(v/ref-1)*100:v-ref;}
+function anomalyOf(d,id,year){if(!d||!d.ok||!id)return null;const s=d[id];const v=s.vals[year-s.start];if(v==null)return null;const ref=mean(s.vals.slice(0,30));if(ref==null)return null;return VARS[id].anomaly==="pct"?(v/ref-1)*100:v-ref;}
 const markerYear=()=>Math.min(S.year,YEAR_END);
 function placeList(){const l=FEATURED.slice();if(S.loc&&S.loc.kind!=="featured"&&S.loc.kind!=="country")l.push(S.loc);return l;}
 function markerInfo(p){const id=curSeries(),y=markerYear(),d=peek(p);
   if(!id)return{color:"#FFFFFF",text:`<b>${esc(p.name)}</b>`};
-  if(!d)return{color:"#FFFFFF",text:`<b>${esc(p.name)}</b> · NASA data on its way`};
-  if(!d.ok)return{color:"#FFFFFF",text:`<b>${esc(p.name)}</b> · NASA data not reachable here`};
+  if(!d)return{color:"#FFFFFF",text:`<b>${esc(p.name)}</b> · NASA POWER data on its way`};
+  if(!d.ok)return{color:"#FFFFFF",text:`<b>${esc(p.name)}</b> · NASA POWER not reachable here`};
   const a=anomalyOf(d,id,y),R=VARS[id];
-  return{color:rampColor(a,id),text:`<b>${esc(p.name)}</b> · ${esc(R.name)} ${y}: ${a==null?"no value":(R.anomaly==="pct"?sfmt(a,0)+"%":sfmt(a,R.dig)+" "+R.unit)+" vs 2000–2010"}`};}
+  return{color:rampColor(a,id),text:`<b>${esc(p.name)}</b> · ${esc(R.name)} ${y}: ${a==null?"no value":(R.anomaly==="pct"?sfmt(a,0)+"%":sfmt(a,R.dig)+" "+R.unit)+" vs 1981–2010"}`};}
 /* ---- globe ---- */
 const G={rot:[-20,-22],r:300,r0:300,spin:!reduceMotion,intro:reduceMotion?0:1,spinK:reduceMotion?1:0,drag:null,ptrs:new Map(),pinch:null,anim:null,userZoom:false};
 const ortho=d3.geoOrthographic().clipAngle(90).precision(0.35),gpath=d3.geoPath(ortho,gx),grat=d3.geoGraticule10();
@@ -1183,7 +1067,7 @@ function refreshStatus(){
     else if(GT.state==="ok"){cls="ok";txt=L&&covers(L,S.year,S.month)?`NASA GIBS · ${L.name} · ${L.period==="static"?L.cover:gibsTime(L,S.year,S.month)} over Blue Marble`:`NASA GIBS · Blue Marble${L&&!covers(L,S.year,S.month)?` (no ${L.name} for ${S.year})`:""}`;}
     if(!S.loc&&!cls)txt=(txt?txt+" · ":"")+"Search, use your location, or click the globe.";}
   else{const yr=S.year;
-    if(!L)txt=`${curItem().name} has no satellite layer; coloured dots show NASA point-series values.`;
+    if(!L)txt=`${curItem().name} has no satellite layer; coloured dots show NASA POWER values.`;
     else if(!covers(L,yr,S.month)){cls="warn";txt=`No ${L.name} for ${MONTHS[S.month-1]} ${yr}. This layer ${L.period==="static"?"is a fixed snapshot":"starts in "+L.start}.`;}
     else if(dataStatus.ok>0){cls="ok";txt=`NASA GIBS · ${L.name} · ${L.period==="static"?L.cover:gibsTime(L,yr,S.month)}`;}
     else if(dataStatus.err>0){cls="warn";txt="NASA imagery couldn't load in this view. It loads from NASA GIBS on a normal website.";}
@@ -1216,7 +1100,7 @@ function selectPoint(lat,lon,opts){const c=mapOK?countryAt(lat,lon):null;
    ===================================================================== */
 function legendHTML(it){const parts=[];const id=it.series;
   if(id){const R=VARS[id],stops=[0,.25,.5,.75,1].map(t=>rampColor(-R.span+2*R.span*t,id)),u=R.anomaly==="pct"?"%":R.unit,d=R.anomaly==="pct"?0:Math.min(2,R.dig);
-    parts.push(`<div class="lg"><span class="label">Dots: ${markerYear()} vs 2000–2010 mean</span> ${gi("anomaly")}<div class="bar" style="background:linear-gradient(90deg,${stops.join(",")});border:1px solid var(--line)"></div><div class="ends"><span>${sfmt(-R.span,d)} ${esc(u)}</span><span>0</span><span>${sfmt(R.span,d)} ${esc(u)}</span></div></div>`);}
+    parts.push(`<div class="lg"><span class="label">Dots: ${markerYear()} vs 1981–2010 mean</span> ${gi("anomaly")}<div class="bar" style="background:linear-gradient(90deg,${stops.join(",")});border:1px solid var(--line)"></div><div class="ends"><span>${sfmt(-R.span,d)} ${esc(u)}</span><span>0</span><span>${sfmt(R.span,d)} ${esc(u)}</span></div></div>`);}
   if(it.layer){const L=LAYERS[it.layer];parts.push(`<p style="margin-top:8px">Imagery colours follow the NASA GIBS palette (${esc(L.unit||"")}). See the official colour scale in <a href="https://worldview.earthdata.nasa.gov/" target="_blank" rel="noopener">NASA Worldview</a>.</p>`);}
   return parts.join("");}
 function renderExploreList(){
@@ -1241,13 +1125,13 @@ $("#exploreToggle").onclick=()=>{const c=$("#explore").classList.toggle("collaps
    ===================================================================== */
 const yr=$("#year");yr.min=Y0;yr.max=YEAR_END;yr.value=S.year;
 $("#month").innerHTML=MONTHS.map((m,i)=>`<option value="${i+1}" ${i+1===S.month?"selected":""}>${m}</option>`).join("");
-function renderTicks(){const t=$("#ticks");t.innerHTML="";for(let y=Math.ceil(Y0/5)*5;y<=YEAR_END;y+=5){const s=document.createElement("span");s.style.left=((y-Y0)/(YEAR_END-Y0)*100)+"%";s.textContent=y;t.appendChild(s);}}
+function renderTicks(){const t=$("#ticks");t.innerHTML="";for(let y=1985;y<=YEAR_END;y+=5){const s=document.createElement("span");s.style.left=((y-Y0)/(YEAR_END-Y0)*100)+"%";s.textContent=y;t.appendChild(s);}}
 let texTimer=null;
 function setYear(y,opts){y=clamp(Math.round(y),Y0,YEAR_END);S.year=y;yr.value=y;$("#yearBig").textContent=y;updateTiles();drawMap();
   clearTimeout(texTimer);texTimer=setTimeout(updateGlobeTexture,S.playing?900:250);
   if(!(opts&&opts.light)){if(S.section==="explore"&&S.loc&&curSeries()){const d=peek(S.loc);if(d&&d.ok)drawExploreChart(d);}
     if(!(opts&&opts.fromCompare)&&S.cmp.b!==y){S.cmp.b=y;if(S.cmp.a>=y)S.cmp.a=Math.max(Y0,y-10);renderCompare();}}
-  const lg=document.querySelector(".xitem.on .lg .label");if(lg)lg.textContent=`Dots: ${markerYear()} vs 2000–2010 mean`;updateStripeMark();}
+  const lg=document.querySelector(".xitem.on .lg .label");if(lg)lg.textContent=`Dots: ${markerYear()} vs 1981–2010 mean`;updateStripeMark();}
 yr.addEventListener("input",()=>setYear(+yr.value));
 $("#month").addEventListener("change",e=>{S.month=+e.target.value;updateTiles();updateGlobeTexture();drawMap();renderCompare();});
 function stopPlay(){if(S.playing){clearInterval(S.playing);S.playing=null;$("#play").innerHTML=icon("play");$("#play").setAttribute("aria-label","Play through the years");updateGlobeTexture();setYear(S.year);}}
@@ -1300,8 +1184,7 @@ const WHY={
  prec:{up:"More rain can refill water supplies but raises flood risk when it falls in bursts.",down:"Less rain means less water for farms, rivers and groundwater."},
  soil:{up:"Wetter soils help crops but can raise flood and waterlogging risk.",down:"Drier soils stress crops, raise irrigation demand and let the ground heat up faster."},
  rh:{up:"More humid heat is harder for the body to cool from.",down:"Drier air pulls more water out of plants and soils."},
- wind:{up:"Stronger winds can raise dust and storm damage but help wind power.",down:"Calmer winds can trap air pollution and lower wind-power output."},
- ndvi:{up:"Greener ground usually means more plant growth, shade and evaporative cooling, though it can also reflect irrigation or new crops.",down:"Less green cover can mean drought stress, land clearing or urban growth, and leaves the ground hotter and more exposed."}
+ wind:{up:"Stronger winds can raise dust and storm damage but help wind power.",down:"Calmer winds can trap air pollution and lower wind-power output."}
 };
 const IMP={small:"small compared with normal year-to-year variation",moderate:"about as large as normal year-to-year variation",large:"much larger than normal year-to-year variation"};
 function trendExplain(id,a,loc){const v=VARS[id];if(a.insufficient)return two(`Insufficient data: ${a.n} valid annual values (minimum 8).`,"There aren't enough years with data to say whether this is changing.");
@@ -1316,7 +1199,7 @@ const STAT_TERMS=[
  ["Emergence year","First year the fitted trend departs from its starting value by more than 2σ.","Roughly when the change became too big to be natural variation."]];
 const termsHTML=()=>`<details class="more"><summary>What do these statistics mean?</summary><div class="terms">${STAT_TERMS.map(t=>two(t[1],t[2],t[0])).join("")}</div></details>`;
 function statsTable(id,a){const v=VARS[id];return`<div class="stattbl"><table><tbody>
-   <tr><th>Series</th><td>${esc(v.name)} (${esc(v.unit)}) · ${esc(v.source)} <code>${esc(v.code)}</code></td></tr>
+   <tr><th>Series</th><td>${esc(v.name)} (${esc(v.unit)}) · NASA POWER <code>${esc(v.power)}</code></td></tr>
    <tr><th>Period · n</th><td class="num">${a.from}–${a.to} · n = ${a.n}${a.missing?` · ${a.missing} missing`:""}</td></tr>
    <tr><th>Sen's slope</th><td class="num">${sfmt(a.sen*10,v.dig+1)} /decade [${sfmt(a.senLo*10,v.dig+1)}, ${sfmt(a.senHi*10,v.dig+1)}]</td></tr>
    <tr><th>Linear fit</th><td class="num">${sfmt(a.ols*10,v.dig+1)} ± ${fmt(a.olsSE*10,v.dig+1)} /decade · R² ${fmt(a.r2,2)} · p ${pfmt(a.olsP)}</td></tr>
@@ -1328,26 +1211,26 @@ function statsTable(id,a){const v=VARS[id];return`<div class="stattbl"><table><t
    13. PANEL SECTIONS
    ===================================================================== */
 const panel=$("#panelBody");
-const liveBadge='<span class="badge live">Live · NASA Data Rods / AppEEARS</span>';
-function locHeader(){const l=S.loc;if(!l)return"";return`<div class="loc"><span class="label">Selected location</span><h2>${esc(l.name)}</h2><span class="coords">${fmt(Math.abs(l.lat),2)}°${l.lat>=0?"N":"S"} · ${fmt(Math.abs(l.lon),2)}°${l.lon>=0?"E":"W"}${l.country&&l.kind!=="country"?" · "+esc(l.country):""} · NASA GLDAS ${gterm("grid","grid cell")}</span>${stripesHTML()}${lifetimeHTML()}</div>`;}
+const liveBadge='<span class="badge live">Live · NASA POWER</span>';
+function locHeader(){const l=S.loc;if(!l)return"";return`<div class="loc"><span class="label">Selected location</span><h2>${esc(l.name)}</h2><span class="coords">${fmt(Math.abs(l.lat),2)}°${l.lat>=0?"N":"S"} · ${fmt(Math.abs(l.lon),2)}°${l.lon>=0?"E":"W"}${l.country&&l.kind!=="country"?" · "+esc(l.country):""} · NASA POWER ${gterm("grid","grid cell")}</span>${stripesHTML()}${lifetimeHTML()}</div>`;}
 const SEC_ICON={explore:"compass",trends:"trend",connect:"network",solutions:"flask",about:"book"};
 const sectionHead=(t,p)=>`<div class="sec-title"><h2>${icon(SEC_ICON[S.section]||"compass")}${t}</h2>${p?`<p>${p}</p>`:""}</div>`;
-/* ---- Climate stripes: one stripe per year from the real annual NASA series ---- */
+/* ---- Climate stripes: one stripe per year from the real annual NASA POWER series ---- */
 const STRIPE_PAL={temp:["#1B4F8F","#6FA2D6","#EEF2F2","#F08A64","#A8321A"],wet:["#7A4512","#C9935A","#EEF2F2","#6FA2D6","#1B4F8F"],wind:["#4E5964","#A5AFB8","#EEF2F2","#7FC4BB","#0B6E69"]};
 const stripePal=id=>id==="ts"||id==="t2m"?"temp":id==="wind"?"wind":"wet";
-function stripeSeries(){const d=S.loc?peek(S.loc):null;if(!d||!d.ok)return null;const id=curSeries()||"t2m",s=d[id],ref=mean(s.vals.slice(0,BASE_N));if(ref==null)return null;
+function stripeSeries(){const d=S.loc?peek(S.loc):null;if(!d||!d.ok)return null;const id=curSeries()||"t2m",s=d[id],ref=mean(s.vals.slice(0,30));if(ref==null)return null;
   const an=s.vals.map(v=>v==null?null:v-ref),mx=Math.max(1e-9,...an.filter(v=>v!=null).map(Math.abs));return{id,s,an,mx};}
 function stripesHTML(){const st=stripeSeries();if(!st)return"";const ip=d3.interpolateRgbBasis(STRIPE_PAL[stripePal(st.id)]),n=st.an.length,v=VARS[st.id];
   const rects=st.an.map((a,i)=>`<rect x="${i}" y="0" width="1.04" height="1" fill="${a==null?"#C9D3D6":ip(0.5+0.5*a/st.mx)}"/>`).join("");
-  return`<div class="stripes"><div class="slab"><span>Climate stripes · ${esc(v.name)} ${gi("anomaly")} vs ${gterm("baseline","2000–2010")}</span><span>${st.s.start}–${st.s.start+n-1}</span></div>
+  return`<div class="stripes"><div class="slab"><span>Climate stripes · ${esc(v.name)} ${gi("anomaly")} vs ${gterm("baseline","1981–2010")}</span><span>${st.s.start}–${st.s.start+n-1}</span></div>
    <div class="srow" id="stripes" tabindex="0" role="slider" aria-label="Climate stripes for ${esc(v.name)}. Click a stripe or use the arrow keys to move the timeline to that year." aria-valuemin="${st.s.start}" aria-valuemax="${st.s.start+n-1}" aria-valuenow="${S.year}">
    <svg viewBox="0 0 ${n} 1" preserveAspectRatio="none" aria-hidden="true">${rects}</svg><span class="smark" id="smark" style="position:absolute;top:-1px;bottom:-1px;border:2px solid #0E2A2F;border-radius:3px;box-shadow:0 0 0 1.5px #fff;pointer-events:none"></span></div>
-   <div class="slab"><span>${stripePal(st.id)==="temp"?"blue = cooler · red = warmer":stripePal(st.id)==="wet"?"brown = drier · blue = wetter":"grey = calmer · teal = windier"} than the 2000–2010 mean</span><span>Click a year to jump the timeline</span></div></div>`;}
+   <div class="slab"><span>${stripePal(st.id)==="temp"?"blue = cooler · red = warmer":stripePal(st.id)==="wet"?"brown = drier · blue = wetter":"grey = calmer · teal = windier"} than the 1981–2010 mean</span><span>Click a year to jump the timeline</span></div></div>`;}
 function updateStripeMark(){const r=$("#stripes"),m=$("#smark");if(!r||!m)return;const st=stripeSeries();if(!st)return;const n=st.an.length,i=clamp(S.year-st.s.start,0,n-1);
-  m.style.left=`calc(${i/n*100}% - 2px)`;m.style.width=`calc(${100/n}% + 4px)`;r.setAttribute("aria-valuenow",S.year);const a=st.an[i],v=VARS[st.id];r.setAttribute("aria-valuetext",`${S.year}: ${a==null?"no data":sfmt(a,v.dig)+" "+v.unit+" vs 2000–2010"}`);}
+  m.style.left=`calc(${i/n*100}% - 2px)`;m.style.width=`calc(${100/n}% + 4px)`;r.setAttribute("aria-valuenow",S.year);const a=st.an[i],v=VARS[st.id];r.setAttribute("aria-valuetext",`${S.year}: ${a==null?"no data":sfmt(a,v.dig)+" "+v.unit+" vs 1981–2010"}`);}
 function bindStripes(){const r=$("#stripes");if(!r)return;const st=stripeSeries();if(!st)return;const n=st.an.length;
   r.addEventListener("click",e=>{const b=r.getBoundingClientRect();setYear(st.s.start+clamp(Math.floor((e.clientX-b.left)/b.width*n),0,n-1));updateStripeMark();});
-  r.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const b=r.getBoundingClientRect(),i=clamp(Math.floor((e.clientX-b.left)/b.width*n),0,n-1),a=st.an[i],v=VARS[st.id];r.title=`${st.s.start+i}: ${a==null?"no data":sfmt(a,v.dig)+" "+v.unit+" vs 2000–2010"}`;});
+  r.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const b=r.getBoundingClientRect(),i=clamp(Math.floor((e.clientX-b.left)/b.width*n),0,n-1),a=st.an[i],v=VARS[st.id];r.title=`${st.s.start+i}: ${a==null?"no data":sfmt(a,v.dig)+" "+v.unit+" vs 1981–2010"}`;});
   r.addEventListener("keydown",e=>{const k={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageDown:-5,PageUp:5}[e.key];if(e.key==="Home"||e.key==="End"){e.preventDefault();setYear(e.key==="Home"?st.s.start:YEAR_END);updateStripeMark();return;}if(k){e.preventDefault();setYear(S.year+k);updateStripeMark();}});
   updateStripeMark();}
 /* ---- Your Lifetime lens (birth year stays in this browser only) ---- */
@@ -1361,9 +1244,9 @@ function sinceBirth(start,vals,unit,dig){if(!BIRTH)return"";const first=start+va
   if(last-from<7)return`<span class="lifeline">${icon("cake","sm")}Since you were born (${BIRTH}): too few years in this record to measure a trend.</span>`;
   const a=analyze(start,vals,from,last);if(a.insufficient)return"";
   return`<span class="lifeline">${icon("cake","sm")}Since you were born (${BIRTH}${BIRTH<first?`; record starts ${first}`:""}): ${sfmt(a.total,dig)} ${esc(unit)} by the trend line, ${a.sig?"a significant trend":"not a significant trend"}</span>`;}
-function afterRender(){bindAp();bindStripes();bindLifetime();countUp(panel);hydrateIcons(panel);positionInk();}
-function unavailable(d){const why=d.reason==="blocked"?"This view blocks requests to outside websites (or NASA did not allow the browser request).":d.reason==="timeout"?"NASA Data Rods took too long to answer.":"NASA Data Rods returned no values for this point.";return`<div class="note warn"><b>NASA Data Rods data couldn't be loaded here.</b> ${why} The platform won't substitute invented numbers.<br><a href="${esc(d.url)}" target="_blank" rel="noopener">Open the Data Rods request for this point ↗</a></div>`;}
-function startCard(){return`${sectionHead("Explore Earth","See what has changed in any place since 2000, test whether the change is real, and explore what could help.")}
+function afterRender(){bindStripes();bindLifetime();countUp(panel);hydrateIcons(panel);positionInk();}
+function unavailable(d){return`<div class="note warn"><b>NASA POWER data couldn't be loaded here.</b> This view blocks requests to outside websites, and the platform won't substitute invented numbers. On a normal website the series for this exact point loads live from NASA.<br><a href="${esc(d.url)}" target="_blank" rel="noopener">Open the NASA POWER data for this point ↗</a></div>`;}
+function startCard(){return`${sectionHead("Explore Earth","See what has changed in any place since 1981, test whether the change is real, and explore what could help.")}
   <div class="card"><h3>Start in three steps</h3><ol class="list">
     <li><b>Find a place.</b> Search above the map, press <b>Use my location</b>, or click the globe.</li>
     <li><b>Choose what to explore</b> on the left, such as ${gterm("lst","land surface temperature")} or ${gterm("rootzone","soil moisture")}.</li>
@@ -1379,8 +1262,7 @@ async function renderPanel(){
   if(!S.loc){panel.innerHTML=S.section==="explore"||S.section==="trends"?startCard():sectionHead({connect:"Earth Connections",solutions:"Solutions Lab"}[S.section])+`<div class="empty"><span>${S.section==="connect"?"Earth Connections compares how variables move together in one place.":"The Solutions Lab starts from the trends measured in one place."} Pick a place first.</span><div class="btnrow"><button class="btn primary" data-fp="f_Cairo">Try Cairo</button><button class="btn" id="emptyLoc">${icon("locate","sm")}Use my location</button><button class="btn" id="emptySearch">${icon("search","sm")}Search a place</button></div></div>`;
     bindGlobal();panel.querySelectorAll("[data-fp]").forEach(b=>b.onclick=()=>selectLocation(FEATURED.find(f=>f.id===b.dataset.fp)));
     const el1=$("#emptyLoc");if(el1)el1.onclick=()=>$("#locBtn").click();const el2=$("#emptySearch");if(el2)el2.onclick=()=>$("#q").focus();afterRender();return;}
-  let d=peek(S.loc);if(!d){panel.innerHTML=locHeader()+skeleton(`Fetching the NASA Data Rods record for ${esc(S.loc.name)}`)+skeleton("Running trend tests",["w70","w40"]);d=await load(S.loc);if(tok!==renderToken)return;}
-  if(d.ok&&AP.auth&&d.aps.state==="idle")runAppeears(S.loc,d);
+  let d=peek(S.loc);if(!d){panel.innerHTML=locHeader()+skeleton(`Fetching the NASA POWER record for ${esc(S.loc.name)}`)+skeleton("Running trend tests",["w70","w40"]);d=await load(S.loc);if(tok!==renderToken)return;}
   ({explore:renderExplore,trends:renderTrends,connect:renderConnect,solutions:renderSolutions})[S.section](d);afterRender();
 }
 function yearOptions(a,b,v){return range(a,b).map(y=>`<option ${y===v?"selected":""}>${y}</option>`).join("");}
@@ -1390,11 +1272,10 @@ function renderExplore(d){
   const varCard=`<div class="card"><div class="card-head"><h3><span class="vi" style="display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;color:#fff;background:${it.color}">${icon(VAR_ICON[it.id],"sm")}</span>${gterm(EXPLORE_GLOSS[it.id],esc(it.name))}</h3>${id?(d.ok?liveBadge:'<span class="badge na">Data unavailable here</span>'):'<span class="badge none">Imagery only</span>'}</div>${two(esc(it.sci),esc(it.plain),"Definition")}</div>`;
   if(!id){const L=LAYERS[it.layer];
     panel.innerHTML=`${locHeader()}${varCard}<div class="card"><dl class="nums"><div><span class="k">Source</span><div class="v" style="font-size:13px">${esc(L.source)}</div></div><div><span class="k">Coverage</span><div class="v" style="font-size:13px">${esc(L.cover)}</div></div><div><span class="k">Resolution ${gi("sres")}</span><div class="v" style="font-size:13px">${esc(L.res)}</div></div><div><span class="k">Unit</span><div class="v" style="font-size:13px">${esc(L.unit)}</div></div></dl>
-     <div class="note"><b>No trend test for this variable.</b> A trend test needs a time series of measurements at this point. This app builds them from Data Rods and AppEEARS for land temperature, rainfall, soil moisture, humidity, wind and NDVI; none is connected for this layer. The imagery itself is real; the platform won't show numbers it doesn't have.</div>
+     <div class="note"><b>No trend test for this variable.</b> A trend test needs a time series of measurements at this point (for example MODIS NDVI through NASA AppEEARS), and none is connected. The imagery itself is real; the platform won't show numbers it doesn't have.</div>
      <div class="btnrow">${L.period!=="static"?'<button class="btn primary" id="toCmp">Compare two years ↓</button>':""}<button class="btn" data-x2="lst">Land surface temperature</button><button class="btn" data-x2="soil">Soil moisture</button></div></div>`;
     const b=$("#toCmp");if(b)b.onclick=()=>$("#baBtn").click();panel.querySelectorAll("[data-x2]").forEach(b=>b.onclick=()=>setItem(b.dataset.x2));return;}
-  if(!d.ok){panel.innerHTML=`${locHeader()}${varCard}${unavailable(d)}<div class="btnrow"><button class="btn" data-goto="trends">Global record (real) →</button></div>`;bindGoto();return;}
-  if(!d[id].vals.some(x=>x!=null)){const nv=VARS[id];panel.innerHTML=`${locHeader()}${varCard}${nv.appeears?apBox(d,[id]):`<div class="note warn"><b>No ${esc(nv.name.toLowerCase())} values came back for this point.</b> The platform won't substitute invented numbers.<br><a href="${esc(rodsURL(S.loc,nv.rods))}" target="_blank" rel="noopener">Open this Data Rods request ↗</a></div>`}<div class="btnrow"><button class="btn" data-goto="trends">Global record (real) →</button></div>`;bindGoto();return;}
+  if(!d.ok){panel.innerHTML=`${locHeader()}${varCard}${unavailable(d)}<div class="btnrow"><button class="btn" data-goto="trends">Global records (real) →</button></div>`;bindGoto();return;}
   const s=d[id],v=VARS[id];const first=s.start+s.vals.findIndex(x=>x!=null);S.from=clamp(Math.max(S.from,first),first,YEAR_END-7);S.to=clamp(S.to,S.from+7,YEAR_END);
   const a=analyze(s.start,s.vals,S.from,S.to),arrow=a.dir==="up"?"▲":a.dir==="down"?"▼":"◆",mc=meaningClass(id,a.dir);
   panel.innerHTML=`${locHeader()}${varCard}
@@ -1422,13 +1303,13 @@ function bindGoto(){panel.querySelectorAll("[data-goto]").forEach(b=>b.onclick=(
 async function saveFile(name,text,msgEl){
   try{if(window.claude&&window.claude.use){const dl=await window.claude.use("downloads");if(dl){await dl.save({filename:name,data:text});if(msgEl)msgEl.textContent="Saved.";return;}}}catch(e){if(e&&e.code==="declined"){if(msgEl)msgEl.textContent="Download cancelled.";return;}}
   try{const blob=text instanceof Blob?text:new Blob([text],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();if(msgEl)msgEl.textContent="Download started.";}catch(_){if(msgEl)msgEl.textContent="Downloads aren't available in this view.";}}
-function bindCSV(d){const b=$("#csvBtn");if(!b)return;b.onclick=()=>{const rows=["year,"+VAR_ORDER.map(id=>`${VARS[id].name} [${VARS[id].code}] (${VARS[id].unit})`).join(",")];
+function bindCSV(d){const b=$("#csvBtn");if(!b)return;b.onclick=()=>{const rows=["year,"+VAR_ORDER.map(id=>`${VARS[id].power} (${VARS[id].unit})`).join(",")];
   range(Y0,YEAR_END).forEach(y=>rows.push(y+","+VAR_ORDER.map(id=>{const v=d[id].vals[y-Y0];return v==null?"":v;}).join(",")));
-  rows.push("# Sources: NASA GES DISC Hydrology Data Rods (GLDAS_NOAH025_M_v2.1), NASA AppEEARS (MODIS MOD11A2.061, MOD13Q1.061). Example request: "+d.url);saveFile(`nasa-point-series-${S.loc.name.replace(/[^\w]+/g,"-").toLowerCase()}.csv`,rows.join("\n"),$("#csvMsg"));};}
+  rows.push("# Source: NASA POWER, "+d.url);saveFile(`nasa-power-${S.loc.name.replace(/[^\w]+/g,"-").toLowerCase()}.csv`,rows.join("\n"),$("#csvMsg"));};}
 /* ---- Trend Explorer ---- */
 function trendItem(key,title,sub,a,unit,dig,body){const arrow=a.dir==="up"?"▲":a.dir==="down"?"▼":"◆";
   return`<div class="trend-item"><button data-tog="${key}" aria-expanded="false"><span class="arrow dir-${a.dir}" style="font-size:20px">${arrow}</span><span class="t"><b>${esc(title)}</b><span>${esc(sub)}</span><br><span class="sigpill ${a.sig?"yes":"no"}">${a.sig?"significant":"not significant"} · p ${pfmt(a.p)}</span></span><span class="m">${sfmt(a.total,dig)} ${esc(unit)}<br><span class="hint">${a.importance}</span></span></button><div class="more" id="more-${key}" hidden>${body}</div></div>`;}
-function globalBlock(){if(!GLOBAL[0].vals.length)return globalPending();return`<div class="sec-title" style="margin-top:6px"><h2 style="font-size:20px">The whole planet</h2><p>Real global record from NASA ${gterm("gistemp","GISTEMP")}, fetched live.</p></div>
+function globalBlock(){return`<div class="sec-title" style="margin-top:6px"><h2 style="font-size:20px">The whole planet</h2><p>Real global records from NASA ${gterm("gistemp","GISTEMP")}, NOAA and NSIDC.</p></div>
   ${GLOBAL.map(g=>{const a=analyze(g.start,g.vals,g.start,g.start+g.vals.length-1);return trendItem(g.id,g.name,`${g.start}–${g.start+g.vals.length-1} · ${g.src}`,a,g.unit,g.dig,
    `<svg class="chart" id="ch-${g.id}" role="img" aria-label="${esc(g.name)}"></svg>${two(`${esc(g.sci)} Sen's slope ${sfmt(a.sen*10,g.dig)} ${esc(g.unit)} decade⁻¹; Mann-Kendall p ${pfmt(a.p)}.`,`${esc(g.plain)} It has ${a.dir==="up"?"risen":a.dir==="down"?"fallen":"changed"} by about ${sfmt(a.total,g.dig).replace(/^[+−]/,"")} ${esc(g.unit)} over the record.`)}
    <p class="hint"><span class="badge real">Real data</span> <a href="${g.url}" target="_blank" rel="noopener">${esc(g.src)} ↗</a></p>`);}).join("")}`;}
@@ -1460,7 +1341,7 @@ function insightCard(r,i){const v=VARS[r.id],a=r.a,mc=meaningClass(r.id,a.dir),c
    <div class="more" id="more-l_${r.id}" hidden><svg class="chart" id="ch-l_${r.id}" role="img" aria-label="${esc(v.name)}"></svg></div></article>`;}
 /* ---- Place Fingerprint ---- */
 const FP_SHORT={ts:"Ground",t2m:"Air",prec:"Rain",soil:"Soil",rh:"Humid",wind:"Wind"};
-function gisRate(from,to){const g=GLOBAL[0];if(!g.vals.length)return null;const a=analyze(g.start,g.vals,from,Math.min(to,g.start+g.vals.length-1));return a.insufficient?null:a;}
+function gisRate(from,to){const a=analyze(1880,GIS,from,Math.min(to,1880+GIS.length-1));return a.insufficient?null:a;}
 function fpHeadline(d){const name=S.loc.name,a=fullAnalysis(d.t2m),g=a.insufficient?null:gisRate(a.from,a.to);
   if(g&&a.sig&&a.dir==="up"&&g.sen>0){const ratio=a.sen/g.sen;
     if(ratio>=1.15)return{t:`${name}'s air is warming ${fmt(ratio,1)}× as fast as the planet`,ratio,a,g};
@@ -1468,7 +1349,7 @@ function fpHeadline(d){const name=S.loc.name,a=fullAnalysis(d.t2m),g=a.insuffici
     return{t:`${name} is warming, but more slowly than the planet as a whole`,ratio,a,g};}
   const rows=rankRows(d).filter(r=>r.a.sig);
   if(rows.length){const r=rows[0],v=VARS[r.id];return{t:`${name}: ${v.name.toLowerCase()} is ${r.a.dir==="up"?"rising":"falling"} (${sfmt(r.a.total,v.dig)} ${v.unit} since ${r.a.from})`,a,g};}
-  return{t:`${name}: no significant trend in any of the NASA series with enough data`,a,g};}
+  return{t:`${name}: no significant trend in any of six NASA POWER variables`,a,g};}
 function radialSVG(d,size,forExport){const c=size/2,R=size*0.335,r0=size*0.07,rows=VAR_ORDER.map(id=>({id,a:fullAnalysis(d[id])}));const n=rows.length,step=2*Math.PI/n,rad=x=>r0+(R-r0)*Math.sqrt(clamp(x,0,6)/6);
   const ff=forExport?"Inter, Helvetica, Arial, sans-serif":"Inter, system-ui, sans-serif";let out="";
   [1,3,6].forEach(k=>{out+=`<circle cx="${c}" cy="${c}" r="${rad(k).toFixed(1)}" fill="none" stroke="#C3D2D5" stroke-width="${size/400}" stroke-dasharray="${k===6?"none":size/100+" "+size/100}"/>`;});
@@ -1480,8 +1361,8 @@ function radialSVG(d,size,forExport){const c=size/2,R=size*0.335,r0=size*0.07,ro
     const lp=p(ang,R+size*0.09);out+=`<text x="${lp[0]}" y="${lp[1]}" font-size="${size*0.048}" font-weight="600" fill="#0E2A2F" text-anchor="middle" dominant-baseline="middle" font-family="${ff}">${FP_SHORT[r.id]}${r.a.sig?(r.a.dir==="up"?" ▲":" ▼"):""}</text>`;});
   out+=`<circle cx="${c}" cy="${c}" r="${r0*0.6}" fill="#0E2A2F"/>`;return out;}
 function fingerprintHTML(d){const h=fpHeadline(d);const rows=VAR_ORDER.map(id=>({id,a:fullAnalysis(d[id])}));
-  return`<div class="card lift" id="fpCard"><div class="card-head"><div><span class="label">Place fingerprint</span><h3>${icon("fingerprint")}${esc(S.loc.name)} at a glance</h3></div><span class="badge live">NASA Data Rods + GISTEMP</span></div>
-  <div class="fp"><svg viewBox="0 0 240 240" role="img" aria-label="Radial chart of trend strength for seven variables">${radialSVG(d,240)}</svg>
+  return`<div class="card lift" id="fpCard"><div class="card-head"><div><span class="label">Place fingerprint</span><h3>${icon("fingerprint")}${esc(S.loc.name)} at a glance</h3></div><span class="badge live">NASA POWER + GISTEMP</span></div>
+  <div class="fp"><svg viewBox="0 0 240 240" role="img" aria-label="Radial chart of trend strength for six variables">${radialSVG(d,240)}</svg>
    <div><p class="headline">${esc(h.t)}</p>${h.g&&h.a&&!h.a.insufficient?`<p class="hint" style="margin-top:4px">Air ${sfmt(h.a.sen*10,2)} °C/decade vs planet ${sfmt(h.g.sen*10,2)} °C/decade (${gterm("gistemp","GISTEMP")}), ${h.a.from}–${h.a.to}.</p>`:""}
    <ul>${rows.map(r=>{const v=VARS[r.id],mc=r.a.insufficient?"neutral":meaningClass(r.id,r.a.dir);return`<li><i style="background:${MEANING_COL[mc]};${r.a.sig?"":"opacity:.35"}"></i>${esc(v.name)}<span class="v">${r.a.insufficient?"—":sfmt(r.a.sen*10,v.dig)+" /dec"}${r.a.sig?"":" · n.s."}</span></li>`;}).join("")}</ul></div></div>
   ${two(`Petal length = ${gterm("snr","signal-to-noise ratio")} (square-root scale, capped at 6). Filled petals are significant Mann-Kendall trends (p < 0.05); dashed petals are not. Warm colours mark heating or drying, blue marks cooling or wetting.`,"Big filled petals are the changes that stand out clearly from normal year-to-year swings. Small dashed ones are within normal variation.","How to read the fingerprint")}
@@ -1495,7 +1376,7 @@ async function exportFingerprint(d){const msg=$("#fpMsg");if(msg)msg.textContent
    <text x="590" y="160" font-family="${ff}" font-size="40" font-weight="700" fill="#0E2A2F">${xe(S.loc.name)}</text>
    ${lines.map((l,i)=>`<text x="590" y="${215+i*40}" font-family="${ff}" font-size="31" font-weight="700" fill="#0B6E69">${xe(l)}</text>`).join("")}
    ${rows.map((r,i)=>{const v=VARS[r.id],mc=r.a.insufficient?"neutral":meaningClass(r.id,r.a.dir),y=215+lines.length*40+22+i*34;return`<circle cx="598" cy="${y-6}" r="7" fill="${MEANING_COL[mc]}" ${r.a.sig?"":'fill-opacity=".35"'}/><text x="616" y="${y}" font-family="${ff}" font-size="20" fill="#0E2A2F">${xe(v.name)}</text><text x="1130" y="${y}" text-anchor="end" font-family="${ff}" font-size="20" fill="#0E2A2F">${r.a.insufficient?"—":xe(sfmt(r.a.sen*10,v.dig)+" "+v.unit+"/decade")}${r.a.sig?"":" (n.s.)"}</text>`;}).join("")}
-   <text x="60" y="585" font-family="${ff}" font-size="16" fill="#4E666B">Data: NASA Data Rods (GLDAS) and AppEEARS (MODIS) ${rows[0].a.from||Y0}–${YEAR_END}, ${xe(S.loc.name)} ${fmt(Math.abs(S.loc.lat),2)}°${S.loc.lat>=0?"N":"S"} ${fmt(Math.abs(S.loc.lon),2)}°${S.loc.lon>=0?"E":"W"} · Global: NASA GISTEMP v4 · Mann-Kendall + Sen's slope. Filled = significant (p &lt; 0.05).</text></svg>`;
+   <text x="60" y="585" font-family="${ff}" font-size="16" fill="#4E666B">Data: NASA POWER (MERRA-2) ${rows[0].a.from||Y0}–${YEAR_END}, ${xe(S.loc.name)} ${fmt(Math.abs(S.loc.lat),2)}°${S.loc.lat>=0?"N":"S"} ${fmt(Math.abs(S.loc.lon),2)}°${S.loc.lon>=0?"E":"W"} · Global: NASA GISTEMP v4 · Mann-Kendall + Sen's slope. Filled = significant (p &lt; 0.05).</text></svg>`;
   try{const img=await loadImg("data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg));const cv=document.createElement("canvas");cv.width=W*2;cv.height=Hh*2;const x=cv.getContext("2d");x.scale(2,2);x.drawImage(img,0,0,W,Hh);
     const blob=await new Promise(r=>cv.toBlob(r,"image/png"));if(!blob)throw new Error("png");await saveFile(`fingerprint-${S.loc.name.replace(/[^\w]+/g,"-").toLowerCase()}.png`,blob,msg);}
   catch(_){if(msg)msg.textContent="This browser couldn't render the PNG.";}}
@@ -1503,7 +1384,7 @@ async function exportFingerprint(d){const msg=$("#fpMsg");if(msg)msg.textContent
 function rankData(){const list=FEATURED.slice();if(S.loc&&!FEATURED.find(f=>f.id===S.loc.id))list.push(S.loc);
   return list.map(p=>{const pd=peek(p);if(!pd||!pd.ok)return null;const a=fullAnalysis(pd.t2m);return a.insufficient?null:{p,a,me:S.loc&&p.id===S.loc.id};}).filter(Boolean).sort((x,y)=>y.a.sen-x.a.sen);}
 function rankHTML(){const rd=rankData(),me=rd.find(r=>r.me);
-  if(rd.length<4||!me)return`<div class="card"><div class="card-head"><h3>${icon("rank")}How does ${esc(S.loc.name)} rank?</h3></div>${skeleton("Fetching the featured places from NASA Data Rods to rank against",["w70","b"])}</div>`;
+  if(rd.length<4||!me)return`<div class="card"><div class="card-head"><h3>${icon("rank")}How does ${esc(S.loc.name)} rank?</h3></div>${skeleton("Fetching the featured places from NASA POWER to rank against",["w70","b"])}</div>`;
   const g=gisRate(me.a.from,me.a.to),gr=g?g.sen*10:null,vals=rd.map(r=>r.a.sen*10).concat(gr!=null?[gr]:[]),lo=Math.min(0,...vals),hi=Math.max(...vals),pad=(hi-lo)*0.08||0.1;
   const w=420,h=150,ml=14,mr=14,X=v=>ml+(v-(lo-pad))/((hi+pad)-(lo-pad))*(w-ml-mr),rankN=rd.indexOf(me)+1;
   const rowsY=[54,76,98];let dots="";rd.forEach((r,i)=>{const v=r.a.sen*10,x=X(v),y=r.me?76:rowsY[i%3],rr=r.me?8:5.5;
@@ -1512,24 +1393,24 @@ function rankHTML(){const rd=rankData(),me=rd.find(r=>r.me);
   const mx=X(me.a.sen*10),anchor=mx>w*0.7?"end":mx<w*0.3?"start":"middle";
   const gl=gr!=null?`<line x1="${X(gr)}" x2="${X(gr)}" y1="34" y2="112" stroke="#0E2A2F" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${X(gr)}" y="28" text-anchor="${X(gr)>w*0.7?"end":"middle"}" font-size="10.5" font-weight="600" fill="#0E2A2F" font-family="Inter, sans-serif">Planet (GISTEMP) ${sfmt(gr,2)}</text>`:"";
   const ratio=gr?me.a.sen*10/gr:null;
-  return`<div class="card lift rankstrip"><div class="card-head"><div><h3>${icon("rank")}How does ${esc(S.loc.name)} rank?</h3><span class="sub">${gterm("t2m","Air temperature")} warming rate, ${gterm("sen","Sen&#39;s slope")} ${me.a.from}–${me.a.to}, °C per decade</span></div><span class="badge live">NASA Data Rods + GISTEMP</span></div>
+  return`<div class="card lift rankstrip"><div class="card-head"><div><h3>${icon("rank")}How does ${esc(S.loc.name)} rank?</h3><span class="sub">${gterm("t2m","Air temperature")} warming rate, ${gterm("sen","Sen&#39;s slope")} ${me.a.from}–${me.a.to}, °C per decade</span></div><span class="badge live">NASA POWER + GISTEMP</span></div>
    <svg viewBox="0 0 ${w} ${h}" role="group" aria-label="Strip chart of warming rates">${ticks}${gl}${dots}<text x="${mx}" y="${anchor==="middle"?146:146}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#0E2A2F" font-family="Inter, sans-serif">${esc(S.loc.name)} ${sfmt(me.a.sen*10,2)}</text></svg>
    <div class="legendrow"><span><i style="background:#D9961A;height:9px;width:9px;border-radius:50%"></i>${esc(S.loc.name)}</span><span><i style="background:#BF4526;height:9px;width:9px;border-radius:50%;opacity:.75"></i>Featured place, significant</span><span><i style="background:#fff;border:1.3px solid #BF4526;height:9px;width:9px;border-radius:50%"></i>Not significant</span><span><i style="background:#0E2A2F"></i>Global rate</span></div>
-   ${two(`Rank ${rankN} of ${rd.length} places by Sen's slope of NASA Data Rods annual air temperature. Global reference: NASA GISTEMP v4 land–ocean index over the same years (${gr!=null?sfmt(gr,2)+" °C decade⁻¹":"n/a"}). Land warms faster than the ocean-dominated global mean, so most land points sit to the right of it.`,
+   ${two(`Rank ${rankN} of ${rd.length} places by Sen's slope of NASA POWER annual T2M. Global reference: NASA GISTEMP v4 land–ocean index over the same years (${gr!=null?sfmt(gr,2)+" °C decade⁻¹":"n/a"}). Land warms faster than the ocean-dominated global mean, so most land points sit to the right of it.`,
      `${esc(S.loc.name)} is number ${rankN} of ${rd.length} for how fast its air is warming${ratio!=null&&me.a.sen>0?`, about ${fmt(ratio,1)}× the rate of the planet as a whole`:""}. Click a dot to explore that place.`)}</div>`;}
 function renderTrends(d){lastTrendData=d;
   if(!d.ok){panel.innerHTML=`${locHeader()}${sectionHead("Trend Explorer","Every variable with a time series is tested automatically for this place.")}${unavailable(d)}${globalBlock()}`;bindGlobal();return;}
   const rows=rankRows(d),sig=rows.filter(r=>r.a.sig);
   const cid=curSeries()||seriesFallback,v=VARS[cid];
   const spatial=FEATURED.map(p=>{const pd=peek(p);if(!pd||!pd.ok)return null;const a=fullAnalysis(pd[cid]);return a.insufficient?null:{p,a};}).filter(Boolean).sort((x,y)=>Math.abs(y.a.sen)-Math.abs(x.a.sen));
-  panel.innerHTML=`${locHeader()}${sectionHead("Trend Explorer",`All ${rows.length} NASA series with enough data were tested for ${esc(S.loc.name)}. ${sig.length} show a statistically significant trend.`)}
+  panel.innerHTML=`${locHeader()}${sectionHead("Trend Explorer",`All ${rows.length} NASA POWER variables were tested for ${esc(S.loc.name)}. ${sig.length} show a statistically significant trend.`)}
   ${fingerprintHTML(d)}
   <div class="sec-title"><h2 style="font-size:19px">Insight feed</h2><p>Ranked automatically: significant trends first, then by ${gterm("snr","signal-to-noise")}.</p></div>
   <div class="feed">${rows.map(insightCard).join("")}</div>
   ${termsHTML()}
   ${rankHTML()}
   <div class="card"><div class="card-head"><div><h3>Where else is it changing?</h3><span class="sub">${esc(v.name)} across featured places with data, fastest change first.</span></div></div>
-   ${spatial.length?`<div class="stattbl"><table><thead><tr><th>Place</th><th>${gterm("sen","Sen&#39;s slope")} /decade</th><th>Test</th></tr></thead><tbody>${spatial.map(r=>`<tr><td><button class="iconbtn" data-place="${esc(r.p.id)}">${esc(r.p.name)}</button></td><td class="num ${r.a.sen>0?"dir-up":"dir-down"}">${sfmt(r.a.sen*10,v.dig)} ${esc(v.unit)}</td><td class="num">${r.a.sig?"significant":"not sig."}</td></tr>`).join("")}</tbody></table></div>`:skeleton("Fetching other featured places from NASA Data Rods",["w70","w40"])}</div>
+   ${spatial.length?`<div class="stattbl"><table><thead><tr><th>Place</th><th>${gterm("sen","Sen&#39;s slope")} /decade</th><th>Test</th></tr></thead><tbody>${spatial.map(r=>`<tr><td><button class="iconbtn" data-place="${esc(r.p.id)}">${esc(r.p.name)}</button></td><td class="num ${r.a.sen>0?"dir-up":"dir-down"}">${sfmt(r.a.sen*10,v.dig)} ${esc(v.unit)}</td><td class="num">${r.a.sig?"significant":"not sig."}</td></tr>`).join("")}</tbody></table></div>`:skeleton("Fetching other featured places from NASA POWER",["w70","w40"])}</div>
   ${globalBlock()}`;
   bindGlobal();
   panel.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>{const it=EXPLORE.find(e=>e.series===b.dataset.show);S.section="explore";setItem(it.id);});
@@ -1579,7 +1460,7 @@ const REF={trees:["EPA: Using Trees and Vegetation to Reduce Heat Islands","http
 const PROBLEMS={heat:{name:"Rising heat",dir:"up"},drying:{name:"Drying land",dir:"down"},wetter:{name:"Heavier rain",dir:"up"},humid:{name:"Humid heat",dir:"up"},stilling:{name:"Calmer air",dir:"down"}};
 function localContext(d){const P=mean(d.prec.vals),Tm=mean(d.t2m.vals),aridF=P<250?1:P<600?0.6:P<1200?0.35:0.15;
   return{P,Tm,aridF,rainUse:clamp((P-100)/600,0,1),hot:Tm>22,cold:Tm<8,sunny:Math.abs(S.loc.lat)<35,urban:!!S.loc.urban,built:S.loc.urban?0.35:0.08,
-    climate:`${Tm>22?"hot":Tm<8?"cold":"mild"} and ${P<250?"very dry":P<600?"dry":P<1200?"moderately wet":"wet"} (mean ${fmt(Tm,1)} °C, ${fmt(P,0)} mm of precipitation a year, NASA Data Rods ${Y0}–${YEAR_END})`};}
+    climate:`${Tm>22?"hot":Tm<8?"cold":"mild"} and ${P<250?"very dry":P<600?"dry":P<1200?"moderately wet":"wet"} (mean ${fmt(Tm,1)} °C, ${fmt(P,0)} mm of precipitation a year, NASA POWER ${Y0}–${YEAR_END})`};}
 function detectProblems(d){const out=[],A={};VAR_ORDER.forEach(id=>A[id]=fullAnalysis(d[id]));
   const pick=(k,ids)=>{const hits=ids.filter(id=>!A[id].insufficient&&A[id].sig&&A[id].dir===PROBLEMS[k].dir);if(hits.length)out.push({k,ev:hits.map(id=>({id,a:A[id]}))});};
   pick("heat",["ts","t2m"]);pick("drying",["soil","prec"]);pick("wetter",["prec"]);if(A.rh.sig&&A.rh.dir==="up"&&A.t2m.sig&&A.t2m.dir==="up")out.push({k:"humid",ev:[{id:"rh",a:A.rh}]});pick("stilling",["wind"]);return{out,A};}
@@ -1613,14 +1494,14 @@ function planRun(c,lv,sen,precTrend){return range(2025,2050).map(y=>{const f=(y-
   const R=100*(1+precTrend*f)-K.treeRun*lv.trees*f-K.groofRun*lv.groofs*bf*f-K.harvestR*lv.harvest*c.rainUse*f;return{y,dT,W,R,G:lv.trees*f+0.3*lv.groofs*c.built*f};});}
 function slider(k,label,val,min,max,step,u,help){return`<div class="slider"><label for="sl-${k}">${esc(label)}</label><output for="sl-${k}">${val} ${esc(u)}</output><input type="range" id="sl-${k}" data-sl="${k}" data-u="${esc(u)}" min="${min}" max="${max}" step="${step}" value="${val}">${help?`<small>${esc(help)}</small>`:""}</div>`;}
 function renderSolutions(d){
-  if(!d.ok){panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab","Options matched to the trends detected in this place.")}${unavailable(d)}<div class="note">The Solutions Lab starts from the trends measured here. Without NASA point data it can't tell which problems exist, so it shows nothing rather than guessing.</div>`;return;}
+  if(!d.ok){panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab","Options matched to the trends detected in this place.")}${unavailable(d)}<div class="note">The Solutions Lab starts from the trends measured here. Without NASA POWER data it can't tell which problems exist, so it shows nothing rather than guessing.</div>`;return;}
   const c=localContext(d),{out:probs,A}=detectProblems(d),L=S.lab;if(L.focus&&!probs.find(p=>p.k===L.focus))L.focus=null;
   const shown=Object.keys(IV).filter(k=>probs.length&&IV[k].for.some(f=>(L.focus?[L.focus]:probs.map(p=>p.k)).includes(f))).map(k=>({k,iv:IV[k],s:IV[k].suit(c)})).sort((a,b)=>b.s[0]-a.s[0]);
   const sen=A.ts.insufficient?0:A.ts.sen,precTrend=A.prec.sig?A.prec.sen*25/Math.max(1,c.P):0;
   const none=planRun(c,{trees:0,cool:0,groofs:0,drip:0,harvest:0},sen,precTrend),plan=planRun(c,L.lv,sen,precTrend),e0=none[25],e1=plan[25];
   const cmpKeys=[...L.cmp].filter(k=>shown.find(s=>s.k===k)).slice(0,3),ts=d.ts;
   panel.innerHTML=`${locHeader()}${sectionHead("Solutions Lab",`What could be done about the trends measured in ${esc(S.loc.name)}, which options suit this place, and what each choice trades off.`)}
-  <div class="card"><span class="label">1 · Detected in the NASA point record</span>
+  <div class="card"><span class="label">1 · Detected in the NASA POWER record</span>
    ${probs.length?`<div class="problems">${probs.map(p=>`<button class="problem" data-prob="${p.k}" aria-pressed="${L.focus===p.k}"><b>${esc(PROBLEMS[p.k].name)}</b>${p.ev.map(e=>`<span>${esc(VARS[e.id].name)}: ${sfmt(e.a.sen*10,VARS[e.id].dig)} ${esc(VARS[e.id].unit)}/decade, p ${pfmt(e.a.p)}</span>`).join("")}</button>`).join("")}</div>
    ${two(`Local climate: ${esc(c.climate)}.`,"These are the problems the measurements actually show here. Tap one to focus the options on it.","Context")}`
    :two("No significant monotonic trend indicating warming, drying, wetting, humid heat or wind stilling was detected (Mann-Kendall, α = 0.05).","The data doesn't show a clear environmental problem trend here, so no targeted fixes are suggested. You can still try the plan simulator below.")}</div>
@@ -1633,12 +1514,12 @@ function renderSolutions(d){
     <tr><th>Fit here</th>${cmpKeys.map(k=>`<td>${suitLabel(IV[k].suit(c)[0])}</td>`).join("")}</tr>${Object.keys(FXNAME).map(f=>`<tr><th>${FXNAME[f]}</th>${cmpKeys.map(k=>`<td class="num">${IV[k].fx[f]||"–"}</td>`).join("")}</tr>`).join("")}
     <tr><th>Time to work</th>${cmpKeys.map(k=>`<td>${esc(IV[k].time)}</td>`).join("")}</tr><tr><th>Cost</th>${cmpKeys.map(k=>`<td>${esc(IV[k].cost.split(".")[0])}</td>`).join("")}</tr><tr><th>Main limit</th>${cmpKeys.map(k=>`<td>${esc(IV[k].limits)}</td>`).join("")}</tr></tbody></table></div></div>`:cmpKeys.length===1?`<p class="hint">Tick one more option to compare.</p>`:""}`:""}
   <div class="sec-title"><h2 style="font-size:19px">3 · Try a plan for 2050</h2><p>Mix options and see how ${esc(S.loc.name)} might respond compared with doing nothing.</p></div>
-  <div class="note sim"><b>${gterm("simulation","Simulation")}, not ${gterm("projobs","observation")}.</b> The solid line is the measured NASA point record. Dashed lines come from a simple what-if model with the assumptions below. They show direction and trade-offs, not guaranteed outcomes.</div>
+  <div class="note sim"><b>${gterm("simulation","Simulation")}, not ${gterm("projobs","observation")}.</b> The solid line is the measured NASA POWER record. Dashed lines come from a simple what-if model with the assumptions below. They show direction and trade-offs, not guaranteed outcomes.</div>
   <div class="presets">${Object.keys(PLAN_PRESETS).map(k=>`<button data-plan="${k}" aria-pressed="${L.preset===k}"><b>${esc(PLAN_PRESETS[k].label)}</b>${esc(PLAN_PRESETS[k].d)}</button>`).join("")}</div>
   <div class="card">${slider("trees","New tree canopy",L.lv.trees,0,20,1,"% of area","Shade and evaporative cooling")}${slider("cool","Cool roofs",L.lv.cool,0,100,5,"% of roofs","Reflect sunlight")}${slider("groofs","Green roofs",L.lv.groofs,0,30,1,"% of roofs","Cooling and rain retention")}${slider("drip","Efficient irrigation",L.lv.drip,0,100,5,"% of farms","Less water lost to evaporation")}${slider("harvest","Rainwater harvesting",L.lv.harvest,0,100,5,"% of buildings",c.P<150?"Little rain to collect here":"Store rain for dry spells")}</div>
   <div class="card"><div class="card-head"><h3 style="font-size:16px">${gterm("skin","Skin temperature")} path</h3><span class="badge sim">Simulated after ${YEAR_END}</span></div>
    <svg class="chart" id="planChart" role="img" aria-label="Observed and simulated skin temperature"></svg>
-   <div class="legendrow"><span><i style="background:${COL.ink}"></i>Observed (NASA)</span><span><i style="background:${COL.violet}"></i>No action (trend continues)</span><span><i style="background:${COL.green}"></i>Your plan</span></div>
+   <div class="legendrow"><span><i style="background:${COL.ink}"></i>Observed (NASA POWER)</span><span><i style="background:${COL.violet}"></i>No action (trend continues)</span><span><i style="background:${COL.green}"></i>Your plan</span></div>
    <div class="stattbl"><table><thead><tr><th>In 2050</th><th>No action</th><th>Your plan</th><th>Difference</th></tr></thead><tbody>
     ${[["Skin temperature change","dT","°C",2,-1],["Water demand (2025 = 100)","W","",0,-1],["Flood runoff (2025 = 100)","R","",0,-1],["Extra green cover","G","pts",1,1]].map(([n,k,u,dg,good])=>{const diff=e1[k]-e0[k],cls=Math.abs(diff)<Math.pow(10,-dg)/2?"":(diff*good>0?"better":"worse");return`<tr><th>${n}</th><td class="num">${k==="dT"?sfmt(e0[k],dg):fmt(e0[k],dg)}${u?" "+u:""}</td><td class="num">${k==="dT"?sfmt(e1[k],dg):fmt(e1[k],dg)}${u?" "+u:""}</td><td class="num ${cls}">${sfmt(diff,dg)}</td></tr>`;}).join("")}</tbody></table></div>
    ${two(`Simulated 2050 skin-temperature change: ${sfmt(e0.dT,2)} °C with no action versus ${sfmt(e1.dT,2)} °C under this plan; water-demand index ${fmt(e0.W,0)} vs ${fmt(e1.W,0)}; runoff index ${fmt(e0.R,0)} vs ${fmt(e1.R,0)}.`,planNarrative(c,e0,e1),"Simulation result")}</div>
@@ -1663,13 +1544,13 @@ function planNarrative(c,e0,e1){const dT=e0.dT-e1.dT,dW=e1.W-e0.W,dR=e0.R-e1.R,p
   if(dR>1)p.push(`while reducing storm runoff (${fmt(dR,0)} points)`);return p.join(", ")+". These are what-if directions, not predictions.";}
 /* ---- Data & Methods ---- */
 function renderAbout(){
-  const vrows=VAR_ORDER.map(id=>{const v=VARS[id];return`<tr><td><b>${esc(v.name)}</b><br><code>${esc(v.code)}</code> · ${esc(v.unit)}</td><td>${esc(v.spatial)}<br><span class="hint">${esc(v.temporal)} · ${esc(v.range)}</span></td><td>${esc(v.limits)}</td></tr>`;}).join("");
+  const vrows=VAR_ORDER.map(id=>{const v=VARS[id];return`<tr><td><b>${esc(v.name)}</b><br><code>${esc(v.power)}</code> · ${esc(v.unit)}</td><td>${esc(v.spatial)}<br><span class="hint">${esc(v.temporal)} · ${esc(v.range)}</span></td><td>${esc(v.limits)}</td></tr>`;}).join("");
   const lrows=Object.keys(LAYERS).map(k=>{const L=LAYERS[k];return`<tr><td><b>${esc(L.name)}</b><br><code>${esc(L.gibs)}</code></td><td>${esc(L.res)}</td><td>${esc(L.cover)}</td></tr>`;}).join("");
   let h=`${sectionHead("Data & Methods","Where every number and image comes from, how trends are tested, and the limits.")}
   <div class="btnrow"><button class="btn" id="aboutGloss">${icon("bookopen","sm")}Open the glossary (${GLOSS_KEYS.length} terms)</button></div>
   <div class="card"><h3>What is real, what is simulated</h3><div class="stattbl"><table><tbody>
-   <tr><td><span class="badge real">Real data</span></td><td>Global temperature record fetched live from the NASA GISTEMP v4 CSV.</td></tr>
-   <tr><td>${liveBadge}</td><td>Annual series fetched live from NASA Data Rods (and AppEEARS after sign-in) for the exact point you chose.</td></tr>
+   <tr><td><span class="badge real">Real data</span></td><td>Global records copied from NASA GISTEMP, NOAA GML and NSIDC files.</td></tr>
+   <tr><td>${liveBadge}</td><td>Annual series fetched from NASA POWER for the exact point you chose.</td></tr>
    <tr><td><span class="badge real">NASA GIBS</span></td><td>Satellite imagery on the globe, the map and in Before &amp; After, requested for the chosen date.</td></tr>
    <tr><td><span class="badge sim">Simulated</span></td><td>Only the Solutions Lab plan curves, from stated assumptions.</td></tr>
    <tr><td><span class="badge na">Unavailable</span></td><td>Shown when a source can't be reached. Nothing is substituted.</td></tr></tbody></table></div></div>
@@ -1682,19 +1563,19 @@ function renderAbout(){
    <li><b>Connections</b> use Pearson correlation on detrended series.</li>
    <li><b>Before &amp; After</b> requests the same bounding box, layer and month for both years.</li>
    <li>Not yet applied: false-discovery-rate correction across places, change-point detection.</li></ol></div>
-  <div class="card"><h3>Time series · NASA Data Rods &amp; AppEEARS</h3><p class="hint"><a href="https://disc.gsfc.nasa.gov/information/tools?title=Hydrology%20Data%20Rods" target="_blank" rel="noopener">Hydrology Data Rods ↗</a> · <a href="https://appeears.earthdatacloud.nasa.gov/" target="_blank" rel="noopener">AppEEARS ↗</a> · <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">GISTEMP ↗</a></p><div class="stattbl"><table><thead><tr><th>Variable</th><th>Resolution &amp; range</th><th>Limitations</th></tr></thead><tbody>${vrows}</tbody></table></div></div>
-  <div class="card"><h3>Imagery · NASA GIBS</h3><div class="stattbl"><table><thead><tr><th>Layer</th><th>Resolution</th><th>Coverage</th></tr></thead><tbody>${lrows}</tbody></table></div><p class="hint">Map tiles: <code>gibs.earthdata.nasa.gov/wmts/epsg3857/best/</code>. Globe and Before &amp; After images: <code>gibs.earthdata.nasa.gov/wms/epsg4326/best/</code>. Imagery colours are GIBS palettes; numeric values come from Data Rods and AppEEARS, not from image pixels.</p></div>
+  <div class="card"><h3>Time series · NASA POWER</h3><p class="hint"><a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener">power.larc.nasa.gov ↗</a> · ${esc(POWER_META.dataset)}</p><div class="stattbl"><table><thead><tr><th>Variable</th><th>Resolution &amp; range</th><th>Limitations</th></tr></thead><tbody>${vrows}</tbody></table></div></div>
+  <div class="card"><h3>Imagery · NASA GIBS</h3><div class="stattbl"><table><thead><tr><th>Layer</th><th>Resolution</th><th>Coverage</th></tr></thead><tbody>${lrows}</tbody></table></div><p class="hint">Map tiles: <code>gibs.earthdata.nasa.gov/wmts/epsg3857/best/</code>. Globe and Before &amp; After images: <code>gibs.earthdata.nasa.gov/wms/epsg4326/best/</code>. Imagery colours are GIBS palettes; numeric values come from NASA POWER, not from image pixels.</p></div>
   <div class="card"><h3>Known limitations</h3><ul class="list">
-   <li>GLDAS cells are about 25 km wide, so they blur city-scale heat islands.</li>
-   <li>Water, night lights, fires, aerosols, snow and sea temperature are imagery only. Land surface temperature and NDVI trends need a free Earthdata login for NASA AppEEARS and can take a few minutes per place.</li>
-   <li>Point series and satellite imagery both start in 2000 (GLDAS 2.1 and MODIS), so the baseline is 2000–2010.</li>
-   <li>This preview blocks outside requests, so NASA imagery, NASA point data, city search and "Use my location" work only on a normal website.</li></ul></div>
+   <li>NASA POWER cells are about 50 km wide, so they blur city-scale heat islands.</li>
+   <li>Vegetation, water, night lights, fires, aerosols, snow and sea temperature are imagery only; trend tests need point time series that aren't connected yet.</li>
+   <li>Satellite imagery here starts in 2000 (MODIS); earlier years have point data but no images.</li>
+   <li>This preview blocks outside requests, so NASA imagery, NASA POWER, city search and "Use my location" work only on a normal website.</li></ul></div>
   <div class="card"><h3>Where each view's numbers come from</h3><div class="stattbl"><table><tbody>
-   <tr><th>Place fingerprint</th><td>Mann-Kendall and Sen's slope on the annual Data Rods and AppEEARS series; headline compares Data Rods air temperature with the NASA GISTEMP v4 rate over the same years.</td></tr>
-   <tr><th>How does my place rank?</th><td>Sen's slope of Data Rods air temperature for every featured place that loaded, against NASA GISTEMP v4.</td></tr>
-   <tr><th>Climate stripes</th><td>One stripe per year: the selected annual value minus its 2000–2010 mean. Grey = missing year.</td></tr>
-   <tr><th>Your lifetime lens</th><td>Sen's slope recomputed on the same series from your birth year, if it falls in the record (minimum 8 years). The year is kept only in this browser's storage.</td></tr>
-   <tr><th>Insight feed</th><td>All the tests, ranked: significant first, then by signal-to-noise ratio.</td></tr>
+   <tr><th>Place fingerprint</th><td>Mann-Kendall and Sen's slope on the six NASA POWER annual series; headline compares POWER T2M with the NASA GISTEMP v4 rate over the same years.</td></tr>
+   <tr><th>How does my place rank?</th><td>Sen's slope of NASA POWER T2M for every featured place that loaded, against NASA GISTEMP v4.</td></tr>
+   <tr><th>Climate stripes</th><td>One stripe per year: the selected NASA POWER annual value minus its 1981–2010 mean. Grey = missing year.</td></tr>
+   <tr><th>Your lifetime lens</th><td>Sen's slope recomputed on the same POWER series from your birth year (minimum 8 years). The year is kept only in this browser's storage.</td></tr>
+   <tr><th>Insight feed</th><td>All six POWER tests, ranked: significant first, then by signal-to-noise ratio.</td></tr>
    <tr><th>Guided story</th><td>Narrates the same tests, the GISTEMP comparison, detrended correlations and the Solutions Lab ranking. No extra data.</td></tr>
    <tr><th>Satellite time-lapse</th><td>NASA GIBS WMS frames for the Before &amp; After bounding box, one per year (same month) or per month. Frames that fail are marked unavailable and skipped.</td></tr>
    <tr><th>Day/night shading on the globe</th><td>Computed from today's date and UTC time (approximate subsolar point). It is astronomy, not a dataset.</td></tr>
@@ -1708,7 +1589,7 @@ function renderAbout(){
 function cmpBBox(loc){if(loc.kind==="country"){const c=COUNTRIES.find(x=>x.name===loc.name);if(c){const b=c.bb,pl=(b[3]-b[1])*0.06+0.2,po=(b[2]-b[0])*0.06+0.2;return[b[1]-pl,b[0]-po,b[3]+pl,b[2]+po];}}
   const hl=1.0,ho=1.0/Math.max(0.3,Math.cos(loc.lat*D));return[loc.lat-hl,loc.lon-ho,loc.lat+hl,loc.lon+ho];}
 function cmpLayer(){if(S.cmp.img==="photo")return LAYERS.truecolor;return curLayer()||LAYERS.truecolor;}
-function valueText(id,d,y){if(!id||!d||!d.ok)return null;const s=d[id],v=s.vals[y-s.start];if(v==null)return null;const ref=mean(s.vals.slice(0,BASE_N));return{v,anom:ref==null?null:v-ref,ref};}
+function valueText(id,d,y){if(!id||!d||!d.ok)return null;const s=d[id],v=s.vals[y-s.start];if(v==null)return null;const ref=mean(s.vals.slice(0,30));return{v,anom:ref==null?null:v-ref,ref};}
 function renderCompare(){
   const body=$("#cmpBody");
   $("#cA").innerHTML=range(Y0,YEAR_END).map(y=>`<option ${y===S.cmp.a?"selected":""}>${y}</option>`).join("");$("#cB").innerHTML=range(Y0,YEAR_END).map(y=>`<option ${y===S.cmp.b?"selected":""}>${y}</option>`).join("");
@@ -1724,9 +1605,9 @@ function renderCompare(){
   const fig=(y,role)=>{const ok=covers(L,y,m),t=gibsTime(L,y,m);const base=L.ext==="png"?wmsURL(LAYERS.bluemarble,"",b,Wp,Hp):null,ov=ok?wmsURL(L,t,b,Wp,Hp):null;
     const px=((loc.lon-b[1])/lonSpan*100),py=((b[2]-loc.lat)/latSpan*100);const vt=valueText(id,d,y),v=id?VARS[id]:null;
     const sci=!ok?`No ${esc(L.name)} for ${MONTHS_L[m-1]} ${y}: ${L.period==="static"?"single snapshot":"record starts "+L.start}.`
-      :`${esc(L.name)}, ${L.period==="static"?esc(L.cover):(L.period==="monthly"?"monthly mean for "+MONTHS_L[m-1]+" "+y:L.period==="8day"?"8-day composite starting "+t:"daily image for "+t)} (${esc(L.res)}).`+(vt?` NASA ${esc(v.name.toLowerCase())}, ${y} annual mean: ${fmt(vt.v,v.dig)} ${esc(v.unit)} (${sfmt(vt.anom,v.dig)} ${esc(v.unit)} vs 2000–2010).`:"");
+      :`${esc(L.name)}, ${L.period==="static"?esc(L.cover):(L.period==="monthly"?"monthly mean for "+MONTHS_L[m-1]+" "+y:L.period==="8day"?"8-day composite starting "+t:"daily image for "+t)} (${esc(L.res)}).`+(vt?` NASA POWER ${esc(v.name.toLowerCase())}, ${y} annual mean: ${fmt(vt.v,v.dig)} ${esc(v.unit)} (${sfmt(vt.anom,v.dig)} ${esc(v.unit)} vs 1981–2010).`:"");
     const plain=!ok?"There is no satellite image for this year, so only point measurements (if loaded) can describe it."
-      :`${layerPlain(L)}${vt?` Over the whole of ${y}, ${esc(v.name.toLowerCase())} here was ${Math.abs(vt.anom)<v.span*0.1?"close to":vt.anom>0?"above":"below"} its 2000–2010 average${Math.abs(vt.anom)>=v.span*0.1?` by ${fmt(Math.abs(vt.anom),v.dig)} ${esc(v.unit)}`:""}.`:id&&d&&!d.ok?" Point measurements from NASA Data Rods couldn't be loaded in this view.":""}`;
+      :`${layerPlain(L)}${vt?` Over the whole of ${y}, ${esc(v.name.toLowerCase())} here was ${Math.abs(vt.anom)<v.span*0.1?"close to":vt.anom>0?"above":"below"} its 1981–2010 average${Math.abs(vt.anom)>=v.span*0.1?` by ${fmt(Math.abs(vt.anom),v.dig)} ${esc(v.unit)}`:""}.`:id&&d&&!d.ok?" Point measurements from NASA POWER couldn't be loaded in this view.":""}`;
     return`<figure><div class="imgbox${ok?" loading":""}" style="aspect-ratio:${Wp}/${Hp}">${base?`<img alt="" src="${base}" data-role="base">`:""}${ov?`<img alt="${esc(L.name)} over ${esc(loc.name)}, ${y}" src="${ov}" data-role="ov" ${L.ext==="png"?'style="opacity:.9"':""}>`:""}
       <div class="ph" ${ok?"hidden":""}>${ok?"":"No image for this year"}</div><span class="yearTag">${role} · ${y}</span><span class="pin" style="left:${px}%;top:${py}%"></span></div>
       <figcaption><div class="cap"><b>${role}: ${y}</b>${ok?`<a class="hint" href="${worldviewURL(L,t,b)}" target="_blank" rel="noopener">Open in NASA Worldview ↗</a>`:""}</div>${two(sci,plain)}</figcaption></figure>`;};
@@ -1739,7 +1620,7 @@ function renderCompare(){
         `${esc(loc.name)} was ${Math.abs(ch)<(an.sd||0)*0.5?"about the same":ch>0?"higher":"lower"} in ${S.cmp.b} than in ${S.cmp.a}. ${exp!=null&&an.sig?`That fits the long-term ${an.dir==="up"?"rise":"fall"} measured since ${an.from}`:"Single years can differ just because of weather"}${Math.abs(ch-(exp||0))>(an.sd||0)*1.5?", but the gap between these two particular years is unusually large or small, so part of it is natural year-to-year variation":""}.`,"Interpretation")}</div>
       <div>${two(`The images show ${esc(L.name)} for the same bounding box and ${L.period==="static"?"product":"calendar month"}. Colours follow the GIBS palette; ${L.period==="daily"?"daily images can include clouds or gaps":"composites reduce cloud effects"}.`,"Look for the same spots in both images. Colour differences at the amber pin show how this place looked in each period; the numbers on the left are the measured yearly averages.","Reading the images")}</div></div>
       <svg class="chart" id="cmpChart" role="img" aria-label="${esc(v.name)} with the two compared years marked" style="max-width:900px"></svg></div>`;}}
-  else if(id&&d&&!d.ok)changeHTML=`<div class="card"><h3>What changed</h3>${unavailable(d)}<p class="hint">The images above are the observations; numeric change needs NASA point data.</p></div>`;
+  else if(id&&d&&!d.ok)changeHTML=`<div class="card"><h3>What changed</h3>${unavailable(d)}<p class="hint">The images above are the observations; numeric change needs NASA POWER data.</p></div>`;
   else if(!id)changeHTML=`<div class="card">${two(`${esc(it.name)} has no connected point time series, so change is assessed visually from the imagery only.`,"Compare the two images directly: the same area, the same month, two years. No numbers are shown because none are measured here.","Interpretation")}</div>`;
   body.innerHTML=`<div class="pair">${fig(S.cmp.a,"Before")}${fig(S.cmp.b,"After")}</div>${changeHTML}`;
   body.querySelectorAll("img[data-role=ov]").forEach(img=>{const box=img.closest(".imgbox");if(img.complete&&img.naturalWidth)box.classList.remove("loading");else img.addEventListener("load",()=>box.classList.remove("loading"));});
@@ -1807,29 +1688,29 @@ const STORY={i:0,steps:[]};
 function storyFly(mul){const l=S.loc;if(!l)return;const k=kMin*mul;if(mode==="globe")globeTo(l.lat,l.lon,G.r0*1.25,800,()=>{enterMap(l.lat,l.lon,kMin*1.6);flyTo(l.lat,l.lon,k,1000);});else flyTo(l.lat,l.lon,k,1100);}
 function goSection(sec){if(S.section!==sec){S.section=sec;}renderPanel();}
 function buildStory(d){const l=S.loc,steps=[],nm=esc(l.name);
-  if(!d.ok){steps.push({t:`Meet ${nm}`,p:"The NASA Data Rods record for this point couldn't be loaded here, so the story can only show imagery.",sci:"No trend statistics are shown because none were measured in this view.",go:()=>{goSection("explore");storyFly(5);}});
+  if(!d.ok){steps.push({t:`Meet ${nm}`,p:"The NASA POWER record for this point couldn't be loaded here, so the story can only show imagery.",sci:"No trend statistics are shown because none were measured in this view.",go:()=>{goSection("explore");storyFly(5);}});
     steps.push({t:"Seen from space",p:"Below the map, Before & After shows NASA GIBS imagery of the same box in two years, and the time-lapse plays every year in between.",sci:"Imagery: NASA GIBS WMS, same bounding box and month for every frame.",go:()=>{storyFly(6);}});return steps;}
   const c=localContext(d),rows=rankRows(d),sig=rows.filter(r=>r.a.sig),top=sig[0]||rows[0],tv=VARS[top.id];
-  steps.push({t:`Meet ${nm}`,p:`${nm} has a ${esc(c.climate)}. Every number in this story describes the ~25 km NASA GLDAS grid cell around this point (MODIS series, if loaded, are one pixel).`,sci:`Source: NASA GES DISC Hydrology Data Rods (GLDAS Noah 0.25°, monthly), annual means ${Y0}–${YEAR_END}.`,go:()=>{goSection("explore");setYear(YEAR_END);storyFly(5);}});
+  steps.push({t:`Meet ${nm}`,p:`${nm} has a ${esc(c.climate)}. Every number in this story describes the ~50 km NASA POWER grid cell around this point.`,sci:`Source: NASA POWER monthly point API (MERRA-2 reanalysis), annual means ${Y0}–${YEAR_END}.`,go:()=>{goSection("explore");setYear(YEAR_END);storyFly(5);}});
   steps.push({t:"What's changing?",p:sig.length?`The clearest change is ${esc(tv.name.toLowerCase())}: ${sfmt(top.a.total,tv.dig)} ${esc(tv.unit)} since ${top.a.from}, about ${sfmt(top.a.sen*10,tv.dig)} ${esc(tv.unit)} every ten years. ${sig.length} of ${rows.length} variables show a significant trend.`:`None of the ${rows.length} variables shows a significant trend here. ${esc(tv.name)} comes closest.`,
     sci:`Ranked by Mann-Kendall significance, then signal-to-noise ratio. Sen's slope ${sfmt(top.a.sen*10,tv.dig)} ${esc(tv.unit)} decade⁻¹.`,go:()=>{const it=EXPLORE.find(e=>e.series===top.id);S.section="explore";if(it&&S.item!==it.id)setItem(it.id);else renderPanel();storyFly(8);}});
   steps.push({t:"Is it real, or just weather?",p:top.a.sig?`A steady change this strong would happen by chance less than ${top.a.p<0.001?"0.1":fmt(top.a.p*100,1)}% of the time. It is ${IMP[top.a.importance]}.${top.a.toe?` It became clearly larger than natural swings around ${top.a.toe}; the timeline has moved there.`:""}`:"The ups and downs are too large compared with any steady change, so this could be chance.",
     sci:`Mann-Kendall p ${pfmt(top.a.p)}${top.a.pw?" after pre-whitening":""}; 95% CI ${sfmt(top.a.senLo*10,tv.dig)} to ${sfmt(top.a.senHi*10,tv.dig)} ${esc(tv.unit)} decade⁻¹; signal-to-noise ${fmt(top.a.snr,1)}${top.a.toe?`; emergence year ${top.a.toe}`:""}.`,go:()=>{goSection("trends");setYear(top.a.toe||top.a.from);storyFly(11);}});
   const ta=fullAnalysis(d.t2m),g=ta.insufficient?null:gisRate(ta.from,ta.to);
   steps.push({t:"Faster or slower than the planet?",p:g&&!ta.insufficient?`${nm}'s air is ${ta.sen>0?"warming":"cooling"} at ${sfmt(ta.sen*10,2)} °C per decade. The whole planet warmed at ${sfmt(g.sen*10,2)} °C per decade over the same years${ta.sen>0&&g.sen>0?`, so this place runs at ${fmt(ta.sen/g.sen,1)}× the global pace`:""}. The map zooms out to show the region.`:"Air temperature isn't available to compare with the global record.",
-    sci:`Data Rods air-temperature Sen's slope vs NASA GISTEMP v4 Sen's slope, ${ta.from||Y0}–${ta.to||YEAR_END}. Land warms faster than the ocean-dominated global mean.`,go:()=>{setYear(YEAR_END);storyFly(1.7);}});
+    sci:`NASA POWER T2M Sen's slope vs NASA GISTEMP v4 Sen's slope, ${ta.from||Y0}–${ta.to||YEAR_END}. Land warms faster than the ocean-dominated global mean.`,go:()=>{setYear(YEAR_END);storyFly(1.7);}});
   const sigIds=sig.map(r=>r.id),mechs=Object.keys(MECH).filter(k=>{const[a,b]=k.split("|");return sigIds.includes(a)&&sigIds.includes(b);});
-  steps.push({t:"Why might this be happening?",p:mechs.length?`Known physics links some of these changes: ${mechs.slice(0,2).map(k=>esc(MECH[k][1])).join(" ")} These are possible explanations, not proof for this exact place.`:`No pair of significant trends here has a textbook link. ${l.urban?"In cities, an urban heat island can add warmth, but a 25 km cell mixes city and countryside.":"Regional and global warming, land use and rainfall shifts are common drivers."} The data alone can't name a cause.`,
+  steps.push({t:"Why might this be happening?",p:mechs.length?`Known physics links some of these changes: ${mechs.slice(0,2).map(k=>esc(MECH[k][1])).join(" ")} These are possible explanations, not proof for this exact place.`:`No pair of significant trends here has a textbook link. ${l.urban?"In cities, an urban heat island can add warmth, but a 50 km cell mixes city and countryside.":"Regional and global warming, land use and rainfall shifts are common drivers."} The data alone can't name a cause.`,
     sci:mechs.length?mechs.slice(0,2).map(k=>esc(MECH[k][0])).join(" "):"Attribution needs controlled experiments or models; this tool only shows co-occurring trends.",go:()=>{storyFly(3);}});
   const pick=(sigIds.length>=2?sigIds:rows.map(r=>r.id)).slice(0,3);let pairTxt="",pairSci="";
   if(pick.length>=2){const A=pick[0],B=pick[1],xs=[],ya=[],yb=[];range(Y0,YEAR_END).forEach(y=>{const va=d[A].vals[y-Y0],vb=d[B].vals[y-Y0];if(va!=null&&vb!=null){xs.push(y);ya.push(va);yb.push(vb);}});const pr=xs.length>5?pearson(detrend(xs,ya),detrend(xs,yb)):null;
     if(pr){pairTxt=`Year to year, ${esc(VARS[A].name.toLowerCase())} and ${esc(VARS[B].name.toLowerCase())} ${Math.abs(pr.r)<0.3||pr.p>=0.05?"don't move together reliably":pr.r>0?"tend to rise and fall together":"tend to move in opposite directions"}. Earth Connections, on the right, shows them side by side.`;pairSci=`Detrended Pearson r = ${fmt(pr.r,2)} (p ${pfmt(pr.p)}, n = ${pr.n}). Correlation is not causation.`;}}
   steps.push({t:"What's connected?",p:pairTxt||"There aren't enough variables with data to compare here.",sci:pairSci||"Needs two overlapping annual series.",go:()=>{S.connect=pick.length>=2?pick:["ts","soil","prec"];goSection("connect");storyFly(4);}});
-  const a0=2003;steps.push({t:"Seen from space",p:`Below the map, Before & After now compares ${a0} with ${YEAR_END} for the same box, and the time-lapse can play every year in between. Satellite pictures start in 2000.`,sci:"NASA GIBS imagery, same bounding box and calendar month in every image. Colours follow the GIBS palettes; numbers come from NASA Data Rods and AppEEARS, not pixels.",
+  const a0=2003;steps.push({t:"Seen from space",p:`Below the map, Before & After now compares ${a0} with ${YEAR_END} for the same box, and the time-lapse can play every year in between. Satellite pictures start in 2000.`,sci:"NASA GIBS imagery, same bounding box and calendar month in every image. Colours follow the GIBS palettes; numbers come from NASA POWER, not pixels.",
     go:()=>{if(!curLayer())setItem("lst");S.cmp.a=a0;S.cmp.b=YEAR_END;setYear(YEAR_END,{fromCompare:true});renderCompare();storyFly(6);},extra:`<button class="btn small" data-story-cmp>Jump to Before &amp; After ↓</button>`});
   const {out:probs}=detectProblems(d),best=Object.keys(IV).filter(k=>probs.length&&IV[k].for.some(f=>probs.map(p=>p.k).includes(f))).map(k=>({k,s:IV[k].suit(c)[0]})).sort((x,y)=>y.s-x.s)[0];
   steps.push({t:"What can be done?",p:probs.length?`The record shows ${probs.map(p=>esc(PROBLEMS[p.k].name.toLowerCase())).join(" and ")}. The best-fitting option for this climate is ${best?esc(IV[best.k].name.toLowerCase()):"listed in the Solutions Lab"}. Try mixing options in the 2050 plan simulator.`:"No problem trend was detected, so the Solutions Lab suggests no targeted fixes. You can still test a plan.",
-    sci:"Options ranked by suitability rules using local NASA Data Rods climate. The 2050 plan is a labelled simulation, not a forecast.",go:()=>{goSection("solutions");storyFly(9);}});
+    sci:"Options ranked by suitability rules using local NASA POWER climate. The 2050 plan is a labelled simulation, not a forecast.",go:()=>{goSection("solutions");storyFly(9);}});
   return steps;}
 async function startStory(){stopPlay();if(!S.loc){flash("Pick a place first, then press Guided story. Try Cairo from the featured places.","warn",7000);$("#q").focus();return;}
   const box=$("#story");box.hidden=false;box.innerHTML=skeleton("Preparing the story from NASA data",["w70","w40"]);const d=await load(S.loc);STORY.steps=buildStory(d);STORY.i=0;showStep(0,true);}
@@ -1913,7 +1794,6 @@ function selectLocation(loc,opts){if(!loc)return;if(S.loc&&locKey(S.loc)!==locKe
   if(window.innerWidth<=900)setTimeout(()=>$("#panel").scrollIntoView({behavior:"smooth",block:"start"}),1200);}
 $$("nav.sections button").forEach(b=>b.onclick=()=>{S.section=b.dataset.sec;renderPanel();positionInk();if(window.innerWidth<=900)$("#panel").scrollIntoView({behavior:"smooth",block:"start"});});
 function boot(){
-  yr.min=Y0;yr.max=YEAR_END;loadGistemp().then(()=>{if(apIdle())renderPanel();});
   if(saved.item&&EXPLORE.find(e=>e.id===saved.item))S.item=saved.item;
   if(window.innerWidth<=900||window.innerHeight<700){$("#explore").classList.add("collapsed");$("#exploreToggle").textContent="Show";$("#exploreToggle").setAttribute("aria-expanded","false");}
   hydrateIcons(document);$("#play").innerHTML=icon("play");G.intro=reduceMotion?0:performance.now();
