@@ -6,6 +6,11 @@
 <meta name="description" content="Detect real Earth-system trends with NASA Giovanni time series and NASA AppEEARS MODIS imagery. NASA Space Apps 2026.">
 <title>Earth Trend Detective</title>
 <style>
+/* Fonts: stored in vendor/fonts (SIL Open Font License 1.1); no font service is contacted. */
+@font-face{font-family:"Space Grotesk";src:url(vendor/fonts/space-grotesk-latin-wght-normal.woff2) format("woff2");font-weight:300 700;font-display:swap}
+@font-face{font-family:"Inter";src:url(vendor/fonts/inter-latin-wght-normal.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(vendor/fonts/jetbrains-mono-latin-wght-normal.woff2) format("woff2");font-weight:100 800;font-display:swap}
+@font-face{font-family:"Fredoka";src:url(vendor/fonts/fredoka-latin-600-normal.woff2) format("woff2");font-weight:600;font-display:swap}
 /* Layout: map-first observation deck. The Earth view (globe → map) fills the first screen; translucent instrument panels float over it
    (explore list left, active section right, timeline bottom). Before & After and the time-lapse sit directly below the map.
    One deliberate light look ("pale mist"): colour carries meaning — coral = heating/drying, blue = cooling/wetting, violet = simulation, amber = your selection. */
@@ -24,7 +29,7 @@
   --shadow:0 1px 1px rgba(14,42,47,.04),0 4px 10px rgba(14,42,47,.05),0 18px 40px -12px rgba(14,42,47,.16);
   --shadow-lift:0 2px 2px rgba(14,42,47,.05),0 10px 22px rgba(14,42,47,.08),0 28px 50px -18px rgba(14,42,47,.24);
   --r:18px; --r-sm:12px;
-  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-display:"Space Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
   --f-body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
   --f-mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --panelW:452px; --leftW:300px;
@@ -303,6 +308,49 @@ ol.list,ul.list{margin:0;padding-left:18px;display:flex;flex-direction:column;ga
 .closebtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer}
 .closebtn:hover{border-color:var(--teal);color:var(--teal)}
 
+/* astronaut avatar (links to game.html) */
+.astro{position:absolute;z-index:19;left:calc(var(--leftW) + 34px);bottom:104px;width:74px;height:92px;display:block;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.explore.collapsed~.astro{left:30px}
+.astro svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 10px rgba(14,42,47,.18))}
+.astro .bob{animation:astroBounce 1.7s cubic-bezier(.33,.7,.4,1) infinite;transform-box:fill-box;transform-origin:50% 100%}
+.astro .shadow{animation:astroShadow 1.7s cubic-bezier(.33,.7,.4,1) infinite;transform-box:fill-box;transform-origin:center}
+.astro .wave{animation:astroWave 1.3s ease-in-out infinite;transform-box:fill-box;transform-origin:10% 90%}
+.astro .eye{animation:astroBlink 4.2s infinite;transform-box:fill-box;transform-origin:center}
+.astro .glint{animation:astroGlint 3.4s ease-in-out infinite}
+.astro:hover .bob,.astro:focus-visible .bob{animation-duration:.9s}
+.astro:hover .shadow,.astro:focus-visible .shadow{animation-duration:.9s}
+.astro .bubble{position:absolute;left:58px;bottom:70px;white-space:nowrap;font-family:"Fredoka","Inter",system-ui,sans-serif;font-weight:600;font-size:14px;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:14px 14px 14px 4px;padding:5px 11px;box-shadow:var(--shadow);opacity:0;transform:translateY(6px) scale(.9);transform-origin:0 100%;transition:opacity .2s,transform .25s var(--ease);pointer-events:none;animation:bubbleHello 5s 1.8s both}
+.astro:hover .bubble,.astro:focus-visible .bubble{opacity:1;transform:none;animation:none}
+.astro:focus-visible{outline:none}.astro:focus-visible svg{outline:2.5px solid var(--teal);outline-offset:4px;border-radius:14px}
+@keyframes astroBounce{0%,100%{transform:translateY(0) scale(1.04,.96)}12%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-15px) scale(.97,1.03)}70%{transform:translateY(0) scale(1.05,.95)}82%{transform:translateY(-3px) scale(1,1)}}
+@keyframes astroShadow{0%,100%{transform:scale(1);opacity:.32}45%{transform:scale(.62);opacity:.14}70%{transform:scale(1.05);opacity:.34}}
+@keyframes astroWave{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(28deg)}}
+@keyframes astroBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes astroGlint{0%,100%{opacity:.85}50%{opacity:.45}}
+@keyframes bubbleHello{0%{opacity:0;transform:translateY(6px) scale(.9)}8%,85%{opacity:1;transform:none}100%{opacity:0;transform:translateY(6px) scale(.9)}}
+@media (max-width:900px){.astro{position:fixed;left:auto;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:58px;height:72px;z-index:45}.explore.collapsed~.astro{left:auto}.astro .bubble{left:auto;right:46px;bottom:58px;border-radius:14px 14px 4px 14px}}
+/* dashboard */
+.dash{position:fixed;z-index:111;inset:max(14px,env(safe-area-inset-top,0px)) 14px 14px;background:var(--page);border-radius:22px;box-shadow:0 30px 80px rgba(14,42,47,.35);display:flex;flex-direction:column;overflow:hidden;animation:pop .25s var(--ease)}
+.dash>header{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
+.dash>header h2{font-size:24px;display:flex;gap:9px;align-items:center}
+.dash .dbody{overflow:auto;padding:18px 20px 28px;display:flex;flex-direction:column;gap:16px}
+.dgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.dgrid2{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
+.kpirow{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.kpi .v{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:-.02em;line-height:1.1}
+.kpi .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi small{font-size:12.5px;color:var(--muted)}
+.vtile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px 14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:transform .2s var(--ease),box-shadow .2s,border-color .2s}
+.vtile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);border-color:var(--line2)}
+.vtile .th{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.vtile .th b{font-family:var(--f-display);font-size:16px;font-weight:650}
+.vtile .th span{font-family:var(--f-mono);font-size:10.5px;color:var(--faint)}
+.vtile dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;margin:0}
+.vtile dt{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.vtile dd{margin:0;font-family:var(--f-mono);font-size:12.5px}
+.dash svg.dchart{width:100%;height:auto;display:block}
+@media (max-width:900px){.dgrid2{grid-template-columns:minmax(0,1fr)}.dash{inset:0;border-radius:0}}
 /* month-by-month bars and quality line */
 .qcrow{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}
 .qcrow b{color:var(--ink);font-family:var(--f-mono);font-weight:500}
@@ -455,6 +503,7 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
   </nav>
   <div class="hdr-actions">
     <button class="hbtn accent" id="storyBtn" type="button" data-icon="route"><span class="t">Guided story</span></button>
+    <button class="hbtn" id="dashBtn" type="button" data-icon="dash" aria-haspopup="dialog"><span class="t">Dashboard</span></button>
     <button class="hbtn" id="glossBtn" type="button" data-icon="bookopen" aria-haspopup="dialog"><span class="t">Glossary</span></button>
     <button class="hbtn" id="shareBtn" type="button" data-icon="link" aria-label="Copy a link to this exact view"><span class="t">Share</span></button>
   </div>
@@ -478,6 +527,31 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
     </aside>
     <div class="zoombtns"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zglobe" aria-label="Back to the globe" title="Back to the globe" data-icon="globe"></button></div>
     <div class="story float" id="story" role="region" aria-label="Guided story" hidden></div>
+    <a class="astro" id="astro" href="game.html" aria-label="Play the Earth Trend Detective game">
+      <span class="bubble" aria-hidden="true">Play the game!</span>
+      <svg viewBox="0 0 100 124" aria-hidden="true">
+        <ellipse class="shadow" cx="50" cy="118" rx="24" ry="4.5" fill="#0E2A2F"/>
+        <g class="bob">
+          <rect x="22" y="52" width="56" height="44" rx="14" fill="#C9D8DC" stroke="#0E2A2F" stroke-width="3"/>
+          <rect x="30" y="94" width="15" height="20" rx="7" fill="#F7FAFB" stroke="#0E2A2F" stroke-width="3"/>
+          <rect x="55" y="94" width="15" height="20" rx="7" fill="#F7FAFB" stroke="#0E2A2F" stroke-width="3"/>
+          <path d="M29 109h17M54 109h17" stroke="#0B6E69" stroke-width="3" stroke-linecap="round"/>
+          <path d="M27 66 C14 70 12 82 17 90" fill="none" stroke="#0E2A2F" stroke-width="12" stroke-linecap="round"/>
+          <path d="M27 66 C14 70 12 82 17 90" fill="none" stroke="#F7FAFB" stroke-width="6" stroke-linecap="round"/>
+          <rect x="26" y="56" width="48" height="44" rx="15" fill="#F7FAFB" stroke="#0E2A2F" stroke-width="3"/>
+          <rect x="38" y="68" width="24" height="15" rx="4" fill="#E7F3F1" stroke="#0E2A2F" stroke-width="2.4"/>
+          <circle cx="44" cy="75.5" r="2.6" fill="#E8673F"/><circle cx="50.5" cy="75.5" r="2.6" fill="#D9961A"/><circle cx="57" cy="75.5" r="2.6" fill="#0B6E69"/>
+          <g class="wave"><path d="M73 66 C84 60 88 50 86 40" fill="none" stroke="#0E2A2F" stroke-width="12" stroke-linecap="round"/><path d="M73 66 C84 60 88 50 86 40" fill="none" stroke="#F7FAFB" stroke-width="6" stroke-linecap="round"/><circle cx="86" cy="37" r="6.5" fill="#F7FAFB" stroke="#0E2A2F" stroke-width="3"/></g>
+          <circle cx="50" cy="36" r="31" fill="#F7FAFB" stroke="#0E2A2F" stroke-width="3"/>
+          <line x1="50" y1="5" x2="50" y2="-3" stroke="#0E2A2F" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="-5" r="4.5" fill="#E8673F" stroke="#0E2A2F" stroke-width="2.4"/>
+          <rect x="27" y="22" width="46" height="31" rx="15.5" fill="#123B42" stroke="#0E2A2F" stroke-width="3"/>
+          <path class="glint" d="M34 30 Q38 25 45 25" fill="none" stroke="#BFEDE3" stroke-width="3" stroke-linecap="round"/>
+          <ellipse class="eye" cx="42" cy="38" rx="3.6" ry="4.6" fill="#FFFFFF"/><ellipse class="eye" cx="58" cy="38" rx="3.6" ry="4.6" fill="#FFFFFF"/>
+          <path d="M45.5 45 Q50 48.5 54.5 45" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+          <ellipse cx="35" cy="45" rx="3.4" ry="2.2" fill="#F4A3A0" opacity=".85"/><ellipse cx="65" cy="45" rx="3.4" ry="2.2" fill="#F4A3A0" opacity=".85"/>
+        </g>
+      </svg>
+    </a>
   </div>
   <div class="timeline float" id="timeline">
     <div class="yr"><b id="yearBig">2025</b><small>year shown</small></div>
@@ -507,6 +581,7 @@ figcaption .cap b{font-family:var(--f-display);font-size:18px}
   </div>
 </section>
 
+<div id="dashLayer" hidden><div class="scrim" id="dashScrim"></div><section class="dash" id="dash" role="dialog" aria-modal="true" aria-labelledby="dashTitle"></section></div>
 <div id="gpop" role="tooltip" hidden></div>
 <div id="glossLayer" hidden><div class="scrim" id="glossScrim"></div><aside class="drawer" id="glossDrawer" role="dialog" aria-modal="true" aria-labelledby="glossTitle">
   <header><div class="row"><h2 id="glossTitle"><span data-icon="bookopen"></span>Glossary</h2><button class="closebtn" id="glossClose" aria-label="Close glossary" data-icon="x"></button></div>
@@ -555,6 +630,7 @@ const two=(sci,plain,sciLabel)=>`<div class="two"><div class="sci"><span class="
 
 /* ---------- line icons (one consistent 24px, 1.8-stroke set) ---------- */
 const ICONS={
+ dash:'<rect x="3" y="3" width="7.5" height="9" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.6"/><rect x="13.5" y="11" width="7.5" height="10" rx="1.6"/><rect x="3" y="15" width="7.5" height="6" rx="1.6"/>',
  thermo:'<path d="M14 14.8V4.5a2 2 0 0 0-4 0v10.3a4 4 0 1 0 4 0z"/><path d="M12 9v7"/>',
  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
  ground:'<circle cx="12" cy="9" r="3.4"/><path d="M12 2.5v1.3M5.6 9H4.3M19.7 9h-1.3M7.4 4.4l.9.9M16.6 4.4l-.9.9"/><path d="M3 16h18M5 20h3M10.5 20h3M16 20h3"/>',
@@ -893,6 +969,15 @@ const locKey=l=>l.lat.toFixed(2)+","+l.lon.toFixed(2);
 function getData(loc){const k=locKey(loc);if(!dataCache.has(k))dataCache.set(k,Promise.resolve(readSite(loc)));return dataCache.get(k);}
 const peek=loc=>resolved.get(locKey(loc))||null;
 async function load(loc){const d=await getData(loc);resolved.set(locKey(loc),d);return d;}
+/* Years with data for a variable: at the given place when it has values, otherwise across all stored places.
+   Every year selector, slider, chart axis and comparison uses this range, so nothing offers a year without data. */
+const AVAIL={};
+function availRange(id,d){if(!id||!VARS[id])return[Y0,YEAR_END];
+  if(d&&d.ok&&d[id]){const v=d[id].vals,i=v.findIndex(x=>x!=null);if(i>=0){let j=v.length-1;while(v[j]==null)j--;return[d[id].start+i,d[id].start+j];}}
+  if(!AVAIL[id]){let lo=1e9,hi=-1e9;const add=s=>{if(!s||!s.vals)return;const i=s.vals.findIndex(x=>x!=null);if(i<0)return;let j=s.vals.length-1;while(s.vals[j]==null)j--;lo=Math.min(lo,s.start+i);hi=Math.max(hi,s.start+j);};
+    if(id==="ndvi"){if(NDVI)Object.values(NDVI.sites).forEach(add);}else if(ETD)Object.values(ETD.sites).forEach(s=>add(s.series[id]));
+    AVAIL[id]=lo<=hi?[lo,hi]:[Y0,YEAR_END];}
+  return AVAIL[id];}
 /* Mean over the reference period; used for every anomaly in the app. */
 const baseOf=s=>mean(s.vals.slice(BASE0-s.start,BASE1-s.start+1));
 
@@ -903,6 +988,8 @@ const saved=store.get("state")||{};
 const S={loc:null,item:"t2m",base:"photo",year:YEAR_END,month:7,section:"explore",from:Y0,to:YEAR_END,connect:["ts","soil","prec"],playing:null,
   cmp:{a:2015,b:YEAR_END,img:"data"},lab:{focus:null,cmp:new Set()},highlight:new Set()};
 const curItem=()=>itemById(S.item),curSeries=()=>curItem().series;
+/* year range of the selected variable (at the selected place once its data is loaded) */
+const curRange=()=>availRange(curSeries(),S.loc?peek(S.loc):null);
 let seriesFallback="ts";
 const saveState=()=>store.set("state",{item:S.item,loc:S.loc?{name:S.loc.name,lat:S.loc.lat,lon:S.loc.lon,country:S.loc.country,kind:S.loc.kind,urban:S.loc.urban,coastal:S.loc.coastal}:null});
 
@@ -1177,7 +1264,7 @@ function drawCountries(){
   /* NASA AppEEARS MODIS images, drawn inside the 1° box they were retrieved for */
   const IL=mapImgLayer();
   if(IL&&IMG)FEATURED.forEach(p=>{const s=IMG.sites[p.id];if(!s||!s.bbox)return;const b=s.bbox,x0=T.x+toU(b[1])*T.k,x1=T.x+toU(b[3])*T.k,y0=T.y+toV(b[2])*T.k,y1=T.y+toV(b[0])*T.k;
-    if(x1<0||x0>W||y1<0||y0>H||x1-x0<28)return;const yy=imgYearFor(IL,p,gy);if(yy==null)return;const im=getImg(imgURL(IL,p,yy));if(!im)return;
+    if(x1<0||x0>W||y1<0||y0>H||x1-x0<70)return;const yy=imgYearFor(IL,p,gy);if(yy==null)return;const im=getImg(imgURL(IL,p,yy));if(!im)return;
     fx.imageSmoothingEnabled=true;fx.drawImage(im,x0,y0,x1-x0,y1-y0);fx.strokeStyle="rgba(14,42,47,.55)";fx.lineWidth=1;fx.strokeRect(x0,y0,x1-x0,y1-y0);
     if(x1-x0<120)return;fx.font="600 11px Inter, sans-serif";const lab=`MODIS · July ${yy}`,tw=fx.measureText(lab).width+10;fx.fillStyle="rgba(255,255,255,.88)";fx.fillRect(x0,y1-18,tw,18);fx.fillStyle="#0E2A2F";fx.fillText(lab,x0+5,y1-5);});
   lx.strokeStyle="rgba(70,100,92,.5)";lx.lineWidth=T.k>4000?1:0.7;lx.beginPath();COUNTRIES.forEach(c=>{if(vis(c))trace(lx,c);});lx.stroke();
@@ -1229,7 +1316,7 @@ function legendHTML(it){const parts=[];const id=it.series,L=it.layer?LAYERS[it.l
   return parts.join("");}
 function renderExploreList(){
   const row=it=>{const on=it.id===S.item,L=it.layer?LAYERS[it.layer]:null,V=VARS[it.series];
-    return`<div class="xitem ${on?"on":""}"><div class="xrow"><button data-x="${it.id}" aria-pressed="${on}"><span class="vi" style="background:${it.color}">${icon(VAR_ICON[it.id])}</span><span>${esc(it.name)}</span><span class="rng">${esc(V.range.replace(/ /g,""))}</span></button>${gi(EXPLORE_GLOSS[it.id])}</div>
+    return`<div class="xitem ${on?"on":""}"><div class="xrow"><button data-x="${it.id}" aria-pressed="${on}"><span class="vi" style="background:${it.color}">${icon(VAR_ICON[it.id])}</span><span>${esc(it.name)}</span><span class="rng">${availRange(it.series,null).join("–")}</span></button>${gi(EXPLORE_GLOSS[it.id])}</div>
     <div class="info">${esc(it.plain)}<dl>
       <dt>Unit</dt><dd>${esc(V.unit)}</dd>
       <dt>Time series</dt><dd>${esc(V.source)} · ${esc(V.dataset)} · ${esc(V.range)} · ${esc(V.spatial)} ${gi("grid")}</dd>
@@ -1241,7 +1328,7 @@ function renderExploreList(){
   $$("#exploreBody [data-x]").forEach(b=>b.onclick=()=>setItem(b.dataset.x));
   $$("#exploreBody [data-base]").forEach(b=>b.onclick=()=>{S.base=b.dataset.base;renderExploreList();updateTiles();drawMap();});
 }
-function setItem(id){S.item=id;if(curSeries())seriesFallback=curSeries();saveState();renderExploreList();updateTiles();updateGlobeTexture();drawMap();renderPanel();renderCompare();}
+function setItem(id){const changed=S.item!==id;S.item=id;if(changed){S.from=Y0;S.to=YEAR_END;}if(curSeries())seriesFallback=curSeries();applyRange();saveState();renderExploreList();updateTiles();updateGlobeTexture();drawMap();renderPanel();renderCompare();}
 $("#exploreToggle").onclick=()=>{const c=$("#explore").classList.toggle("collapsed");$("#exploreToggle").textContent=c?"Show":"Hide";$("#exploreToggle").setAttribute("aria-expanded",!c);sizeView();};
 
 /* =====================================================================
@@ -1249,9 +1336,13 @@ $("#exploreToggle").onclick=()=>{const c=$("#explore").classList.toggle("collaps
    ===================================================================== */
 const yr=$("#year");yr.min=Y0;yr.max=YEAR_END;yr.value=S.year;
 $("#month").innerHTML=MONTHS.map((m,i)=>`<option value="${i+1}" ${i+1===S.month?"selected":""}>${m}</option>`).join("");
-function renderTicks(){const t=$("#ticks");t.innerHTML="";for(let y=1985;y<=YEAR_END;y+=5){const s=document.createElement("span");s.style.left=((y-Y0)/(YEAR_END-Y0)*100)+"%";s.textContent=y;t.appendChild(s);}}
+function renderTicks(){const t=$("#ticks");t.innerHTML="";const[r0,r1]=curRange(),span=Math.max(1,r1-r0),st=span>30?5:span>14?5:2;
+  for(let y=Math.ceil(r0/st)*st;y<=r1;y+=st){const s=document.createElement("span");s.style.left=((y-r0)/span*100)+"%";s.textContent=y;t.appendChild(s);}}
+/* Fit the timeline, the selected year and the Before & After years to the selected variable's data. */
+function applyRange(){const[r0,r1]=curRange();yr.min=r0;yr.max=r1;renderTicks();const y=clamp(S.year,r0,r1),moved=y!==S.year;S.year=y;yr.value=y;$("#yearBig").textContent=y;
+  S.cmp.b=clamp(S.cmp.b,r0,r1);S.cmp.a=clamp(S.cmp.a,r0,r1);if(S.cmp.a>=S.cmp.b)S.cmp.a=Math.max(r0,S.cmp.b-10);if(moved){updateGlobeTexture();drawMap();}}
 let texTimer=null;
-function setYear(y,opts){y=clamp(Math.round(y),Y0,YEAR_END);S.year=y;yr.value=y;$("#yearBig").textContent=y;updateTiles();drawMap();
+function setYear(y,opts){const RR=curRange();y=clamp(Math.round(y),RR[0],RR[1]);S.year=y;yr.value=y;$("#yearBig").textContent=y;updateTiles();drawMap();
   clearTimeout(texTimer);texTimer=setTimeout(updateGlobeTexture,S.playing?900:250);
   if(!(opts&&opts.light)){if(S.section==="explore"&&S.loc&&curSeries()){const d=peek(S.loc);if(d&&d.ok)drawExploreChart(d);}
     if(!(opts&&opts.fromCompare)&&S.cmp.b!==y){S.cmp.b=y;if(S.cmp.a>=y)S.cmp.a=Math.max(Y0,y-10);renderCompare();}}
@@ -1259,8 +1350,8 @@ function setYear(y,opts){y=clamp(Math.round(y),Y0,YEAR_END);S.year=y;yr.value=y;
 yr.addEventListener("input",()=>setYear(+yr.value));
 $("#month").addEventListener("change",e=>{S.month=+e.target.value;updateTiles();updateGlobeTexture();drawMap();renderCompare();});
 function stopPlay(){if(S.playing){clearInterval(S.playing);S.playing=null;$("#play").innerHTML=icon("play");$("#play").setAttribute("aria-label","Play through the years");updateGlobeTexture();setYear(S.year);}}
-$("#play").onclick=()=>{if(S.playing){stopPlay();return;}let y=S.year>=YEAR_END?Y0:S.year;$("#play").innerHTML=icon("pause");$("#play").setAttribute("aria-label","Pause");
-  const tick=()=>{setYear(y,{light:true});y++;if(y>YEAR_END)stopPlay();};tick();S.playing=setInterval(tick,+$("#speed").value);};
+$("#play").onclick=()=>{if(S.playing){stopPlay();return;}const RR=curRange();let y=S.year>=RR[1]?RR[0]:S.year;$("#play").innerHTML=icon("pause");$("#play").setAttribute("aria-label","Pause");
+  const tick=()=>{setYear(y,{light:true});y++;if(y>RR[1])stopPlay();};tick();S.playing=setInterval(tick,+$("#speed").value);};
 $("#speed").addEventListener("change",()=>{if(S.playing){stopPlay();$("#play").click();}});
 $("#baBtn").onclick=()=>{$("#compare").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});};
 
@@ -1368,7 +1459,7 @@ const sectionHead=(t,p)=>`<div class="sec-title"><h2>${icon(SEC_ICON[S.section]|
 const STRIPE_PAL={temp:["#1B4F8F","#6FA2D6","#EEF2F2","#F08A64","#A8321A"],wet:["#7A4512","#C9935A","#EEF2F2","#6FA2D6","#1B4F8F"],wind:["#4E5964","#A5AFB8","#EEF2F2","#7FC4BB","#0B6E69"]};
 const stripePal=id=>id==="ts"||id==="t2m"||id==="no2"?"temp":id==="wind"?"wind":"wet";
 function stripeSeries(){const d=S.loc?peek(S.loc):null;if(!d||!d.ok)return null;const id=curSeries()||"t2m",s=d[id],ref=baseOf(s);if(ref==null)return null;
-  const an=s.vals.map(v=>v==null?null:v-ref),mx=Math.max(1e-9,...an.filter(v=>v!=null).map(Math.abs));return{id,s,an,mx};}
+  const[r0,r1]=availRange(id,d),tr={start:r0,vals:s.vals.slice(r0-s.start,r1-s.start+1)},an=tr.vals.map(v=>v==null?null:v-ref),mx=Math.max(1e-9,...an.filter(v=>v!=null).map(Math.abs));return{id,s:tr,an,mx};}
 function stripesHTML(){const st=stripeSeries();if(!st)return"";const ip=d3.interpolateRgbBasis(STRIPE_PAL[stripePal(st.id)]),n=st.an.length,v=VARS[st.id];
   const rects=st.an.map((a,i)=>`<rect x="${i}" y="0" width="1.04" height="1" fill="${a==null?"#C9D3D6":ip(0.5+0.5*a/st.mx)}"/>`).join("");
   return`<div class="stripes"><div class="slab"><span>Climate stripes · ${esc(v.name)} ${gi("anomaly")} vs ${gterm("baseline",BASE_TXT)}</span><span>${st.s.start}–${st.s.start+n-1}</span></div>
@@ -1380,7 +1471,7 @@ function updateStripeMark(){const r=$("#stripes"),m=$("#smark");if(!r||!m)return
 function bindStripes(){const r=$("#stripes");if(!r)return;const st=stripeSeries();if(!st)return;const n=st.an.length;
   r.addEventListener("click",e=>{const b=r.getBoundingClientRect();setYear(st.s.start+clamp(Math.floor((e.clientX-b.left)/b.width*n),0,n-1));updateStripeMark();});
   r.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;const b=r.getBoundingClientRect(),i=clamp(Math.floor((e.clientX-b.left)/b.width*n),0,n-1),a=st.an[i],v=VARS[st.id];r.title=`${st.s.start+i}: ${a==null?"no data":sfmt(a,v.dig)+" "+v.unit+" vs "+BASE_TXT}`;});
-  r.addEventListener("keydown",e=>{const k={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageDown:-5,PageUp:5}[e.key];if(e.key==="Home"||e.key==="End"){e.preventDefault();setYear(e.key==="Home"?st.s.start:YEAR_END);updateStripeMark();return;}if(k){e.preventDefault();setYear(S.year+k);updateStripeMark();}});
+  r.addEventListener("keydown",e=>{const k={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageDown:-5,PageUp:5}[e.key];if(e.key==="Home"||e.key==="End"){e.preventDefault();setYear(e.key==="Home"?st.s.start:st.s.start+st.an.length-1);updateStripeMark();return;}if(k){e.preventDefault();setYear(S.year+k);updateStripeMark();}});
   updateStripeMark();}
 /* ---- Your Lifetime lens (birth year stays in this browser only) ---- */
 let BIRTH=(()=>{const b=store.get("birth");return Number.isInteger(b)&&b>=1900&&b<=YEAR_END?b:null;})();
@@ -1437,11 +1528,11 @@ function renderExplore(d){
     const b=$("#toCmp");if(b)b.onclick=()=>$("#baBtn").click();panel.querySelectorAll("[data-x2]").forEach(b=>b.onclick=()=>setItem(b.dataset.x2));return;}
   if(!d.ok){panel.innerHTML=`${locHeader()}${varCard}${unavailable(d)}<div class="btnrow"><button class="btn" data-goto="trends">Whole-planet estimates →</button></div>`;bindGoto();return;}
   if(!d[id].vals.some(x=>x!=null)){panel.innerHTML=`${locHeader()}${varCard}<div class="note warn"><b>No ${esc(VARS[id].name.toLowerCase())} values for this place.</b> Reason: ${esc(d.missing[id]||"none retrieved")}. Nothing is substituted.</div>${sourceCard(id,d)}`;return;}
-  const s=d[id],v=VARS[id];const first=s.start+s.vals.findIndex(x=>x!=null);S.from=clamp(Math.max(S.from,first),first,YEAR_END-7);S.to=clamp(S.to,S.from+7,YEAR_END);
+  const s=d[id],v=VARS[id];const[first,last]=availRange(id,d);S.from=clamp(Math.max(S.from,first),first,last-7);S.to=clamp(S.to,S.from+7,last);
   const a=analyze(s.start,s.vals,S.from,S.to),arrow=a.dir==="up"?"▲":a.dir==="down"?"▼":"◆",mc=meaningClass(id,a.dir);
   panel.innerHTML=`${locHeader()}${varCard}
   <div class="card"><div class="card-head"><div><h3>${esc(v.name)} over time</h3><span class="sub">${esc(v.source)} · annual values · ${esc(v.unit)}</span></div></div>
-    <div class="rangerow"><label for="rFrom">Period</label><select id="rFrom">${yearOptions(first,YEAR_END-7,S.from)}</select><span>to</span><select id="rTo">${yearOptions(S.from+7,YEAR_END,S.to)}</select><span class="mono" id="selVal"></span></div>
+    <div class="rangerow"><label for="rFrom">Period</label><select id="rFrom">${yearOptions(first,last-7,S.from)}</select><span>to</span><select id="rTo">${yearOptions(S.from+7,last,S.to)}</select><span class="mono" id="selVal"></span></div>
     <svg class="chart" id="mainChart" role="img" aria-label="${esc(v.name)} over time"></svg>
     ${two("Dots are annual values; the amber line is the Sen's-slope trend; the dashed red line marks the emergence year; the teal line is the year shown on the map.","Each dot is one year. The amber line shows the overall direction. Click the chart to move the map to that year.","How to read this chart")}</div>
   <div class="card lift">${a.insufficient?trendExplain(id,a,S.loc):`<div class="hero"><span class="big" style="color:${MEANING_COL[mc]}">${cnt(a.total,v.dig,true)}<small>${esc(v.unit)}</small></span>
@@ -1454,7 +1545,7 @@ function renderExplore(d){
    <details class="more"><summary>Full statistics and data</summary>${statsTable(id,a)}<div class="btnrow" style="margin-top:8px"><button class="btn small" id="csvBtn">Download data (CSV)</button><span class="hint" id="csvMsg"></span><a class="hint" href="${esc(d.url)}" target="_blank" rel="noopener">Monthly values for this place (CSV) ↗</a></div></details>`}</div>
   ${a.insufficient?"":monthlyCard(d,id)+predictionCard(d,id)}
   ${sourceCard(id,d)}
-  <div class="btnrow"><button class="btn primary" id="toCmp">Before &amp; After ↓</button><button class="btn" data-goto="trends">${icon("fingerprint","sm")}Fingerprint &amp; all trends</button><button class="btn" data-story="1">${icon("route","sm")}Guided story</button><button class="btn" data-goto="solutions">What can be done?</button></div>`;
+  <div class="btnrow"><button class="btn primary" id="toCmp">Before &amp; After ↓</button><button class="btn" data-goto="trends">${icon("fingerprint","sm")}Fingerprint &amp; all trends</button><button class="btn" data-story="1">${icon("route","sm")}Guided story</button><button class="btn" data-goto="solutions">What can be done?</button><button class="btn" data-dash="1">${icon("dash","sm")}Dashboard</button><button class="btn" data-report="1">${icon("download","sm")}Summary report</button></div><p class="hint" id="reportMsg"></p>`;
   $("#rFrom").onchange=e=>{S.from=+e.target.value;if(S.to<S.from+7)S.to=S.from+7;renderPanel();};$("#rTo").onchange=e=>{S.to=+e.target.value;renderPanel();};
   $("#toCmp").onclick=()=>$("#baBtn").click();bindGoto();bindCSV(d);drawExploreChart(d);if(!a.insufficient){drawMonthly(d,id);drawPredChart($("#predChart"),d,id,predict(d,id,S.from,S.to));}
   panel.querySelectorAll("[data-after]").forEach(b=>b.onclick=()=>{S.from=+b.dataset.after;renderPanel();});
@@ -1539,7 +1630,7 @@ let lastTrendData=null;
 function bindGlobal(){panel.querySelectorAll("[data-tog]").forEach(b=>b.onclick=()=>{const m=$("#more-"+b.dataset.tog);m.hidden=!m.hidden;b.setAttribute("aria-expanded",!m.hidden);if(m.hidden)return;
   const g=GLOBAL.find(x=>x.id===b.dataset.tog);if(g){const a=analyze(g.start,g.vals,g.start,g.start+g.vals.length-1);lineChart($("#ch-"+g.id),{x0:g.start,x1:g.start+g.vals.length-1,series:[{start:g.start,vals:g.vals,color:COL.ink}],trends:[{from:a.from,to:a.to,fit:a.fit}],unit:g.unit,unitShort:g.unit,dig:g.dig,h:180});return;}
   const id=b.dataset.tog.slice(2),d=lastTrendData;if(!d||!d.ok)return;const s=d[id],a=fullAnalysis(s);
-  lineChart($("#ch-l_"+id),{x0:a.from,x1:YEAR_END,series:[{start:s.start,vals:s.vals,color:VARS[id].color,dots:true}],trends:a.insufficient?[]:[{from:a.from,to:a.to,fit:a.fit}],unit:VARS[id].unit,unitShort:VARS[id].unit,dig:VARS[id].dig,h:170,sel:S.year,onPick:y=>setYear(y)});});}
+  lineChart($("#ch-l_"+id),{x0:a.from,x1:a.to,series:[{start:s.start,vals:s.vals,color:VARS[id].color,dots:true}],trends:a.insufficient?[]:[{from:a.from,to:a.to,fit:a.fit}],unit:VARS[id].unit,unitShort:VARS[id].unit,dig:VARS[id].dig,h:170,sel:S.year,onPick:y=>setYear(y)});});}
 /* ---- meaning colours: warm = heating/drying, cool = cooling/wetting ---- */
 function meaningClass(id,dir){if(dir==="none")return"neutral";if(id==="ts"||id==="t2m"||id==="no2")return dir==="up"?"warm":"cool";if(id==="wind")return"neutral";return dir==="up"?"cool":"dry";}
 const MEANING_COL={warm:"#BF4526",cool:"#2563A6",dry:"#9A5B22",neutral:"#4E666B"};
@@ -1652,7 +1743,7 @@ const MECH={
 const mechKey=(a,b)=>[a,b].sort().join("|");
 function renderConnect(d){
   if(!d.ok){panel.innerHTML=`${locHeader()}${sectionHead("Earth Connections","Do variables change together here?")}${unavailable(d)}`;return;}
-  const ids=S.connect.filter(id=>d[id]);const from=ids.length?Math.max(...ids.map(id=>d[id].start+d[id].vals.findIndex(x=>x!=null))):Y0,to=YEAR_END;
+  const ids=S.connect.filter(id=>d[id]);const from=ids.length?Math.max(...ids.map(id=>d[id].start+d[id].vals.findIndex(x=>x!=null))):Y0,to=ids.length?Math.min(...ids.map(id=>availRange(id,d)[1])):YEAR_END;
   const an={};ids.forEach(id=>an[id]=analyze(d[id].start,d[id].vals,from,to));
   const z=id=>{const s=d[id],vs=range(from,to).map(y=>s.vals[y-s.start]),m=mean(vs),sd=Math.sqrt(mean(vs.filter(v=>v!=null).map(v=>(v-m)**2)));return{start:from,vals:vs.map(v=>v==null?null:(v-m)/(sd||1)),color:VARS[id].color,label:VARS[id].name.split(" ")[0]};};
   const pairs=[];for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const A=ids[i],B=ids[j],xs=[],ya=[],yb=[];range(from,to).forEach(y=>{const va=d[A].vals[y-d[A].start],vb=d[B].vals[y-d[B].start];if(va!=null&&vb!=null){xs.push(y);ya.push(va);yb.push(vb);}});
@@ -1809,6 +1900,8 @@ function renderAbout(){
    <tr><th>Insight feed</th><td>All variables with data, ranked: significant first, then by signal-to-noise ratio.</td></tr>
    <tr><th>Monthly analysis</th><td>Seasonal Mann-Kendall and seasonal Sen's slope on the stored monthly values of the chosen period; anomalies against each calendar month's ${BASE_TXT} mean.</td></tr>
    <tr><th>Where it is heading</th><td>Trend line, 95% prediction range and five-year backtest, computed from the same stored values. The Solutions Lab shows the same projection for the variables behind each detected problem.</td></tr>
+   <tr><th>Dashboard</th><td>Every variable for one place on one screen: strength of change, every year at a glance, a tile per variable and a table of all statistics. Each variable uses its own years with data.</td></tr>
+   <tr><th>Summary report</th><td>A single HTML file with the same numbers, charts, sources and methods; it opens in any browser and prints to PDF.</td></tr>
    <tr><th>Guided story</th><td>Narrates the same tests, the global comparison, detrended correlations and the Solutions Lab ranking. No extra data.</td></tr>
    <tr><th>Satellite time-lapse</th><td>Stored NASA AppEEARS MODIS images for the Before &amp; After box, one per year (July).</td></tr>
    <tr><th>Day/night shading on the globe</th><td>Computed from today's date and UTC time (approximate subsolar point). It is astronomy, not a dataset.</td></tr>
@@ -1826,7 +1919,8 @@ function cmpLayer(){const L=curLayer();if(S.cmp.img==="photo")return LAYERS.true
 function valueText(id,d,y){if(!id||!d||!d.ok)return null;const s=d[id],v=s.vals[y-s.start];if(v==null)return null;const ref=baseOf(s);return{v,anom:ref==null?null:v-ref,ref};}
 function renderCompare(){
   const body=$("#cmpBody");
-  $("#cA").innerHTML=range(Y0,YEAR_END).map(y=>`<option ${y===S.cmp.a?"selected":""}>${y}</option>`).join("");$("#cB").innerHTML=range(Y0,YEAR_END).map(y=>`<option ${y===S.cmp.b?"selected":""}>${y}</option>`).join("");
+  const CR=curRange();S.cmp.a=clamp(S.cmp.a,CR[0],CR[1]);S.cmp.b=clamp(S.cmp.b,CR[0],CR[1]);if(S.cmp.a>=S.cmp.b)S.cmp.a=Math.max(CR[0],S.cmp.b-10);
+  $("#cA").innerHTML=range(CR[0],CR[1]).map(y=>`<option ${y===S.cmp.a?"selected":""}>${y}</option>`).join("");$("#cB").innerHTML=range(CR[0],CR[1]).map(y=>`<option ${y===S.cmp.b?"selected":""}>${y}</option>`).join("");
   $$("[data-cimg]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.cimg===S.cmp.img);b.parentNode.hidden=!(LAYERS.ndvi&&LAYERS.truecolor);});
   if(!S.loc){$("#cmpTitle").textContent="Compare a place with itself";$("#cmpSub").textContent="Pick a place on the map first. The comparison will show the same area in two different years.";
     body.innerHTML=`<div class="empty"><span>Choose a place and this section shows the measured change between two years. For the featured places it also shows MODIS images of the same area and a time-lapse.</span><div class="btnrow"><button class="btn primary" id="cmpTry">Show Cairo, ${S.cmp.a} vs ${S.cmp.b}</button><button class="btn" id="cmpUp">Pick on the map ↑</button></div></div>`;
@@ -1860,7 +1954,7 @@ function renderCompare(){
   else if(!id)changeHTML=`<div class="card">${two(`${esc(it.name)} has no connected point time series, so change is assessed visually from the imagery only.`,"Compare the two images directly: the same area, the same month, two years. No numbers are shown because none are measured here.","Interpretation")}</div>`;
   body.innerHTML=`${yrs.length?`<div class="pair">${fig(S.cmp.a,"Before")}${fig(S.cmp.b,"After")}</div>`:`<div class="note">${why}</div>`}${changeHTML}`;
   body.querySelectorAll("img").forEach(img=>{img.onerror=()=>{const box=img.closest(".imgbox"),ph=box.querySelector(".ph"),pin=box.querySelector(".pin");img.remove();if(pin)pin.hidden=true;if(ph){ph.hidden=false;ph.innerHTML=`<b style="color:var(--ink)">Image file not found.</b><span>${esc(img.getAttribute("src"))} is listed in data/imagery.js but missing from the folder.</span>`;}};});
-  if(id&&d&&d.ok&&$("#cmpChart")){const v=VARS[id],s=d[id];lineChart($("#cmpChart"),{w:900,h:200,x0:Y0,x1:YEAR_END,series:[{start:s.start,vals:s.vals,color:v.color,dots:true}],marks:[{year:S.cmp.a,label:"Before "+S.cmp.a,color:COL.cool,top:true},{year:S.cmp.b,label:"After "+S.cmp.b,color:COL.teal,top:true}],unit:v.unit,unitShort:v.unit,dig:v.dig});}
+  if(id&&d&&d.ok&&$("#cmpChart")){const v=VARS[id],s=d[id];lineChart($("#cmpChart"),{w:900,h:200,x0:CR[0],x1:CR[1],series:[{start:s.start,vals:s.vals,color:v.color,dots:true}],marks:[{year:S.cmp.a,label:"Before "+S.cmp.a,color:COL.cool,top:true},{year:S.cmp.b,label:"After "+S.cmp.b,color:COL.teal,top:true}],unit:v.unit,unitShort:v.unit,dig:v.dig});}
   countUp(body);renderLapse();writeHash();
 }
 function layerPlain(L){return{ndvi:"Greener colours mean more, healthier vegetation; browns are bare ground, water or built-up land.",truecolor:"A natural-colour view, close to what an astronaut would see. Clouds can appear."}[L.key]||"";}
@@ -1905,6 +1999,120 @@ function renderLapse(){const host=$("#lapse");if(!host)return;if(!S.loc){host.in
   $("#lpPlay").onclick=playLapse;$("#lpSpeed").onchange=e=>{LP.speed=+e.target.value;if(LP.timer){stopLapse(false);playLapse();}};
   const rg=$("#lpRange");rg.oninput=()=>{if(LP.timer)stopLapse(false);if(!LP.loaded)loadLapse();showLapse(+rg.value);};rg.onchange=()=>syncLapse();
   showLapse(LP.i);hydrateIcons(host);}
+
+/* =====================================================================
+   14b2. DASHBOARD and SUMMARY REPORT. Both are built from the same per-variable summary, so the numbers always match
+         the Explore panel. Each variable is analysed over its own years with data.
+   ===================================================================== */
+function varSummary(d,id){const v=VARS[id],s=d&&d.ok?d[id]:null;if(!s||!s.vals.some(x=>x!=null))return null;const[r0,r1]=availRange(id,d),a=analyze(s.start,s.vals,r0,r1);
+  if(s.vals.every(x=>x==null||x===0))return{id,v,r0,r1,a,insufficient:true,zero:true};
+  if(a.insufficient)return{id,v,r0,r1,a,insufficient:true};
+  const st=s.mon?seasonalTest(s.mon,r0,r1):{insufficient:true},P=predict(d,id,r0,r1),q=prep(d,id),brk=breakCheck(s.start,s.vals,r0,r1);
+  let compl=null;if(q){let n=0,k=0;s.mon.vals.forEach((x,i)=>{const y=Math.floor((s.mon.start+i)/12);if(y>=r0&&y<=r1){n++;if(x!=null)k++;}});compl=(r1-r0+1)*12?k/((r1-r0+1)*12):null;}
+  return{id,v,r0,r1,a,st,P,q,brk,compl,snrSigned:a.snr*Math.sign(a.total||0),mc:meaningClass(id,a.dir)};}
+const allSummaries=d=>ALL_VARS.map(id=>varSummary(d,id)).filter(Boolean);
+/* backtest result in words: positive skill as a percentage, otherwise "no gain" */
+const skillTxt=P=>!P||!P.ok?"—":P.skill>0?`${fmt(P.skill*100,0)}% better`:"no gain";
+const projText=(r,short)=>{const P=r.P;if(!P||!P.ok)return short?"too short":"Record too short to test a projection.";if(!P.show)return short?(P.brk.found?"break":"failed test"):(P.brk.found?`No projection: possible break in ${P.brk.year}.`:"No projection: the trend line did not beat the long-term average in the backtest.");
+  const yH=P.last+P.H,F=P.full;return short?`${fmt(F.fit(yH),r.v.dig)} (${yH})`:`${fmt(F.fit(yH),r.v.dig)} ${r.v.unit} in ${yH} (95% range ${fmt(F.fit(yH)-F.half(yH),r.v.dig)} to ${fmt(F.fit(yH)+F.half(yH),r.v.dig)})`;};
+/* SVG: signed signal-to-noise per variable (how large the change is compared with normal ups and downs) */
+function strengthSVG(rows){const R=rows.filter(r=>!r.insufficient).sort((a,b)=>Math.abs(b.snrSigned)-Math.abs(a.snrSigned)),w=560,rh=26,top=22,h=top+R.length*rh+24,lx=176,rx=w-96,cx=(lx+rx)/2,mx=Math.max(1,...R.map(r=>Math.abs(r.snrSigned)));
+  const X=v=>cx+v/mx*(rx-lx)/2,f="Inter, system-ui, sans-serif",m="JetBrains Mono, monospace";
+  let o=`<svg class="dchart" viewBox="0 0 ${w} ${h}" style="max-width:640px" role="img" aria-label="Strength of change for each variable"><line x1="${cx}" x2="${cx}" y1="${top-6}" y2="${h-20}" stroke="#8197A0" stroke-dasharray="2 3"/>`;
+  o+=`<text x="${lx}" y="12" font-size="10" fill="#4E666B" font-family="${m}">◀ falling</text><text x="${rx}" y="12" text-anchor="end" font-size="10" fill="#4E666B" font-family="${m}">rising ▶</text>`;
+  R.forEach((r,i)=>{const y=top+i*rh,col=MEANING_COL[r.mc]||"#4E666B",x0=Math.min(X(0),X(r.snrSigned)),bw=Math.max(2,Math.abs(X(r.snrSigned)-X(0)));
+    o+=`<text x="${lx-10}" y="${y+16}" text-anchor="end" font-size="12.5" fill="#0E2A2F" font-family="${f}">${esc(r.v.name.replace(/ \(.*\)/,""))}</text>`;
+    o+=`<rect x="${x0}" y="${y+5}" width="${bw}" height="15" rx="3" fill="${r.a.sig?col:"#FFFFFF"}" stroke="${col}" stroke-width="1.5"><title>${esc(r.v.name)}: ${sfmt(r.a.total,r.v.dig)} ${esc(r.v.unit)} ${r.a.from}–${r.a.to}; signal-to-noise ${fmt(r.a.snr,1)}; p ${pfmt(r.a.p)}</title></rect>`;
+    o+=`<text x="${w-4}" y="${y+16}" text-anchor="end" font-size="11" fill="#4E666B" font-family="${m}">${sfmt(r.a.total,r.v.dig)} ${esc(r.v.unit.length>9?"":r.v.unit)}</text>`;});
+  o+=`<text x="${cx}" y="${h-4}" text-anchor="middle" font-size="10" fill="#4E666B" font-family="${m}">change ÷ normal year-to-year variation · filled = significant (p &lt; 0.05)</text></svg>`;return o;}
+/* SVG: every year at a glance; colour = how far the year is from the variable's 2005–2020 mean, in standard deviations */
+function heatmapSVG(d,rows){const R=rows.filter(r=>!r.insufficient),y0=Math.min(...R.map(r=>r.r0)),y1=Math.max(...R.map(r=>r.r1)),n=y1-y0+1,lw=168,cw=Math.max(7,Math.min(14,(820-lw)/n)),ch=20,w=lw+n*cw+8,h=R.length*ch+30,m="JetBrains Mono, monospace";
+  let o=`<svg class="dchart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Every year for every variable, coloured by difference from normal">`;
+  R.forEach((r,i)=>{const s=d[r.id],ref=baseOf(s),vals=range(r.r0,r.r1).map(y=>s.vals[y-s.start]).filter(x=>x!=null),sd=Math.sqrt(mean(vals.map(x=>(x-mean(vals))**2)))||1,ip=d3.interpolateRgbBasis(STRIPE_PAL[stripePal(r.id)]);
+    o+=`<text x="${lw-8}" y="${i*ch+14}" text-anchor="end" font-size="11.5" fill="#0E2A2F" font-family="Inter, system-ui, sans-serif">${esc(r.v.name.replace(/ \(.*\)/,""))}</text>`;
+    for(let y=r.r0;y<=r.r1;y++){const x=s.vals[y-s.start];if(x==null||ref==null)continue;const z=(x-ref)/sd;o+=`<rect x="${lw+(y-y0)*cw}" y="${i*ch+2}" width="${cw-1}" height="${ch-3}" rx="1.5" fill="${ip(clamp(0.5+0.5*z/2.5,0,1))}"><title>${esc(r.v.name)} ${y}: ${fmt(x,r.v.dig)} ${esc(r.v.unit)} (${sfmt(z,1)} σ vs ${BASE_TXT})</title></rect>`;}});
+  for(let y=Math.ceil(y0/5)*5;y<=y1;y+=5)o+=`<text x="${lw+(y-y0)*cw+cw/2}" y="${h-6}" text-anchor="middle" font-size="10" fill="#4E666B" font-family="${m}">${y}</text>`;
+  return o+`</svg>`;}
+function statsTableHTML(rows){return`<div class="stattbl"><table><thead><tr><th>Variable</th><th>Years</th><th>Sen's slope / decade [95% CI]</th><th>Mann-Kendall p</th><th>Monthly test p</th><th>Linear fit / decade (p)</th><th>S/N</th><th>Projection</th><th>Backtest</th><th>Data</th></tr></thead><tbody>
+  ${rows.map(r=>{const v=r.v,a=r.a;if(r.insufficient)return`<tr><td><b>${esc(v.name)}</b></td><td class="num">${r.r0}–${r.r1}</td><td colspan="8">${r.zero?"Always 0 at this place, so there is nothing to test.":"Too few years for a trend test."}</td></tr>`;
+    return`<tr><td><b>${esc(v.name)}</b><br><span class="hint">${esc(v.unit)}</span></td><td class="num">${a.from}–${a.to}<br>n = ${a.n}</td><td class="num">${sfmt(a.sen*10,v.dig)} [${sfmt(a.senLo*10,v.dig)}, ${sfmt(a.senHi*10,v.dig)}]</td>
+    <td class="num">${pfmt(a.p)}${a.sig?" ✓":""}</td><td class="num">${r.st.insufficient?"—":pfmt(r.st.pUse)+(r.st.sig?" ✓":"")}</td><td class="num">${sfmt(a.ols*10,v.dig)} (${pfmt(a.olsP)})</td><td class="num">${fmt(a.snr,1)}</td>
+    <td class="num">${esc(projText(r,true))}</td><td class="num">${skillTxt(r.P)}</td><td class="num">${r.compl!=null?fmt(r.compl*100,0)+"% months":"annual"}${r.brk.found?`<br>break ${r.brk.year}`:""}</td></tr>`;}).join("")}</tbody></table></div>`;}
+function dashKPIs(rows){const R=rows.filter(r=>!r.insufficient),up=R.filter(r=>r.a.sig&&r.a.dir==="up").length,dn=R.filter(r=>r.a.sig&&r.a.dir==="down").length,pr=R.filter(r=>r.P&&r.P.show).length,br=R.filter(r=>r.brk.found).length,cp=mean(R.map(r=>r.compl).filter(x=>x!=null));
+  return{n:R.length,up,dn,pr,br,cp,html:`<div class="kpirow">
+   <div class="kpi"><span class="k">Variables tested</span><span class="v">${R.length}</span><small>of ${ALL_VARS.length} in the app${rows.some(r=>r.zero)?` · ${rows.filter(r=>r.zero).map(r=>r.v.name.toLowerCase().replace(/ \(.*\)/,"")).join(", ")} always 0`:""}</small></div>
+   <div class="kpi"><span class="k">Significant trends</span><span class="v">${up+dn}</span><small>▲ ${up} rising · ▼ ${dn} falling</small></div>
+   <div class="kpi"><span class="k">Projections shown</span><span class="v">${pr}</span><small>passed the five-year backtest</small></div>
+   <div class="kpi"><span class="k">Possible breaks</span><span class="v">${br}</span><small>series flagged, trend uncertain</small></div>
+   <div class="kpi"><span class="k">Data completeness</span><span class="v">${cp!=null?fmt(cp*100,0)+"%":"—"}</span><small>of months within each record</small></div></div>`};}
+async function openDash(){const L=$("#dashLayer"),box=$("#dash");L.hidden=false;document.body.style.overflow="hidden";
+  if(!S.loc){box.innerHTML=`<header><h2 id="dashTitle" tabindex="-1">${icon("dash")}Dashboard</h2><button class="closebtn" id="dashX" aria-label="Close the dashboard">${icon("x")}</button></header><div class="dbody"><div class="empty"><span>The dashboard summarises every variable for one place. Pick a place first.</span><div class="chips">${FEATURED.slice(0,8).map(f=>`<button data-dfp="${esc(f.id)}">${esc(f.name)}</button>`).join("")}</div></div></div>`;
+    box.querySelectorAll("[data-dfp]").forEach(b=>b.onclick=()=>{selectLocation(FEATURED.find(f=>f.id===b.dataset.dfp));openDash();});bindDash();return;}
+  box.innerHTML=`<header><h2 id="dashTitle" tabindex="-1">${icon("dash")}Dashboard</h2></header><div class="dbody">${skeleton("Running every test for "+esc(S.loc.name))}</div>`;
+  const d=await load(S.loc),l=S.loc;
+  if(!d.ok){box.innerHTML=`<header><h2 id="dashTitle" tabindex="-1">${icon("dash")}Dashboard · ${esc(l.name)}</h2><button class="closebtn" id="dashX" aria-label="Close the dashboard">${icon("x")}</button></header><div class="dbody">${unavailable(d)}</div>`;bindDash();return;}
+  const rows=allSummaries(d),K=dashKPIs(rows);
+  box.innerHTML=`<header><div><span class="label">Dashboard</span><h2 id="dashTitle" tabindex="-1">${esc(l.name)}</h2><span class="hint">${fmt(Math.abs(l.lat),2)}°${l.lat>=0?"N":"S"}, ${fmt(Math.abs(l.lon),2)}°${l.lon>=0?"E":"W"}${l.country&&l.kind!=="country"?" · "+esc(l.country):""} · NASA Giovanni${NDVI?" and NASA AppEEARS":""}, stored copy retrieved ${esc(ETD.retrieved)}</span></div>
+   <div class="btnrow"><button class="btn primary" id="dashReport">${icon("download","sm")}Download summary report</button><span class="hint" id="dashMsg"></span><button class="closebtn" id="dashX" aria-label="Close the dashboard">${icon("x")}</button></div></header>
+   <div class="dbody">${K.html}
+    <div class="dgrid2"><div class="card"><h3 style="font-size:17px">How strongly each variable is changing</h3>${strengthSVG(rows)}</div>
+     <div class="card"><h3 style="font-size:17px">Every year at a glance</h3><p class="hint">Each square is one year, coloured by its difference from the ${BASE_TXT} mean in standard deviations (${stripePal("t2m")==="temp"?"blue cooler or lower, red warmer or higher; brown drier, blue wetter":""}). Blank = no data for that year.</p>${heatmapSVG(d,rows)}</div></div>
+    <div class="sec-title"><h2 style="font-size:20px">Every variable</h2><p>Click a tile to open it in Explore. Each chart covers that variable's own years with data.</p></div>
+    <div class="dgrid">${rows.map(r=>{const v=r.v,a=r.a;return`<button class="vtile" data-dvar="${r.id}"><div class="th"><b>${esc(v.name)}</b><span>${r.r0}–${r.r1}</span></div>
+      ${r.insufficient?`<p class="hint">${r.zero?"Always 0 at this place, so there is nothing to test.":"Too few years for a trend test."}</p>`:`<span>${a.sig?`<span class="sigpill yes${a.dir==="down"&&r.mc==="cool"?" cool":""}">significant ${a.dir==="up"?"rise":"fall"} · p ${pfmt(a.p)}</span>`:`<span class="sigpill no">no significant trend · p ${pfmt(a.p)}</span>`}${r.brk.found?` <span class="sigpill no">possible break ${r.brk.year}</span>`:""}</span>
+      <svg class="chart" id="dv-${r.id}" role="img" aria-label="${esc(v.name)} over time"></svg>
+      <dl><div><dt>Trend / decade</dt><dd>${sfmt(a.sen*10,v.dig)}</dd></div><div><dt>Total change</dt><dd>${sfmt(a.total,v.dig)}</dd></div><div><dt>Monthly p</dt><dd>${r.st.insufficient?"—":pfmt(r.st.pUse)}</dd></div>
+       <div><dt>Projection</dt><dd>${esc(projText(r,true))}</dd></div><div><dt>Backtest</dt><dd>${skillTxt(r.P)}</dd></div><div><dt>Months</dt><dd>${r.compl!=null?fmt(r.compl*100,0)+"%":"—"}</dd></div></dl>`}<span class="hint">${esc(v.unit)}</span></button>`;}).join("")}</div>
+    <div class="card"><h3 style="font-size:17px">All statistics</h3>${statsTableHTML(rows)}<p class="hint">Sen's slope and Mann-Kendall use yearly values; the monthly test is the seasonal Mann-Kendall. Backtest = how much smaller the trend line's error was than the long-term average's on the last five years. ✓ = significant at p &lt; 0.05.</p></div>
+   </div>`;
+  rows.forEach(r=>{if(r.insufficient)return;const svg=$("#dv-"+r.id);if(r.P&&r.P.ok)drawPredChart(svg,d,r.id,r.P,{h:150});else lineChart(svg,{w:400,h:150,x0:r.r0,x1:r.r1,series:[{start:d[r.id].start,vals:d[r.id].vals,color:r.v.color,dots:true}],trends:[{from:r.a.from,to:r.a.to,fit:r.a.fit}],unit:r.v.unit,unitShort:r.v.unit,dig:r.v.dig});});
+  box.querySelectorAll("[data-dvar]").forEach(b=>b.onclick=e=>{if(e.target.closest("svg")&&e.target.closest(".chart rect"))return;const it=EXPLORE.find(x=>x.series===b.dataset.dvar);closeDash();S.section="explore";if(it)setItem(it.id);else renderPanel();});
+  $("#dashReport").onclick=()=>downloadReport($("#dashMsg"));bindDash();}
+function bindDash(){hydrateIcons($("#dash"));const x=$("#dashX");if(x)x.onclick=closeDash;const t=$("#dashTitle");if(t)t.focus({preventScroll:true});}
+function closeDash(){$("#dashLayer").hidden=true;document.body.style.overflow="";$("#dashBtn").focus({preventScroll:true});}
+$("#dashBtn").onclick=openDash;$("#dashScrim").onclick=closeDash;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#dashLayer").hidden)closeDash();});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-dash],[data-report]");if(!b)return;e.preventDefault();if(b.dataset.dash)openDash();else downloadReport($("#reportMsg"));});
+/* Summary report: one self-contained HTML file (opens in any browser, prints to PDF). Same numbers as the dashboard. */
+function chartMarkup(fn){const svg=document.createElementNS(svgNS,"svg");svg.dataset.drawn="1";fn(svg);svg.querySelectorAll("[visibility=hidden],rect[fill=transparent]").forEach(n=>n.remove());svg.setAttribute("style","width:100%;height:auto");return svg.outerHTML;}
+async function downloadReport(msgEl){if(!S.loc){flash("Pick a place first; the report describes one place.","warn");return;}if(msgEl)msgEl.textContent="Preparing the report…";
+  const d=await load(S.loc),l=S.loc;if(!d.ok){if(msgEl)msgEl.textContent="No stored data for this place, so there is nothing to report.";return;}
+  const rows=allSummaries(d),K=dashKPIs(rows),R=rows.filter(r=>!r.insufficient),sig=R.filter(r=>r.a.sig),not=R.filter(r=>!r.a.sig),today=new Date().toISOString().slice(0,10);
+  const finding=r=>{const v=r.v,a=r.a,st=r.st;return`<li><b>${esc(v.name)}</b> ${a.dir==="up"?"rose":"fell"} by ${sfmt(a.total,v.dig).replace(/^[+−]/,"")} ${esc(v.unit)} from ${a.from} to ${a.to} (Sen's slope ${sfmt(a.sen*10,v.dig)} ${esc(v.unit)} per decade, Mann-Kendall p ${pfmt(a.p)}).${st.insufficient?"":st.sig&&st.dir===a.dir?" The monthly test agrees.":" The monthly test does not confirm it, so treat it with caution."}${r.brk.found?` A possible break in ${r.brk.year} may come from the dataset rather than the climate.`:""}</li>`;};
+  const charts=R.map(r=>`<div class="tile"><h4>${esc(r.v.name)} <span>${r.r0}–${r.r1} · ${esc(r.v.unit)}</span></h4>${chartMarkup(svg=>{if(r.P&&r.P.ok)drawPredChart(svg,d,r.id,r.P,{h:160});else lineChart(svg,{w:400,h:160,x0:r.r0,x1:r.r1,series:[{start:d[r.id].start,vals:d[r.id].vals,color:r.v.color,dots:true}],trends:[{from:r.a.from,to:r.a.to,fit:r.a.fit}],unit:r.v.unit,unitShort:r.v.unit,dig:r.v.dig});})}<p>${esc(projText(r,false))}</p></div>`).join("");
+  const srcRows=R.map(r=>{const v=r.v;return`<tr><td><b>${esc(v.name)}</b></td><td>${esc(v.dataset)}<br><code>${esc(v.code)}</code></td><td>${esc(v.origin)}; via ${esc(v.source)}</td><td>${esc(v.cover)}</td><td>${r.r0}–${r.r1}</td><td>${esc(v.unit)}</td><td>${esc(v.spatial)}</td><td>${esc(r.id==="ndvi"&&NDVI?NDVI.retrieved:ETD.retrieved)}</td></tr>`;}).join("");
+  const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Earth Trend Detective report · ${esc(l.name)}</title>
+<style>:root{--ink:#0E2A2F;--muted:#4E666B;--line:#DAE4E6;--teal:#0B6E69}body{font-family:Inter,"Segoe UI",system-ui,sans-serif;color:var(--ink);background:#F2F6F7;margin:0;line-height:1.5}main{max-width:980px;margin:0 auto;padding:28px 20px 48px}
+h1,h2,h3,h4{font-family:"Space Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;letter-spacing:-.01em;margin:0 0 6px}h1{font-size:30px}h2{font-size:21px;margin-top:26px}h4 span{font-weight:400;color:var(--muted);font-size:12px}
+.card,.tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.tile{margin:0}.tile p{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.kpirow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.kpi .v{font-family:"Space Grotesk",system-ui,sans-serif;font-size:26px;font-weight:700;display:block}.kpi .k{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.kpi small{color:var(--muted);font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{text-align:left;padding:6px 8px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}th{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}td.num{font-family:ui-monospace,Menlo,monospace;white-space:nowrap}.stattbl{overflow-x:auto}.hint{color:var(--muted);font-size:12.5px}code{font-size:11px}
+.meta{color:var(--muted);font-size:13.5px}.note{background:#ECE7F8;border:1px solid #D9D0F1;border-radius:12px;padding:10px 12px;font-size:13.5px}button.print{position:fixed;right:16px;top:16px;font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 14px;background:var(--teal);color:#fff;cursor:pointer}
+@media print{body{background:#fff}button.print{display:none}.card,.tile{break-inside:avoid}main{padding:0}}</style></head><body><button class="print" onclick="window.print()">Print / save as PDF</button><main>
+<p class="meta">Earth Trend Detective · NASA Space Apps 2026 · summary report generated ${today}</p>
+<h1>${esc(l.name)}${l.country&&l.kind!=="country"?", "+esc(l.country):""}</h1>
+<p class="meta">${fmt(Math.abs(l.lat),2)}°${l.lat>=0?"N":"S"}, ${fmt(Math.abs(l.lon),2)}°${l.lon>=0?"E":"W"}${l.kind==="country"?" (country reference point: one grid cell, not a national average)":""}. Data: stored copies from NASA Giovanni (retrieved ${esc(ETD.retrieved)})${NDVI?` and NASA AppEEARS (retrieved ${esc(NDVI.retrieved)})`:""}. Each value describes the dataset's grid cell around this point.</p>
+${K.html}
+<h2>Key findings</h2><div class="card">${sig.length?`<ul>${sig.map(finding).join("")}</ul>`:"<p>No variable shows a statistically significant trend at this place (Mann-Kendall, p &lt; 0.05).</p>"}${not.length?`<p class="hint">No significant trend: ${not.map(r=>esc(r.v.name.toLowerCase())+` (p ${pfmt(r.a.p)})`).join(", ")}. A trend that is not significant can still become significant with a longer record.</p>`:""}</div>
+<h2>Where it is heading</h2><div class="note">Projections extend each measured trend with a 95% prediction range and are shown only when the trend line beat the long-term average on the last five years, which it was not allowed to see. They are not forecasts.</div>
+<div class="card"><ul>${R.map(r=>`<li><b>${esc(r.v.name)}:</b> ${esc(projText(r,false))}${r.P&&r.P.show?` Backtest: ${fmt(r.P.skill*100,0)}% smaller error than the long-term average; ${r.P.inside} of ${r.P.test.length} hidden years inside the range.`:""}</li>`).join("")}</ul></div>
+<h2>How strongly each variable is changing</h2><div class="card">${strengthSVG(rows)}</div>
+<h2>Every year at a glance</h2><div class="card"><p class="hint">Colour = difference from the ${BASE_TXT} mean in standard deviations. Blank = no data.</p>${heatmapSVG(d,rows)}</div>
+<h2>Each variable</h2><div class="grid">${charts}</div>
+<h2>All statistics</h2><div class="card">${statsTableHTML(rows)}</div>
+<h2>Sources</h2><div class="card stattbl"><table><thead><tr><th>Variable</th><th>Dataset</th><th>Provider</th><th>Coverage</th><th>Years here</th><th>Units</th><th>Resolution</th><th>Retrieved</th></tr></thead><tbody>${srcRows}</tbody></table></div>
+<h2>Methods</h2><div class="card"><ul>
+<li>Yearly values use only years with all 12 months; gaps are never filled. Monthly values outside physically possible limits are removed.</li>
+<li>Trend: Mann-Kendall test (trend-free pre-whitening when needed) with Sen's slope and its 95% interval; a linear fit with t-test for comparison; seasonal Mann-Kendall (Hirsch et al., 1982; Hirsch–Slack correction with 10 or more complete years) on monthly values.</li>
+<li>Break check: Pettitt test, flagged when p &lt; 0.01, a single jump fits much better than a line, and the jump exceeds 2.5 standard deviations.</li>
+<li>Projection: seasonal Sen's slope, t-based 95% prediction range widened for autocorrelation and calibrated on five-year backtests at every place; horizon a third of the record, at most 15 years.</li>
+<li>Correlation and co-occurring trends do not prove a cause.</li></ul></div>
+</main></body></html>`;
+  await saveFile(`earth-trend-detective-${slugify(l.name)}-report.html`,new Blob([html],{type:"text/html"}),msgEl);}
+
+/* Astronaut: opens game.html; if the file is missing next to index.html, say so instead of showing a broken page. */
+$("#astro").addEventListener("click",async e=>{if(location.protocol==="file:")return;e.preventDefault();const href=$("#astro").getAttribute("href");
+  try{const r=await fetch(href,{method:"HEAD",cache:"no-store"});if(r.ok){location.href=href;return;}flash("The game isn't in this folder yet: put game.html next to index.html.","warn",7000);}catch(_){location.href=href;}});
 
 /* =====================================================================
    14c. GUIDED STORY MODE (narrates the real results; the map moves at every step)
@@ -2016,20 +2224,20 @@ function selectLocation(loc,opts){loc=snapLoc(loc);if(!loc)return;if(S.loc&&locK
   if(mode==="globe"){if(opts&&opts.fly===false)enterMap(loc.lat,loc.lon,kTarget);else globeTo(loc.lat,loc.lon,G.r0*1.25,900,()=>{enterMap(loc.lat,loc.lon,kMin*1.6);flyTo(loc.lat,loc.lon,kTarget,1100);});}
   else if(!(opts&&opts.fly===false))flyTo(loc.lat,loc.lon,Math.max(T.k,kTarget));
   drawMap();if(S.section==="about")S.section="explore";renderPanel();renderCompare();refreshStatus();
-  load(loc).then(()=>{drawMap();renderExploreList();renderCompare();});
+  load(loc).then(()=>{applyRange();drawMap();renderExploreList();renderCompare();});
   if(window.innerWidth<=900)setTimeout(()=>$("#panel").scrollIntoView({behavior:"smooth",block:"start"}),1200);}
 $$("nav.sections button").forEach(b=>b.onclick=()=>{S.section=b.dataset.sec;renderPanel();positionInk();if(window.innerWidth<=900)$("#panel").scrollIntoView({behavior:"smooth",block:"start"});});
 function boot(){
   if(saved.item&&EXPLORE.find(e=>e.id===saved.item))S.item=saved.item;
   if(window.innerWidth<=900||window.innerHeight<700){$("#explore").classList.add("collapsed");$("#exploreToggle").textContent="Show";$("#exploreToggle").setAttribute("aria-expanded","false");}
   hydrateIcons(document);$("#play").innerHTML=icon("play");G.intro=reduceMotion?0:performance.now();
-  buildGlobeGeo();renderTicks();renderExploreList();sizeView();sizeMap();
+  buildGlobeGeo();applyRange();renderExploreList();sizeView();sizeMap();
   new ResizeObserver(()=>{sizeView();sizeMap();if(mode==="map")drawMap();}).observe(stage);
   requestAnimationFrame(globeLoop);updateGlobeTexture();
   (async()=>{const list=FEATURED.slice(),worker=async()=>{while(list.length){const p=list.shift();await load(p);if(mode==="map")drawMarks();}};await Promise.all([worker(),worker(),worker()]);if(mode==="map")drawMarks();if(S.section==="trends"||S.section==="connect")renderPanel();})();
   const prev=saved.loc,fromHash=parseHash(location.hash);
   if(fromHash){applyHash(fromHash);}
-  else if(prev&&isFinite(prev.lat)){const f=FEATURED.find(x=>x.name===prev.name)||COUNTRIES.find(c=>c.name===prev.name)||snapLoc(Object.assign({},prev,{kind:"point"}),true);if(!f)renderPanel();else{S.loc=f;G.rot=[-f.lon,clamp(-f.lat,-80,80)];G.spin=false;renderPanel();load(f).then(()=>{renderPanel();renderCompare();});}}
+  else if(prev&&isFinite(prev.lat)){const f=FEATURED.find(x=>x.name===prev.name)||COUNTRIES.find(c=>c.name===prev.name)||snapLoc(Object.assign({},prev,{kind:"point"}),true);if(!f)renderPanel();else{S.loc=f;G.rot=[-f.lon,clamp(-f.lat,-80,80)];G.spin=false;renderPanel();load(f).then(()=>{applyRange();renderPanel();renderCompare();});}}
   else renderPanel();
   renderCompare();setYear(S.year,{light:true});refreshStatus();requestAnimationFrame(positionInk);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(positionInk);
 }

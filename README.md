@@ -16,7 +16,7 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000/` in a browser. Opening `index.html` directly from the folder also works.
 
-The app reads only the files in this folder and makes no outside requests while it runs. Text uses the system fonts.
+The app reads only the files in this folder and makes no outside requests while it runs. Fonts are stored in `vendor/fonts/`.
 
 ## What is in the folder
 
@@ -32,7 +32,21 @@ The app reads only the files in this folder and makes no outside requests while 
 | `tools/fetch_appeears.py` | Retrieval and conversion script for NASA AppEEARS. |
 | `tools/calibrate.js` | Backtests the projection at every place and calibrates its 95% range (Node.js). |
 | `tools/sites.json` | The locations: the featured places and one reference point per country. |
-| `vendor/` | Local copies of D3 7.9.0 (ISC licence) and the Apache ECharts 4.9.0 world outlines (Apache-2.0). |
+| `vendor/` | Local copies of D3 7.9.0 (ISC licence), the Apache ECharts 4.9.0 world outlines (Apache-2.0) and, in `vendor/fonts/`, the Space Grotesk, Inter, JetBrains Mono and Fredoka fonts (SIL Open Font License 1.1, licences included). |
+| `game.html` | Not included. The astronaut in the map corner links to it; place your game file next to `index.html`. Until then the app says the game isn't in the folder. |
+
+## Features added in the latest version
+
+- **Time ranges follow the data:** the year slider, its ticks, the period selector, Before & After, the climate stripes
+  and every chart cover only the years the selected variable has data (at the selected place once it is loaded,
+  otherwise across all stored places). Switching variable resets the period to that variable's full range.
+- **Dashboard** (header button, or the Explore panel): every variable for one place on one screen. Headline figures,
+  how strongly each variable is changing, every year at a glance, a tile per variable with its chart and projection,
+  and a table of all statistics. Clicking a tile opens that variable in Explore.
+- **Summary report:** one self-contained HTML file with key findings, projections, charts, all statistics, sources
+  and methods. It opens in any browser and has a "Print / save as PDF" button.
+- **Astronaut:** a bouncing, waving astronaut in the map corner (bottom-right on phones) links to `game.html`.
+  Animations stop for visitors who ask their system for reduced motion.
 
 ## Data sources
 
